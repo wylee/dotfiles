@@ -2,16 +2,6 @@ set nocompatible
 filetype off
 
 call pathogen#infect()
-"set rtp+=~/.vim/bundle/vundle/
-"call vundle#rc()
-"Bundle 'gmarik/vundle'
-"Bundle 'wincent/Command-T'
-"Bundle 'scrooloose/nerdtree'
-"Bundle 'scrooloose/nerdcommenter'
-"Bundle 'tpope/vim-surround'
-"Bundle 'git://repo.or.cz/vcscommand'
-"Bundle 'kevinw/pyflakes-vim.git'
-""Bundle 'klen/python-mode'
 
 filetype plugin on
 
