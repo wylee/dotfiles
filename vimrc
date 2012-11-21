@@ -25,10 +25,6 @@ nnoremap k gk
 " Convenient Esc
 inoremap jj <ESC>
 
-" Comment/uncomment lines
-noremap <leader>/ :s/^/#/<CR>
-noremap <leader>? :s/^#//<CR>
-
 " \n to toggle NERDTree
 map <leader>n :NERDTreeToggle<CR>
 
