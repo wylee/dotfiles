@@ -1,0 +1,25 @@
+[ui]
+username = Wyatt Lee Baldwin <baldwinw@trimet.org>
+ignore = ~/.hgignore
+merge = meld
+
+[web]
+cacerts = /etc/ssl/certs/ca-certificates.crt
+
+[extensions]
+convert =
+fetch =
+largefiles =
+mq =
+rebase =
+record =
+
+[merge-tools]
+executable = meld
+
+[tortoisehg]
+ui.language = en
+vdiff = meld
+editor = /usr/bin/gedit
+shell = /bin/bash
+monitorrepo = localonly

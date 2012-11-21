@@ -1,0 +1,31 @@
+#### At root of repo
+^build$
+^var$
+
+# Eclipse
+^\.eclipse
+^\.project$
+^\.pydevproj
+
+# Python
+^dist$
+^docs/\.build$  # Sphinx
+^\.coverage$
+^.*\.egg-info$
+^.*\.egg$
+
+# Buildout
+^bin$
+^buildout$
+^develop-eggs$
+^parts$
+^\.installed\.cfg$
+
+# Pylons/Pyramid
+^data/.*
+
+
+#### Anywhere in repo
+hg.commit
+\.py[c,o]$
+\..*\.swp
