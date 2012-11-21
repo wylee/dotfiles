@@ -26,10 +26,10 @@ nnoremap k gk
 inoremap jj <ESC>
 
 " \n to toggle NERDTree
-map <leader>n :NERDTreeToggle<CR>
+noremap <silent> <leader>n :NERDTreeToggle<CR>
 
 " Rope for Python
-map <F3> :RopeGotoDefinition<CR>
+noremap <F3> :RopeGotoDefinition<CR>
 
 " Basics
 set encoding=utf-8
@@ -75,7 +75,7 @@ function <SID>strip_trailing_whitespace()
     let @/ = s
 endfun
 
-map <leader>s :call <SID>strip_trailing_whitespace()<CR>
+noremap <leader>s :call <SID>strip_trailing_whitespace()<CR>
 
 augroup vimrc
     autocmd!
