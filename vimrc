@@ -101,3 +101,7 @@ augroup END
 
 set ofu=syntaxcomplete#Complete
 let g:SuperTabDefaultCompletionType = "context"
+
+" Tagbar
+let g:tagbar_usearrows = 1
+nnoremap <leader>o :TagbarToggle<CR>
