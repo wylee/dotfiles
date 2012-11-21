@@ -109,5 +109,5 @@ augroup vimrc
     autocmd BufWritePre *.py :call <SID>strip_trailing_whitespace()
 augroup END
 
-" Enable python folding
-let g:pymode_folding = 0
+set ofu=syntaxcomplete#Complete
+let g:SuperTabDefaultCompletionType = "context"
