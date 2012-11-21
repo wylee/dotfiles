@@ -1,0 +1,104 @@
+#!/usr/bin/python
+import argparse
+from collections import OrderedDict
+import glob
+import os
+from subprocess import call
+import sys
+
+# List of directories and files to back up. ~ and * will be expanded below.
+# TODO: Read from config file
+paths_in = (
+    '{.project_dir}/bycycle/src/*',
+    '{.project_dir}/pyramid_restler*',
+    '{.project_dir}/restler',
+    '~/Documents/scratch',
+)
+
+# TODO: Read from config file
+rsync_excludes = (
+    '*.jar',
+    '*.pyc',
+    '*.pyo',
+    'data/matrix',
+    'data/*_raw.sql',
+    'develop-eggs/',
+    'fam/',
+    'site-packages/',
+    'tags/',
+    'var/data/',
+)
+
+# Locations where backups will be made
+# TODO: Read from config file
+locations = OrderedDict((
+    ('.local', '~/.local/backup/projects'),
+    ('local-disk', '/media/data/backup/projects'),
+    ('webfaction', 'bycycle@bycycle.org:~/backup/projects'),
+))
+for k, v in locations.items():
+    locations[k] = os.path.expanduser(v)
+
+default_project_dir = os.environ.get(
+    'PROJECT_DIR', os.path.expanduser('~/projects'))
+
+arg_parser = argparse.ArgumentParser()
+arg_parser.add_argument(
+    '--list-locations', '-l', action='store_true', default=False,
+    help='List available backup locations then exit.')
+arg_parser.add_argument('--verbose', '-v', action='store_true', default=False)
+arg_parser.add_argument('--dry-run', action='store_true', default=False)
+arg_parser.add_argument('--project-dir', '-d', default=default_project_dir)
+arg_parser.add_argument('locations', nargs='*', default=[])
+args = arg_parser.parse_args()
+
+def list_locations():
+    print('Available backup locations:')
+    for k, v in locations.items():
+       print(' - {0}: {1}'.format(k, v))
+
+if args.list_locations:
+    list_locations()
+    sys.exit(0)
+
+# Expand input paths.
+# ~ is expanded.
+# Shell style globs are, too.
+# TODO: Expand shell vars?
+paths = []
+for p in paths_in:
+    p = p.format(args)
+    p = os.path.expanduser(p)
+    p = glob.glob(p)
+    paths += p
+
+rsync_cmd = ['rsync', '-az', '--delete']
+if args.dry_run:
+    rsync_cmd.append('--dry-run')
+if args.verbose:
+    rsync_cmd.append('--verbose')
+for e in rsync_excludes:
+    rsync_cmd += ['--exclude', e]
+for p in paths:
+    if os.path.exists(p):
+        rsync_cmd.append(p)
+    else:
+        sys.stderr.write('Path not found: {0}.'.format(p))
+
+if args.locations:
+    selected_locations = args.locations
+    try:
+        selected_locations = [locations[l] for l in selected_locations]
+    except KeyError as e:
+        print('{0} is not a valid location key.'.format(l))
+        list_locations()
+        sys.exit(1)
+else:
+    selected_locations = locations.values()
+
+for l in selected_locations:
+    sys.stdout.write("*> Sync'ing to {0}...\n".format(l))
+    cmd = rsync_cmd[:]
+    cmd.append(l)
+    sys.stdout.write('*> rsync command: {0}\n\n'.format(' '.join(cmd)))
+    return_code = call(cmd)

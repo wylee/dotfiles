@@ -1,0 +1,2 @@
+#!/bin/bash
+play -c 2 -n synth pinknoise band -n 2500 4000 reverb 20
