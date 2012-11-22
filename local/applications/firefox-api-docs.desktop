@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Name=Firefox - API Docs
+GenericName=Web Browser - API Docs
+Keywords=Internet;WWW;Browser;Web;Explorer
+Exec=firefox -P 'API Docs' -no-remote
+Terminal=false
+X-MultipleArgs=false
+Type=Application
+Icon=firefox
+Categories=GNOME;GTK;Network;WebBrowser;
