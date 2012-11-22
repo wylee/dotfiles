@@ -7,15 +7,17 @@ filetype plugin on
 
 let mapleader = ","
 
-" Disable arrow keys
-nnoremap <Up>    <NOP>
-nnoremap <Down>  <NOP>
-nnoremap <Left>  <NOP>
-nnoremap <Right> <NOP>
+" Use left and right arrow keys for buffer navigation
+noremap  <Left>  <Esc>:bp<CR>
+noremap  <Right> <Esc>:bn<CR>
+inoremap <Left>  <C-o>:bp<CR>
+inoremap <Right> <C-o>:bn<CR>
+
+" Disable up and down arrow keys
+noremap  <Up>    <NOP>
+noremap  <Down>  <NOP>
 inoremap <Up>    <NOP>
 inoremap <Down>  <NOP>
-inoremap <Left>  <NOP>
-inoremap <Right> <NOP>
 
 " Move by screen line instead of text line.
 " Relevant when text is wrapped.
@@ -25,15 +27,20 @@ nnoremap k gk
 " Convenient Esc
 inoremap jj <ESC>
 
-" \n to toggle NERDTree
-noremap <silent> <leader>n :NERDTreeToggle<CR>
+" Convenient save key for insert mode
+inoremap <F2> <C-o>:w<CR>
 
-" Rope for Python
-noremap <F3> :RopeGotoDefinition<CR>
+" Copy to system clipboard
+noremap <leader>y "+y
+" Paste from system clipboard
+noremap <leader>p "+p
+noremap <leader>P "+P
 
 " Basics
 set encoding=utf-8
 set cursorline
+set mouse=a
+set mousehide  " Hide pointer while typing
 set ruler
 set showmode
 set showcmd
@@ -44,27 +51,27 @@ set wildmode=list:longest
 " Search
 nnoremap / /\v
 vnoremap / /\v
-set ignorecase
-set smartcase
 set gdefault
+set hlsearch
+set ignorecase
 set incsearch
 set showmatch
-set hlsearch
+set smartcase
 nnoremap <leader><space> :noh<cr>
 nnoremap <tab> %
 vnoremap <tab> %
 
 " Text formatting
-set expandtab
-set textwidth=79
-set softtabstop=4
-set shiftwidth=4
 set autoindent
-set formatoptions=tcrqnl1
 set colorcolumn=+1
 highlight ColorColumn ctermbg=7
+set expandtab
+set formatoptions=tcrqnl1
 set list
 set listchars=tab:»\ ,trail:·
+set shiftwidth=4
+set softtabstop=4
+set textwidth=79
 
 function <SID>strip_trailing_whitespace()
     let l = line(".")
@@ -95,6 +102,7 @@ augroup vimrc
     autocmd BufWritePre *.py :call <SID>strip_trailing_whitespace()
 augroup END
 
+" Supertab
 set ofu=syntaxcomplete#Complete
 let g:SuperTabDefaultCompletionType = "context"
 
@@ -104,3 +112,10 @@ nnoremap <leader>o :TagbarToggle<CR>
 
 " Ack
 nnoremap <leader>a :Ack<CR>
+
+" \n to toggle NERDTree
+noremap <silent> <leader>n :NERDTreeToggle<CR>
+
+" Rope for Python
+noremap <F3> :RopeGotoDefinition<CR>
+
