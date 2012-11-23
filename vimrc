@@ -37,15 +37,17 @@ noremap <leader>p "+p
 noremap <leader>P "+P
 
 " Basics
-set encoding=utf-8
+set autowrite
 set cursorline
+set encoding=utf-8
 set foldlevel=0
 set foldmethod=indent
+set hidden
 set mouse=a
 set mousehide  " Hide pointer while typing
 set ruler
-set showmode
 set showcmd
+set showmode
 set showtabline=2
 set wildmenu
 set wildmode=list:longest
