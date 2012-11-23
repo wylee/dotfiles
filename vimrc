@@ -39,6 +39,8 @@ noremap <leader>P "+P
 " Basics
 set encoding=utf-8
 set cursorline
+set foldlevel=0
+set foldmethod=indent
 set mouse=a
 set mousehide  " Hide pointer while typing
 set ruler
