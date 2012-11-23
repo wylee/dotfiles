@@ -2,10 +2,11 @@
 ^build$
 ^var$
 
-# Eclipse
+# Project directories
 ^\.eclipse
 ^\.project$
 ^\.pydevproj
+^\.ropeproject
 
 # Python
 ^dist$
