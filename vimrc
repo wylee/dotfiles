@@ -58,6 +58,9 @@ set showtabline=2
 set wildmenu
 set wildmode=list:longest
 
+" GUI
+set guioptions-=T  " Hide the toolbar
+
 " Search
 nnoremap / /\v
 vnoremap / /\v
