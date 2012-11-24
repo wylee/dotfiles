@@ -46,7 +46,7 @@ noremap <leader>P "+P
 set autowrite
 set cursorline
 set encoding=utf-8
-set foldlevel=0
+set foldlevel=99
 set foldmethod=indent
 set hidden
 set mouse=a
