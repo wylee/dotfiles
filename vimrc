@@ -13,6 +13,12 @@ noremap  <Right> <Esc>:bn<CR>
 inoremap <Left>  <C-o>:bp<CR>
 inoremap <Right> <C-o>:bn<CR>
 
+"
+map <C-j> <C-w>j
+map <C-k> <C-w>k
+map <C-l> <C-w>l
+map <C-h> <C-w>h
+
 " Disable up and down arrow keys
 noremap  <Up>    <NOP>
 noremap  <Down>  <NOP>
