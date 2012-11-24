@@ -35,7 +35,9 @@ hg_info() {
 # PWD (HGINFO)
 # HISTORYNUM PROMPT
 PS1="\
-${GRAY_BG}\d                                                              \t${N}
+${GRAY_BG}\
+\d                                                              \t\
+${RESET_COLOR}
 ${GRAY}\
 \u@\H ${GOTO_POS}[80G\]«
 \w\$(hg_info) ${GOTO_POS}[80G\]«
