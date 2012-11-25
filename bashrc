@@ -59,5 +59,3 @@ fi
 export HISTIGNORE="&:[ ]*:exit"
 
 export EDITOR=vim
-
-export PATH=$HOME/.local/bin:$PATH
