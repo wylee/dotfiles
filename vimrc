@@ -136,3 +136,7 @@ noremap <F3> :RopeGotoDefinition<CR>
 " CtrlP
 silent! nnoremap <unique> <silent> <leader>t :CtrlP<CR>
 silent! nnoremap <unique> <silent> <leader>b :CtrlPBuffer<CR>
+
+" Gundo
+let g:gundo_right=1
+nnoremap <F5> :GundoToggle<CR>
