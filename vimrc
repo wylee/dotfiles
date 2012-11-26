@@ -7,23 +7,17 @@ filetype plugin indent on
 
 let mapleader = ","
 
-" Use left and right arrow keys for buffer navigation
-noremap  <Left>  <Esc>:bp<CR>
-noremap  <Right> <Esc>:bn<CR>
-inoremap <Left>  <C-o>:bp<CR>
-inoremap <Right> <C-o>:bn<CR>
+" Use arrow keys for window navigation
+noremap <Left>  <C-w>h
+noremap <Down>  <C-w>j
+noremap <Up>    <C-w>k
+noremap <Right> <C-w>l
 
-"
-map <C-j> <C-w>j
-map <C-k> <C-w>k
-map <C-l> <C-w>l
-map <C-h> <C-w>h
-
-" Disable up and down arrow keys
-noremap  <Up>    <NOP>
-noremap  <Down>  <NOP>
-inoremap <Up>    <NOP>
+" Disable up and down arrow keys and some other insert mode navigation
+inoremap <Left>  <NOP>
 inoremap <Down>  <NOP>
+inoremap <Up>    <NOP>
+inoremap <Right> <NOP>
 
 " Move by screen line instead of text line.
 " Relevant when text is wrapped.
