@@ -123,8 +123,8 @@ let g:tagbar_usearrows=1
 let g:tagbar_left=1
 nnoremap <leader>o :TagbarToggle<CR>
 
-" Ack
-nnoremap <leader>a :Ack<CR>
+" Ack search; ! keeps Ack from opening the first match automatically
+nnoremap <leader>a :Ack!<space>
 
 " \n to toggle NERDTree
 noremap <silent> <leader>n :NERDTreeToggle<CR>
