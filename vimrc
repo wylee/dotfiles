@@ -121,7 +121,7 @@ let g:SuperTabDefaultCompletionType = "context"
 " Tagbar
 let g:tagbar_usearrows=1
 let g:tagbar_left=1
-nnoremap <leader>o :TagbarToggle<CR>
+nnoremap <leader>tb :TagbarToggle<CR>
 
 " Ack search; ! keeps Ack from opening the first match automatically
 nnoremap <leader>a :Ack!<space>
@@ -137,9 +137,11 @@ noremap <silent> <leader>n :NERDTreeToggle<CR>
 " Rope for Python
 noremap <F3> :RopeGotoDefinition<CR>
 
-" CtrlP
-silent! nnoremap <unique> <silent> <leader>t :CtrlP<CR>
-silent! nnoremap <unique> <silent> <leader>b :CtrlPBuffer<CR>
+" CtrlP 'o' is for open
+silent! nnoremap <unique> <silent> <leader>o :CtrlP<CR>
+
+" BufExplorer
+noremap <script> <silent> <unique> <leader>b :BufExplorer<CR>
 
 " Gundo
 let g:gundo_right=1
