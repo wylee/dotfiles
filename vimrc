@@ -126,6 +126,11 @@ nnoremap <leader>o :TagbarToggle<CR>
 " Ack search; ! keeps Ack from opening the first match automatically
 nnoremap <leader>a :Ack!<space>
 
+" NERDCommenter
+" Make comment toggling easier
+nmap <silent> <leader>/ <leader>c<space>
+xmap <silent> <leader>/ <leader>c<space>
+
 " \n to toggle NERDTree
 noremap <silent> <leader>n :NERDTreeToggle<CR>
 
