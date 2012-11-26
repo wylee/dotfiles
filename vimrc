@@ -41,6 +41,7 @@ noremap <leader>P "+P
 " Basics
 set autowrite
 set cursorline
+highlight CursorLine cterm=NONE ctermbg=7
 set encoding=utf-8
 set foldlevel=99
 set foldmethod=indent
