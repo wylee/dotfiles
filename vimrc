@@ -18,6 +18,8 @@ inoremap <Left>  <NOP>
 inoremap <Down>  <NOP>
 inoremap <Up>    <NOP>
 inoremap <Right> <NOP>
+inoremap <Home>  <NOP>
+inoremap <End>   <NOP>
 
 " Move by screen line instead of text line.
 " Relevant when text is wrapped.
