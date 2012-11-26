@@ -106,10 +106,11 @@ augroup vimrc
     autocmd FileType javascript setlocal sw=2 sts=2
     autocmd FileType text setlocal sw=2 sts=2 tw=76
 
+    autocmd BufRead,BufNewFile *.mako set filetype=mako
+    autocmd FileType mako setlocal sw=2 sts=2
+
     autocmd BufRead,BufNewFile *.commit set filetype=commit
     autocmd FileType commit setlocal sw=2 sts=2 tw=72
-
-    autocmd BufEnter *.mako set filetype=xml
 
     autocmd BufWritePre *.py :call <SID>strip_trailing_whitespace()
 augroup END
