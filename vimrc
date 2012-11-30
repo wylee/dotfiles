@@ -122,7 +122,6 @@ augroup vimrc
     "     - Make comments wrap at column 72 (works with format option c)
     "     - Display right margin in column 80
     autocmd FileType python setlocal fo-=t tw=72 cc=80
-    autocmd BufWritePre *.py :call <SID>strip_trailing_whitespace()
 augroup END
 
 " Supertab
