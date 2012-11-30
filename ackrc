@@ -1,0 +1,5 @@
+# Ignore Buildout directories
+--ignore-dir=bin
+--ignore-dir=develop-eggs
+--ignore-dir=parts
+--ignore-dir=*.egg-info
