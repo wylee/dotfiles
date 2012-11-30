@@ -146,7 +146,11 @@ xmap <silent> <leader>/ <leader>c<space>
 noremap <silent> <leader>n :NERDTreeToggle<CR>
 
 " Rope for Python
-noremap <F3> :RopeGotoDefinition<CR>
+map <F2> :RopeFindOccurrences<CR>
+map <F3> :RopeGotoDefinition<CR>
+map <F4> :RopeShowDoc<CR>
+let ropevim_extended_complete=1
+let ropevim_guess_project=1
 
 " CtrlP 'o' is for open
 silent! nnoremap <unique> <silent> <leader>o :CtrlP<CR>
