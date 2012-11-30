@@ -160,4 +160,4 @@ noremap <script> <silent> <unique> <leader>b :BufExplorer<CR>
 
 " Gundo
 let g:gundo_right=1
-nnoremap <F5> :GundoToggle<CR>
+nnoremap <leader>u :GundoToggle<CR>
