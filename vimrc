@@ -122,10 +122,16 @@ augroup vimrc
     "     - Make comments wrap at column 72 (works with format option c)
     "     - Display right margin in column 80
     autocmd FileType python setlocal fo-=t tw=72 cc=80
+
+    " Set default completion function only if one isn't already set on the
+    " file.
+    autocmd Filetype *
+                \ if &omnifunc == "" |
+                \     setlocal omnifunc=syntaxcomplete#Complete |
+                \ endif
 augroup END
 
 " Supertab
-set ofu=syntaxcomplete#Complete
 let g:SuperTabDefaultCompletionType = "context"
 
 " Tagbar
