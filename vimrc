@@ -56,7 +56,14 @@ set wildmenu
 set wildmode=list:longest
 
 " GUI
-set guioptions-=T  " Hide the toolbar
+" Hide toolbar
+set guioptions-=T
+" Hide scrollbars
+set guioptions-=r
+set guioptions-=R
+set guioptions-=l
+set guioptions-=L
+set guioptions-=b
 
 " Search
 nnoremap / /\v
