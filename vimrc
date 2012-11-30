@@ -51,7 +51,7 @@ set mousehide  " Hide pointer while typing
 set ruler
 set showcmd
 set showmode
-set showtabline=2
+set showtabline=1
 set wildmenu
 set wildmode=list:longest
 
