@@ -81,7 +81,7 @@ set autoindent
 set colorcolumn=+1
 highlight ColorColumn ctermbg=7
 set expandtab
-set formatoptions=tcrqnl1
+set formatoptions=tcrqnl1j
 set list
 set listchars=tab:»\ ,trail:·
 set shiftwidth=4
