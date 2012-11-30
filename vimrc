@@ -75,8 +75,6 @@ set incsearch
 set showmatch
 set smartcase
 nnoremap <leader><space> :noh<cr>
-nnoremap <tab> %
-vnoremap <tab> %
 
 " Text formatting
 set autoindent
