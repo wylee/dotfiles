@@ -1,4 +1,5 @@
 #### At root of repo
+^MANIFEST$
 ^build$
 ^var$
 ^tags$
