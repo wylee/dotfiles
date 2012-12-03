@@ -45,8 +45,8 @@ ${GRAY}\
 "
 export PS1
 
-if [ -f ~/.bash_aliases ]; then
-    . ~/.bash_aliases
+if [ -f ~/.aliasrc ]; then
+    . ~/.aliasrc
 fi
 
 if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
