@@ -7,6 +7,8 @@ filetype plugin indent on
 
 let mapleader = ","
 
+syntax on
+
 " Use arrow keys for window navigation
 noremap <Left>  <C-w>h
 noremap <Down>  <C-w>j
