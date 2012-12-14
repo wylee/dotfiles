@@ -59,3 +59,6 @@ fi
 export HISTIGNORE="&:[ ]*:exit"
 
 export EDITOR=vim
+
+set -o vi
+bind -m vi-insert "\C-l":clear-screen
