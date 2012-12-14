@@ -88,8 +88,6 @@ set formatoptions=tcrqnl1j
 set list
 set listchars=tab:»\ ,trail:·
 set shiftwidth=4
-set smartindent
-set smarttab
 set softtabstop=4
 set textwidth=79
 
