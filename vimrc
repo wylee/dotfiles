@@ -159,10 +159,10 @@ let ropevim_extended_complete=1
 let ropevim_guess_project=1
 
 " CtrlP 'o' is for open
-silent! nnoremap <unique> <silent> <leader>o :CtrlP<CR>
-
-" BufExplorer
-noremap <script> <silent> <unique> <leader>b :BufExplorer<CR>
+let g:ctrlp_map = '<leader>o'
+let g:ctrlp_custom_ignore = '\v(\.py[cdo]$|tags)'
+nnoremap <silent> <leader>O :<C-u>CtrlPCurFile<CR>
+nnoremap <silent> <leader>bo :<C-u>CtrlPBuffer<CR>
 
 " Gundo
 let g:gundo_right=1
