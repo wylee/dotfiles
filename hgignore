@@ -3,6 +3,7 @@
 ^build$
 ^var$
 ^tags$
+^\.coverage$
 
 # Project directories
 ^\.eclipse
@@ -30,5 +31,5 @@
 
 #### Anywhere in repo
 hg.commit
-\.py[c,o]$
+\.py[cdo]$
 \..*\.swp
