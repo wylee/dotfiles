@@ -1,0 +1,31 @@
+#### At root of repo
+/build/
+/var/
+/MANIFEST
+/Makefile
+/tags
+/.coverage
+
+# Project directories
+/.eclipse*/
+/.project*/
+/.pydevproject*/
+/.ropeproject*/
+
+# Python
+/dist/
+/docs/.build
+/*.egg-info/
+/*.egg
+
+# Buildout
+/bin/
+/develop-eggs/
+/parts/
+/buildout.cfg
+/.installed.cfg
+
+#### Anywhere in repo
+git.commit
+*.py[cdo]
+.*.swp
