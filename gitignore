@@ -8,6 +8,7 @@
 
 # Project directories
 /.eclipse*/
+/.idea*/
 /.project*/
 /.pydevproject*/
 /.ropeproject*/
