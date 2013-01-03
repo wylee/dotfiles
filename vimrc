@@ -43,6 +43,7 @@ noremap <leader>P "+P
 
 " Basics
 set autowrite
+set backspace=indent,eol,start
 " Fixes 'crontab: temp file must be edited in place' on Mac OS
 set backupskip+=/private/tmp/*
 set cursorline
