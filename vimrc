@@ -47,7 +47,6 @@ set backspace=indent,eol,start
 " Fixes 'crontab: temp file must be edited in place' on Mac OS
 set backupskip+=/private/tmp/*
 set cursorline
-highlight CursorLine cterm=NONE ctermbg=7
 set encoding=utf-8
 set foldlevel=99
 set foldmethod=indent
