@@ -19,8 +19,11 @@ shopt -s checkwinsize
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
 # Fancy pants prompt
-GRAY='\[\e[1;30m\]'
-GRAY_BG='\[\e[0;47m\]'
+RED='\[\e[0;31m\]'
+GREEN='\[\e[0;32m\]'
+BLUE='\[\e[0;34m\]'
+CYAN='\[\e[0;36m\]'
+YELLOW='\[\e[1;33m\]'
 RESET_COLOR='\[\e[0;0m\]'
 GOTO_POS="\[\033"
 hg_info() {
@@ -30,18 +33,15 @@ hg_info() {
         fi
     fi
 }
-# DATE TIME
+# DATE                                                                     TIME
 # USER@HOST
 # PWD (HGINFO)
 # HISTORYNUM PROMPT
 PS1="\
-${GRAY_BG}\
-\d                                                              \t\
-${RESET_COLOR}
-${GRAY}\
-\u@\H ${GOTO_POS}[80G\]«
-\w\$(hg_info) ${GOTO_POS}[80G\]«
-!\!> ${RESET_COLOR}\
+\d${GOTO_POS}[73G\]\t
+${RED}\u${YELLOW}@${GREEN}\H${RESET_COLOR}${GOTO_POS}[80G\]«
+${CYAN}\w\$(hg_info)${RESET_COLOR}${GOTO_POS}[80G\]«
+${YELLOW}>${RESET_COLOR} \
 "
 export PS1
 
