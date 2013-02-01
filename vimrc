@@ -118,7 +118,7 @@ augroup vimrc
     autocmd FileType mako setlocal sw=2 sts=2
 
     autocmd BufRead,BufNewFile *.commit set filetype=commit
-    autocmd FileType commit setlocal sw=2 sts=2 tw=72
+    autocmd FileType commit setlocal sw=4 sts=4 tw=72 syntax=gitcommit
 
     " Python files:
     "     - Don't auto-wrap code
