@@ -1,5 +1,23 @@
 # ~/.bashrc: executed by bash(1) for non-login shells.
 
+function source_if () {
+    if [ -f "$1" ]; then
+        source "$1"
+    fi
+}
+
+source_if ~/.bashrc.before
+
+function first_of () {
+    for p in $@; do
+        if [ -e "$p" ]; then
+            echo "$p"
+            return 0
+        fi
+    done
+    return 1
+}
+
 # If not running interactively, don't do anything
 [ -z "$PS1" ] && return
 
@@ -18,18 +36,23 @@ shopt -s checkwinsize
 # Make less more friendly for non-text input files; see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
+source_if "/usr/local/etc/bash_completion.d/git-prompt.sh"
+
 # Fancy pants prompt
 RED='\[\e[0;31m\]'
 GREEN='\[\e[0;32m\]'
 BLUE='\[\e[0;34m\]'
 CYAN='\[\e[0;36m\]'
 YELLOW='\[\e[1;33m\]'
+GREY='\[\e[1;30m\]'
 RESET_COLOR='\[\e[0;0m\]'
 GOTO_POS="\[\033"
-hg_info() {
+vcs_info() {
     if [ "$PWD" != "$HOME" ]; then
         if [ -d "${PWD}/.hg" ]; then
             hg -R . branch 2>/dev/null | awk '{print " (hg:"$1")"}'
+        elif [ -d "${PWD}/.git" ]; then
+            __git_ps1
         fi
     fi
 }
@@ -38,20 +61,12 @@ hg_info() {
 # PWD (HGINFO)
 # HISTORYNUM PROMPT
 PS1="\
-\d${GOTO_POS}[73G\]\t
-${RED}\u${YELLOW}@${GREEN}\H${RESET_COLOR}${GOTO_POS}[80G\]«
-${CYAN}\w\$(hg_info)${RESET_COLOR}${GOTO_POS}[80G\]«
+${GREY}\d${GOTO_POS}[73G\]\t${RESET_COLOR}
+${RED}\u${YELLOW}@${GREEN}\H${GOTO_POS}[80G\]${GREY}«
+${CYAN}\w\$(vcs_info)${GOTO_POS}[80G\]${GREY}«
 ${YELLOW}>${RESET_COLOR} \
 "
 export PS1
-
-if [ -f ~/.aliasrc ]; then
-    . ~/.aliasrc
-fi
-
-if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
-    . /etc/bash_completion
-fi
 
 # Don't add certain commands to BASH history.
 # & = ignore duplicates
@@ -62,3 +77,10 @@ export EDITOR=vim
 
 set -o vi
 bind -m vi-insert "\C-l":clear-screen
+
+PROJECT_DIR="$(first_of ~/projects ~/Projects)"
+export PROJECT_DIR
+
+! shopt -oq posix && source_if "/etc/bash_completion"
+source_if ~/.aliasrc
+source_if ~/.bashrc.after
