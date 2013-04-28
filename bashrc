@@ -1,5 +1,7 @@
 # ~/.bashrc: executed by bash(1) for non-login shells.
 
+BASH_COMPLETION_PATH="/etc/bash_completion"
+
 function source_if () {
     if [ -f "$1" ]; then
         source "$1"
@@ -81,6 +83,6 @@ bind -m vi-insert "\C-l":clear-screen
 PROJECT_DIR="$(first_of ~/projects ~/Projects)"
 export PROJECT_DIR
 
-! shopt -oq posix && source_if "/etc/bash_completion"
+! shopt -oq posix && source_if "${BASH_COMPLETION_PATH}"
 source_if ~/.aliasrc
 source_if ~/.bashrc.after
