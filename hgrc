@@ -4,6 +4,7 @@ ignore = ~/.hgignore
 merge = meld
 
 [extensions]
+color =
 convert =
 fetch =
 largefiles =
