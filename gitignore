@@ -6,6 +6,7 @@
 /scratch
 /tags
 /.coverage
+/*.commit
 
 # Project directories
 /.eclipse*/
