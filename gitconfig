@@ -5,3 +5,5 @@
     excludesfile = /home/wyatt/.gitignore
 [color]
     ui = true
+[push]
+    default = simple
