@@ -2,7 +2,7 @@
     name = Wyatt Lee Baldwin
     email = wyatt.lee.baldwin@gmail.com
 [core]
-    excludesfile = /home/wyatt/.gitignore
+    excludesfile = ~/.gitignore
 [color]
     ui = true
 [push]
