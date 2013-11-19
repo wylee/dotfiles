@@ -42,6 +42,7 @@ link hgignore
 link hgrc
 link profile
 link vimrc
+link ssh/config
 
 mkdir -p ~/.vim/{autoload,bundle}
 checkoutmanager co vim-pathogen
