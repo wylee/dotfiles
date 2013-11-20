@@ -7,6 +7,7 @@
 
 # Project directories
 ^\.eclipse
+^\.idea
 ^\.project$
 ^\.pydevproj
 ^\.ropeproject
