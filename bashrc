@@ -71,7 +71,8 @@ export PS1
 # Don't add certain commands to BASH history.
 # & = ignore duplicates
 # [ ]* = ignore commands starting with a space
-export HISTIGNORE="&:[ ]*:exit"
+# ? and ?? = ignore all 1 and 2 character commands
+export HISTIGNORE="&:[ ]*:?:??"
 
 export EDITOR=vim
 
