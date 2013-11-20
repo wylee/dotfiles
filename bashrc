@@ -26,6 +26,12 @@ HISTCONTROL=ignoredups:ignorespace
 HISTSIZE=1000
 HISTFILESIZE=2000
 
+# Don't add certain commands to BASH history.
+# & = ignore duplicates
+# [ ]* = ignore commands starting with a space
+# ? and ?? = ignore all 1 and 2 character commands
+export HISTIGNORE="&:[ ]*:?:??"
+
 # Append to the history file; don't overwrite it
 shopt -s histappend
 
@@ -67,12 +73,6 @@ ${CYAN}\w\$(vcs_info)${GOTO_POS}[80G\]${GREY}«
 ${YELLOW}>${RESET_COLOR} \
 "
 export PS1
-
-# Don't add certain commands to BASH history.
-# & = ignore duplicates
-# [ ]* = ignore commands starting with a space
-# ? and ?? = ignore all 1 and 2 character commands
-export HISTIGNORE="&:[ ]*:?:??"
 
 export EDITOR=vim
 
