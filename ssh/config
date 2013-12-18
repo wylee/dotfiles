@@ -5,3 +5,7 @@ Host github.com github
 Host bitbucket.org bitbucket
     HostName bitbucket.org
     IdentityFile ~/.ssh/id_rsa-bitbucket
+
+Host pypi.python.org pypi
+    HostName pypi.python.org
+    IdentityFile ~/.ssh/id_rsa-pypi
