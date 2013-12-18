@@ -25,7 +25,6 @@
 /bin/
 /develop-eggs/
 /parts/
-/buildout.cfg
 /.installed.cfg
 
 #### Anywhere in repo
