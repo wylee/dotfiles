@@ -11,6 +11,7 @@ largefiles =
 mq =
 rebase =
 record =
+shelve =
 
 [merge-tools]
 executable = meld
