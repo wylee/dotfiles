@@ -79,7 +79,7 @@ export EDITOR=vim
 set -o vi
 bind -m vi-insert "\C-l":clear-screen
 
-PROJECT_DIR="$(first_of ~/projects ~/Projects)"
+PROJECT_DIR="$(first_of ~/Projects ~/projects)"
 export PROJECT_DIR
 
 PATH="/usr/local/bin:${PATH}"
