@@ -1,5 +1,6 @@
 #### At root of repo
 /build/
+/docs/_build
 /var/
 /MANIFEST
 /Makefile
