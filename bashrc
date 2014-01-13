@@ -65,11 +65,11 @@ vcs_info() {
 # DATE                                                                     TIME
 # USER@HOST
 # PWD (HGINFO)
-# HISTORYNUM PROMPT
+# PROMPT
 PS1="\
-${GREY}\d${GOTO_POS}[73G\]\t${RESET_COLOR}
-${RED}\u${YELLOW}@${GREEN}\H${GOTO_POS}[80G\]${GREY}«
-${CYAN}\w\$(vcs_info)${GOTO_POS}[80G\]${GREY}«
+${GREY}\d${GOTO_POS}[73G\]\t
+${RED}\u${YELLOW}@${GREEN}\H
+${CYAN}\w\$(vcs_info)
 ${YELLOW}>${RESET_COLOR} \
 "
 export PS1
