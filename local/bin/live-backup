@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/local/bin/python3
 import argparse
 import collections
 import configparser
@@ -46,10 +46,23 @@ available_locations = collections.OrderedDict(
 )
 
 
+location_groups = collections.OrderedDict()
+for group, group_locations in config_parser.items('location-groups'):
+    group_locations = group_locations.strip().split()
+    for group_loc in group_locations:
+        if group_loc not in available_locations:
+            print('Bad location in {} group: {}'.format(group, group_loc))
+            sys.exit(1)
+    location_groups[group] = group_locations
+
+
 def list_available_locations():
     print('Available backup locations:\n')
     for k, v in available_locations.items():
-       print('    - {0}: {1}'.format(k, v))
+        print('    - {0}: {1}'.format(k, v))
+    print('\nLocation groups:\n')
+    for k, v in location_groups.items():
+        print('    - {0}: {1}'.format(k, ', '.join(v)))
 
 
 if args.list_locations:
@@ -97,14 +110,17 @@ rsync_cmd.extend(paths)
 
 
 if args.locations:
-    selected_locations = args.locations
-    try:
-        selected_locations = [
-            available_locations[loc] for loc in selected_locations]
-    except KeyError as e:
-        print('{0} is not a valid location key\n'.format(e.args[0]))
-        list_available_locations()
-        sys.exit(1)
+    selected_locations = []
+    for loc in args.locations:
+        if loc in location_groups:
+            locations = [available_locations[l] for l in location_groups[loc]]
+            selected_locations.extend(locations)
+        elif loc in available_locations:
+            selected_locations.append(available_locations[loc])
+        else:
+            print('{0} is not a valid location key\n'.format(e.args[0]))
+            list_available_locations()
+            sys.exit(1)
 else:
     selected_locations = available_locations.values()
 
