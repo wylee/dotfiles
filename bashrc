@@ -67,7 +67,11 @@ vcs_info() {
 # PWD (HGINFO)
 # PROMPT
 PS1="\
-${GREY}\d${GOTO_POS}[73G\]\t
+${GREY}\d \
+${RED}=${GREEN}=${BLUE}=${RESET_COLOR}\
+======================================================\
+${BLUE}=${GREEN}=${RED}=${GREY} \
+\t
 ${RED}\u${YELLOW}@${GREEN}\H
 ${CYAN}\w\$(vcs_info)
 ${YELLOW}>${RESET_COLOR} \
