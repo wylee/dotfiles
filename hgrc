@@ -2,6 +2,7 @@
 username = Wyatt Lee Baldwin <self@wyattbaldwin.com>
 ignore = ~/.hgignore
 merge = meld
+pager =
 
 [extensions]
 color =
@@ -12,6 +13,10 @@ mq =
 rebase =
 record =
 shelve =
+pager =
+
+[pager]
+pager = LESS='FRX' less
 
 [merge-tools]
 executable = meld
