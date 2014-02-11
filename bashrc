@@ -52,7 +52,9 @@ CYAN='\[\e[0;36m\]'
 YELLOW='\[\e[1;33m\]'
 GREY='\[\e[1;30m\]'
 RESET_COLOR='\[\e[0;0m\]'
-GOTO_POS="\[\033"
+hr() {
+    printf '=%.0s' $(seq $((${COLUMNS} - 20)))
+}
 vcs_info() {
     if [ "$PWD" != "$HOME" ]; then
         if [ -d "${PWD}/.hg" ]; then
@@ -67,11 +69,7 @@ vcs_info() {
 # PWD (HGINFO)
 # PROMPT
 PS1="\
-${GREY}\d \
-${RED}=${GREEN}=${BLUE}=${RESET_COLOR}\
-======================================================\
-${BLUE}=${GREEN}=${RED}=${GREY} \
-\t
+${GREY}\d ${RED}\$(hr)${GREY} \t
 ${RED}\u${YELLOW}@${GREEN}\H
 ${CYAN}\w\$(vcs_info)
 ${YELLOW}>${RESET_COLOR} \
