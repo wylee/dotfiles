@@ -9,3 +9,6 @@ Host bitbucket.org bitbucket
 Host pypi.python.org pypi
     HostName pypi.python.org
     IdentityFile ~/.ssh/id_rsa-pypi
+
+Host static.bycycle.org
+    User bycycle
