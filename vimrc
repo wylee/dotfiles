@@ -128,10 +128,12 @@ augroup vimrc
 
     " Set default completion function only if one isn't already set on the
     " file.
-    autocmd Filetype *
+    autocmd FileType *
                 \ if &omnifunc == "" |
                 \     setlocal omnifunc=syntaxcomplete#Complete |
                 \ endif
+
+    autocmd BufRead,BufNewFile CHANGELOG set filetype=rst
 augroup END
 
 " Supertab
