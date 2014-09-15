@@ -47,13 +47,14 @@ available_locations = collections.OrderedDict(
 
 
 location_groups = collections.OrderedDict()
-for group, group_locations in config_parser.items('location-groups'):
-    group_locations = group_locations.strip().split()
-    for group_loc in group_locations:
-        if group_loc not in available_locations:
-            print('Bad location in {} group: {}'.format(group, group_loc))
-            sys.exit(1)
-    location_groups[group] = group_locations
+if 'location-groups' in config_parser:
+    for group, group_locations in config_parser.items('location-groups'):
+        group_locations = group_locations.strip().split()
+        for group_loc in group_locations:
+            if group_loc not in available_locations:
+                print('Bad location in {} group: {}'.format(group, group_loc))
+                sys.exit(1)
+        location_groups[group] = group_locations
 
 
 def list_available_locations():
@@ -61,8 +62,11 @@ def list_available_locations():
     for k, v in available_locations.items():
         print('    - {0}: {1}'.format(k, v))
     print('\nLocation groups:\n')
-    for k, v in location_groups.items():
-        print('    - {0}: {1}'.format(k, ', '.join(v)))
+    if location_groups:
+        for k, v in location_groups.items():
+            print('    - {0}: {1}'.format(k, ', '.join(v)))
+    else:
+        print('    No location groups')
 
 
 if args.list_locations:
