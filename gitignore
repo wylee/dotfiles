@@ -29,6 +29,7 @@
 /.installed.cfg
 
 #### Anywhere in repo
+.DS_Store
 git.commit
 *.py[cdo]
 .*.swp
