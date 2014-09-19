@@ -3,3 +3,6 @@
 --ignore-dir=develop-eggs
 --ignore-dir=parts
 --ignore-dir=*.egg-info
+
+# Ignore virtualenvs
+--ignore-dir=.env
