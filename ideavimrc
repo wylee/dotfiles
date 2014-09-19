@@ -1,0 +1,7 @@
+" Search
+set gdefault
+set hlsearch
+set ignorecase
+set incsearch
+set showmatch
+set smartcase

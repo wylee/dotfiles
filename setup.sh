@@ -40,6 +40,7 @@ link gitconfig
 link gitignore
 link hgignore
 link hgrc
+link ideavimrc
 link live-backup.cfg
 link profile
 link vimrc
