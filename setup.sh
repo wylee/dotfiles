@@ -45,6 +45,8 @@ link live-backup.cfg
 link profile
 link vimrc
 link ssh/config
+link Library/LaunchAgents/gpg-agent.plist \
+    ${HOME}/Library/LaunchAgents/gpg-agent.plist
 
 mkdir -p ~/.vim/{autoload,bundle}
 checkoutmanager co vim-pathogen
