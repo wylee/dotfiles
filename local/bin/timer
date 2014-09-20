@@ -1,0 +1,51 @@
+#!/usr/bin/env python3
+import argparse
+import time
+
+
+def seconds_from_str(s):
+    parts = s.split(':')
+    seconds = int(parts[-1])
+    if len(parts) > 1:
+        minutes = int(parts[-2])
+        seconds += minutes * 60
+    if len(parts) > 2:
+        hours = int(parts[-3])
+        seconds += minutes * 3600
+    return seconds
+
+
+def format_time(seconds):
+    hours = seconds // 3600
+    seconds -= hours * 3600
+    minutes = seconds // 60
+    seconds -= minutes * 60
+    parts = ['{:0>2}'.format(p) for p in (hours, minutes, seconds)]
+    return ':'.join(parts)
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument('time', type=seconds_from_str, help='[[H:]M:]S')
+args = parser.parse_args()
+
+
+elapsed = 0
+remaining = args.time
+start_time = time.time()
+msg = '\rElapsed: {} Remaining: {}'
+
+
+def print_msg():
+    print(' ' * 80, '\r', end='')
+    print(msg.format(format_time(elapsed), format_time(remaining)), end='')
+
+
+while remaining > 0:
+    print_msg()
+    time.sleep(1)
+    elapsed = int(round(time.time() - start_time))
+    remaining = args.time - elapsed
+
+
+print_msg()
+print()
