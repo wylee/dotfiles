@@ -102,4 +102,5 @@ if ! shopt -oq posix; then
 fi
 
 source_if ~/.aliasrc
+source_if ~/.gpg-agent-info && export GPG_AGENT_INFO && export GPG_TTY=$(tty)
 source_if ~/.bashrc.after
