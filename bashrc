@@ -3,7 +3,9 @@
 function source_if () {
     if [ -f "$1" ]; then
         source "$1"
+        return 0
     fi
+    return 1
 }
 
 source_if ~/.bashrc.before
