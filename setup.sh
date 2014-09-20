@@ -12,15 +12,36 @@ function save_original () {
 }
 
 function link () {
+    # Args:
+    #     $1: relative path to file in dot files repo
+    #     $2: target path (optional; default is $HOME/.$1 or
+    #         $HOME/$1)
     local file="${REPO_DIR}/${1}"
-    local target="${2-"${HOME}/.${1}"}"
+    if [ ! -f "${file}" ]; then
+        echo "${file} does not exist in .files repo" 1>&2
+        return 1
+    fi
+    if [ "${2}" ]; then
+        local target="${2}"
+    else
+        local target="${HOME}/.${1}"
+        if [ ! -d "$(dirname ${target})" ]; then
+            local target="${HOME}/${1}"
+        fi
+    fi
+    local target_dir="$(dirname ${target})" 
+    if [ ! -d "${target_dir}" ]; then
+        echo "Target directory \"${target_dir}\" does not exist" 1>&2
+        return 1
+    fi
     if [ ! -L "$target" ]; then
         save_original $target
         ln -s $file $target
         echo "Linked $target to $file"
     else
-        echo "$target already points to $(readlink $target)"
+        echo "$target already points to $(readlink $target)" 1>&2
     fi
+    return 0
 }
 
 if [ -e "$REPO_DIR" ]; then
@@ -45,8 +66,7 @@ link live-backup.cfg
 link profile
 link vimrc
 link ssh/config
-link Library/LaunchAgents/gpg-agent.plist \
-    ${HOME}/Library/LaunchAgents/gpg-agent.plist
+link Library/LaunchAgents/gpg-agent.plist
 
 mkdir -p ~/.vim/{autoload,bundle}
 checkoutmanager co vim-pathogen
