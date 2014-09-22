@@ -3,17 +3,16 @@
 <plist version="1.0">
   <dict>
     <key>Label</key>
-    <string>homebrew.mxcl.gpg-agent</string>
-
-    <key>ProgramArguments</key>
-    <array>
-      <string>/usr/local/bin/gpg-agent</string>
-      <string>--daemon</string>
-      <string>--write-env-file</string>
-      <string>/Users/wyatt/.gpg-agent-info</string>
-    </array>
+    <string>gpg-agent</string>
 
     <key>RunAtLoad</key>
     <true/>
+
+    <key>ProgramArguments</key>
+    <array>
+      <string>/bin/bash</string>
+      <string>-c</string>
+      <string>exec /usr/local/bin/gpg-agent --daemon --write-env-file ~/.gpg-agent-info</string>
+    </array>
   </dict>
 </plist>
