@@ -32,5 +32,6 @@
 
 #### Anywhere in repo
 hg.commit
+.DS_Store
 \.py[cdo]$
 \..*\.swp
