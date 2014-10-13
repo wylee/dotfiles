@@ -6,3 +6,4 @@
 
 # Ignore virtualenvs
 --ignore-dir=.env
+--ignore-dir=.idea
