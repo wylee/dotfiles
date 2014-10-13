@@ -103,7 +103,7 @@ for i, path in enumerate(paths_in):
         print('Path not found: {0}\n'.format(path), file=sys.stderr)
 
 
-rsync_cmd = ['rsync', '-az', '--delete']
+rsync_cmd = ['rsync', '-rltz', '--delete']
 if args.dry_run:
     rsync_cmd.append('--dry-run')
 if args.verbose:
