@@ -1,2 +1,2 @@
 #!/bin/bash
-play -q -c 2 -n synth brownnoise band -n 1600 1500 tremolo .1 30
+play -q -c 2 --null synth brownnoise band -n 1600 1500 tremolo .0333333 30 reverb
