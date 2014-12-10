@@ -1,8 +1,8 @@
 set nocompatible
 filetype off
 
-call pathogen#infect()
-call pathogen#helptags()
+silent! call pathogen#infect()
+silent! call pathogen#helptags()
 
 filetype plugin indent on
 
@@ -83,10 +83,15 @@ nnoremap <leader><space> :noh<cr>
 
 " Text formatting
 set autoindent
-set colorcolumn=+1
+if exists('&colorcolumn')
+    set colorcolumn=+1
+endif
 highlight ColorColumn ctermbg=7
 set expandtab
-set formatoptions=tcrqnl1j
+set formatoptions=tcrqnl1
+if v:version >= 703
+    set formatoptions+=j
+endif
 set list
 set listchars=tab:»\ ,trail:·
 set shiftwidth=4
