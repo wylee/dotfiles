@@ -82,8 +82,14 @@ if not args.project_dir:
 else:
     project_dir = args.project_dir
 
-paths_in = config_parser.get('live-backup', 'paths')
-paths_in = as_list(paths_in)
+section = config_parser['live-backup']
+paths_in = {
+    '__main__': as_list(section.get('paths', [])),
+}
+for k, v in section.items():
+    if k.startswith('paths.'):
+        _, loc = k.split('.', 1)
+        paths_in[loc] = as_list(section[k])
 
 excludes = config_parser.get('live-backup', 'excludes')
 excludes = as_list(excludes)
@@ -93,14 +99,16 @@ excludes = as_list(excludes)
 #   - project_dir is injected
 #   - ~ is expanded
 #   - shell style globs are too
-paths = []
-for i, path in enumerate(paths_in):
-    path = path.format(project_dir=project_dir)
-    path = os.path.expanduser(path)
-    glob_paths = glob.glob(path)
-    paths += glob_paths
-    if not glob_paths:
-        print('Path not found: {0}\n'.format(path), file=sys.stderr)
+paths = {}
+for loc, loc_paths in paths_in.items():
+    paths[loc] = []
+    for i, path in enumerate(loc_paths):
+        path = path.format(project_dir=project_dir)
+        path = os.path.expanduser(path)
+        glob_paths = glob.glob(path)
+        paths[loc] += glob_paths
+        if not glob_paths:
+            print('Path not found: {0}\n'.format(path), file=sys.stderr)
 
 
 rsync_cmd = ['rsync', '-rltz', '--delete']
@@ -110,17 +118,16 @@ if args.verbose:
     rsync_cmd.append('--verbose')
 for e in excludes:
     rsync_cmd += ['--exclude', e]
-rsync_cmd.extend(paths)
 
 
 if args.locations:
     selected_locations = []
     for loc in args.locations:
         if loc in location_groups:
-            locations = [available_locations[l] for l in location_groups[loc]]
+            locations = [(l, available_locations[l]) for l in location_groups[loc]]
             selected_locations.extend(locations)
         elif loc in available_locations:
-            selected_locations.append(available_locations[loc])
+            selected_locations.append((loc, available_locations[loc]))
         else:
             print('{0} is not a valid location key\n'.format(loc))
             list_available_locations()
@@ -129,9 +136,11 @@ else:
     selected_locations = available_locations.values()
 
 
-for loc in selected_locations:
-    print("*> Syncing to {0}...".format(loc))
+for loc, path in selected_locations:
+    print("*> Syncing to {0}...".format(path))
     cmd = rsync_cmd[:]
-    cmd.append(loc)
+    cmd += paths.get('__main__', [])
+    cmd += paths.get(loc, [])
+    cmd.append(path)
     print('*> rsync command: {0}\n'.format(' '.join(cmd)))
     return_code = subprocess.call(cmd)
