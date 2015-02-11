@@ -12,3 +12,6 @@ Host pypi.python.org pypi
 
 Host static.bycycle.org
     User bycycle
+
+Host *.pdx.edu
+    User wbaldwin
