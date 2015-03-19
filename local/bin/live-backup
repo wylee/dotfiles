@@ -137,7 +137,7 @@ else:
 
 
 for loc, path in selected_locations:
-    print("*> Syncing to {0}...".format(path))
+    print('*> Syncing to {0}...'.format(path))
     cmd = rsync_cmd[:]
     cmd += paths.get('__main__', [])
     cmd += paths.get(loc, [])
