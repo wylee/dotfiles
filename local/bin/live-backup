@@ -30,6 +30,7 @@ arg_parser.add_argument(
 arg_parser.add_argument('--verbose', '-v', action='store_true', default=False)
 arg_parser.add_argument('--dry-run', action='store_true', default=False)
 arg_parser.add_argument('--project-dir', '-p', type=path_type, default=None)
+arg_parser.add_argument('--all', '-a', action='store_true', default=False)
 arg_parser.add_argument(
     'locations', nargs='*', default=[],
     help='Back up to the specified locations')
@@ -120,21 +121,25 @@ for e in excludes:
     rsync_cmd += ['--exclude', e]
 
 
-if args.locations:
-    selected_locations = []
-    for loc in args.locations:
-        if loc in location_groups:
-            locations = [(l, available_locations[l]) for l in location_groups[loc]]
-            selected_locations.extend(locations)
-        elif loc in available_locations:
-            selected_locations.append((loc, available_locations[loc]))
-        else:
-            print('{0} is not a valid location key\n'.format(loc))
-            list_available_locations()
-            sys.exit(1)
-else:
-    selected_locations = available_locations.values()
+locations = args.locations
+if not locations:
+    locations = section.get('default-locations')
+    if not args.all and locations:
+        locations = as_list(locations)
+    else:
+        locations = available_locations.keys()
 
+selected_locations = []
+for loc in locations:
+    if loc in location_groups:
+        locations = [(l, available_locations[l]) for l in location_groups[loc]]
+        selected_locations.extend(locations)
+    elif loc in available_locations:
+        selected_locations.append((loc, available_locations[loc]))
+    else:
+        print('{0} is not a valid location key\n'.format(loc))
+        list_available_locations()
+        sys.exit(1)
 
 for loc, path in selected_locations:
     print('*> Syncing to {0}...'.format(path))
