@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 import argparse
+import sys
 import time
+
+
+DEFAULT_MESSAGE = 'Elapsed: {elapsed} Remaining: {remaining}'
 
 
 def seconds_from_str(s):
@@ -11,41 +15,66 @@ def seconds_from_str(s):
         seconds += minutes * 60
     if len(parts) > 2:
         hours = int(parts[-3])
-        seconds += minutes * 3600
+        seconds += hours * 3600
     return seconds
 
 
-def format_time(seconds):
+def get_hours_minutes_and_seconds(seconds):
+    seconds = round(seconds)
     hours = seconds // 3600
     seconds -= hours * 3600
     minutes = seconds // 60
     seconds -= minutes * 60
-    parts = ['{:0>2}'.format(p) for p in (hours, minutes, seconds)]
-    return ':'.join(parts)
+    return hours, minutes, seconds
 
 
-parser = argparse.ArgumentParser()
-parser.add_argument('time', type=seconds_from_str, help='[[H:]M:]S')
-args = parser.parse_args()
+def format_time(seconds_):
+    hours, minutes, seconds = get_hours_minutes_and_seconds(seconds_)
+    return ':'.join('{:0>2}'.format(p) for p in (hours, minutes, seconds))
 
 
-elapsed = 0
-remaining = args.time
-start_time = time.time()
-msg = '\rElapsed: {} Remaining: {}'
+def print_message(message, elapsed, remaining):
+    format_args = {
+        'elapsed': format_time(elapsed),
+        'remaining': format_time(remaining),
+    }
+    sys.stdout.write('\r')
+    sys.stdout.write(' ' * 80)
+    sys.stdout.write('\r')
+    sys.stdout.write(message.format(**format_args))
+    sys.stdout.flush()
 
 
-def print_msg():
-    print(' ' * 80, '\r', end='')
-    print(msg.format(format_time(elapsed), format_time(remaining)), end='')
+def run(seconds, message=DEFAULT_MESSAGE, repeat=0, _repeats=0):
+    start_time = time.monotonic()
+    current_time = start_time
+    elapsed = 0
+    remaining = seconds
+    sleep_time = 1
+    while elapsed <= seconds:
+        print_message(message, elapsed, remaining)
+        time.sleep(sleep_time)
+        actual_sleep_time = time.monotonic() - current_time
+        current_time += actual_sleep_time
+        elapsed += actual_sleep_time
+        remaining = seconds - elapsed
+        sleep_time = 1 - (actual_sleep_time - 1)
+    print_message(message, elapsed, remaining)
+    if _repeats < repeat:
+        run(seconds, message, repeat - 1, _repeats + 1)
+    sys.stdout.write('\n')
 
 
-while remaining > 0:
-    print_msg()
-    time.sleep(1)
-    elapsed = int(round(time.time() - start_time))
-    remaining = args.time - elapsed
-
-
-print_msg()
-print()
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('time', type=seconds_from_str, help='[[H:]M:]S')
+    parser.add_argument('--repeat', type=int, default=0)
+    parser.add_argument(
+        '--message', default=DEFAULT_MESSAGE,
+        help='Message to display, updated every second; can include format strings: '
+             '{elapsed}, {remaining} ["%s"]' % DEFAULT_MESSAGE)
+    args = parser.parse_args()
+    try:
+        run(args.time, args.message, args.repeat)
+    except KeyboardInterrupt:
+        print_message('Aborted\n', 0, 0)
