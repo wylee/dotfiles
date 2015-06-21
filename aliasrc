@@ -43,13 +43,11 @@ esac
 # Less tedious than `cd ../../../../...`
 function up {
     times=${1:-1}
-    start_pwd="${PWD}"
+    dir="$(pwd)"
     for (( i=0; i<times; ++i )); do
-        cd ..
+        dir="$(dirname $dir)"
     done
-    end_pwd="${PWD}"
-    cd "${start_pwd}"
-    cd "${end_pwd}"
+    cd "${dir}"
 }
 
 apt=$(which aptitude apt-get 2>/dev/null | head -1)
