@@ -3,7 +3,6 @@
 /docs/_build
 /var/
 /MANIFEST
-/Makefile
 /scratch
 /tags
 /.coverage
