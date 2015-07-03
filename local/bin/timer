@@ -35,12 +35,10 @@ def seconds_from_str(arg):
 
 
 def get_hours_minutes_and_seconds(seconds):
-    seconds = round(seconds)
-    hours = seconds // 3600
-    seconds -= hours * 3600
-    minutes = seconds // 60
-    seconds -= minutes * 60
-    return hours, minutes, seconds
+    h, s = divmod(seconds, 3600)
+    m, s = divmod(s, 60)
+    h, m, s = int(h), int(m), int(round(s))
+    return h, m, s
 
 
 def format_time(seconds_):
