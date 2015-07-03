@@ -73,7 +73,7 @@ def run(seconds, message=DEFAULT_MESSAGE, repeat=0, _repeats=0):
         elapsed = current_time - start_time
         remaining = end_time - current_time
         sleep_time = 1 - (actual_sleep_time - 1)
-    print_message(message, elapsed, remaining)
+    print_message(message, elapsed, 0)
     if _repeats < repeat:
         run(seconds, message, repeat - 1, _repeats + 1)
     sys.stdout.write('\n')

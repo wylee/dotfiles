@@ -15,3 +15,4 @@ Host static.bycycle.org
 
 Host *.pdx.edu
     User wbaldwin
+    ForwardAgent yes
