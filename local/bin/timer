@@ -1,4 +1,13 @@
 #!/usr/bin/env python3
+"""A simple countdown timer.
+
+Times can be specified in the following formats:
+
+   - S where S > 0
+   - M:S where M > 0 and S in [00, 59]
+   - H:M:S where H > 0 and M in [00, 59] and S in [00, 59]
+
+"""
 import argparse
 import sys
 import time
@@ -67,7 +76,9 @@ def run(seconds, message=DEFAULT_MESSAGE, repeat=0, _repeats=0):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(
+            description=__doc__,
+            formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('time', type=seconds_from_str, help='[[H:]M:]S')
     parser.add_argument('--repeat', type=int, default=0)
     parser.add_argument(
