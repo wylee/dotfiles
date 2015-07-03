@@ -9,22 +9,28 @@ Times can be specified in the following formats:
 
 """
 import argparse
+import re
 import sys
 import time
 
 
 DEFAULT_MESSAGE = 'Elapsed: {elapsed} Remaining: {remaining}'
+S_RE = r'^(?P<seconds>[1-9]\d*)$'
+MS_RE = r'^(?P<minutes>[1-9]\d*):(?P<seconds>[0-5]\d)$'
+HMS_RE = r'^(?P<hours>[1-9]\d*):(?P<minutes>[0-5]\d):(?P<seconds>[0-5]\d)$'
 
 
-def seconds_from_str(s):
-    parts = s.split(':')
-    seconds = int(parts[-1])
-    if len(parts) > 1:
-        minutes = int(parts[-2])
-        seconds += minutes * 60
-    if len(parts) > 2:
-        hours = int(parts[-3])
-        seconds += hours * 3600
+def seconds_from_str(arg):
+    for pattern in (S_RE, MS_RE, HMS_RE):
+        match = re.search(pattern, arg)
+        if match is not None:
+            break
+    else:
+        raise ValueError(arg)
+    d = match.groupdict()
+    h, m, s = d.get('hours', 0), d.get('minutes', 0), d.get('seconds')
+    h, m, s = int(h), int(m), int(s)
+    seconds = 3600 * h + 60 * m + s
     return seconds
 
 
