@@ -59,21 +59,17 @@ def print_message(message, elapsed, remaining):
 
 
 def run(seconds, message=DEFAULT_MESSAGE, repeat=0, _repeats=0):
-    start_time = time.monotonic()
-    end_time = start_time + seconds
-    elapsed = 0
-    remaining = seconds
-    sleep_time = 1
-    while elapsed <= seconds:
-        print_message(message, elapsed, remaining)
-        sleep_start_time = time.monotonic()
-        time.sleep(sleep_time)
-        current_time = time.monotonic()
-        actual_sleep_time = current_time - sleep_start_time
-        elapsed = current_time - start_time
-        remaining = end_time - current_time
-        sleep_time = 1 - (actual_sleep_time - 1)
-    print_message(message, elapsed, 0)
+    start_time = time.perf_counter()
+    for elapsed in range(seconds):
+        print_message(message, elapsed, seconds - elapsed)
+        time.sleep(1 - ((time.perf_counter() - start_time) - elapsed))
+    real_elapsed = time.perf_counter() - start_time
+    real_remaining = real_elapsed - seconds
+    if round(real_remaining) < 0:
+        err = '\rError: Timer overran by more than 0.5s: {:.3f} seconds'.format(real_remaining)
+        sys.stderr.write(err)
+    else:
+        print_message(message, real_elapsed, real_remaining)
     if _repeats < repeat:
         run(seconds, message, repeat - 1, _repeats + 1)
     sys.stdout.write('\n')
