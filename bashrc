@@ -44,6 +44,8 @@ shopt -s checkwinsize
 # Make less more friendly for non-text input files; see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
+PROMPT_COMMAND='echo -ne "\033]0;$(hostname -s):$(basename ${PWD})\007"'
+
 source_if "/usr/local/etc/bash_completion.d/git-prompt.sh"
 
 # Fancy pants prompt
