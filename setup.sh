@@ -64,6 +64,7 @@ link hgrc
 link ideavimrc
 link live-backup.cfg
 link profile
+link tmux.conf
 link vimrc
 link ssh/config
 link Library/LaunchAgents/gpg-agent.plist
