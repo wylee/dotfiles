@@ -108,6 +108,8 @@ else
     rm get-pip.py
 fi
 
+pip3 install checkoutmanager >/dev/null
+
 mkdir -p ${HOME}/.vim/{autoload,bundle}
 echo -n "Checking out Pathogen plugins... "
 checkoutmanager co vim-pathogen >/dev/null
