@@ -69,6 +69,16 @@ link vimrc
 link ssh/config
 link Library/LaunchAgents/gpg-agent.plist
 
-mkdir -p ~/.vim/{autoload,bundle}
-checkoutmanager co vim-pathogen
-ln -s ~/.vim/vim-pathogen/autoload/pathogen.vim ~/.vim/autoload
+mkdir -p ${HOME}/.vim/{autoload,bundle}
+echo -n "Checking out Pathogen plugins... "
+checkoutmanager co vim-pathogen >/dev/null
+echo "Done"
+pathogen_path="${HOME}/.vim/vim-pathogen/autoload/pathogen.vim"
+pathogen_link="${HOME}/.vim/autoload/pathogen.vim"
+if [ -L $pathogen_link ]; then
+    echo "pathogen.vim already linked to $(readlink $pathogen_link)"
+else
+    echo -n "Linking ${pathogen_link} to ${pathogen_path}... "
+    ln -s $pathogen_path $pathogen_link
+    echo "Done"
+fi
