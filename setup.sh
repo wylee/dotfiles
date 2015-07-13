@@ -69,6 +69,30 @@ link vimrc
 link ssh/config
 link Library/LaunchAgents/gpg-agent.plist
 
+if [ "$(uname -s)" = "Darwin" ]; then
+    # Install Homebrew & some packages
+    brew_path="/usr/local/bin/brew"
+    if [ -f $brew_path ]; then
+        echo "Homebrew already installed at prefix $($brew_path --prefix)"
+    else
+        ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+        $brew_path doctor
+        $brew_path install \
+            ack \
+            bash-completion \
+            gpg \
+            git \
+            mercurial \
+            pass \
+            python2 \
+            python3 \
+            sox \
+            vim
+    fi
+else
+    echo "Skipping Homebrew install since this doesn't appear to be a Mac"
+fi
+
 mkdir -p ${HOME}/.vim/{autoload,bundle}
 echo -n "Checking out Pathogen plugins... "
 checkoutmanager co vim-pathogen >/dev/null
