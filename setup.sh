@@ -93,6 +93,21 @@ else
     echo "Skipping Homebrew install since this doesn't appear to be a Mac"
 fi
 
+if which pip >/dev/null; then
+    echo "pip already installed at $(which pip)"
+else
+    echo -n "Getting pip installer..."
+    curl -O https://bootstrap.pypa.io/get-pip.py
+    echo "Done"
+    echo -n "Installing pip for Python 2..."
+    python get-pip.py
+    echo "Done"
+    echo -n "Installing pip for Python 3..."
+    python3 get-pip.py
+    echo "Done"
+    rm get-pip.py
+fi
+
 mkdir -p ${HOME}/.vim/{autoload,bundle}
 echo -n "Checking out Pathogen plugins... "
 checkoutmanager co vim-pathogen >/dev/null
