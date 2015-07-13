@@ -7,3 +7,6 @@
 # Ignore virtualenvs
 --ignore-dir=.env
 --ignore-dir=.idea
+
+# Ignore vendor files
+--ignore-dir=vendor
