@@ -62,14 +62,22 @@ def run(seconds, message=DEFAULT_MESSAGE, repeat=0, _repeats=0):
     start_time = time.perf_counter()
     for elapsed in range(seconds):
         print_message(message, elapsed, seconds - elapsed)
-        time.sleep(1 - ((time.perf_counter() - start_time) - elapsed))
-    real_elapsed = time.perf_counter() - start_time
-    real_remaining = real_elapsed - seconds
+        # Sleep for ~1 second, adjusting for skew.
+        sleep_time = 1 - ((time.perf_counter() - start_time) - elapsed)
+        # When the calculated sleep time is less than zero, that
+        # indicates that the process has been suspended or slept for
+        # longer than expected (longer than 1 second); attempt to "catch
+        # up" by not sleeping.
+        if sleep_time > 0:
+            time.sleep(sleep_time)
+    end_time = time.perf_counter()
+    real_elapsed = end_time - start_time
+    real_remaining = seconds - real_elapsed
     if round(real_remaining) < 0:
-        err = '\rError: Timer overran by more than 0.5s: {:.3f} seconds'.format(real_remaining)
+        err = '\rError: Timer overran by {:.3f} seconds'.format(-real_remaining)
         sys.stderr.write(err)
     else:
-        print_message(message, real_elapsed, real_remaining)
+        print_message(message, real_elapsed, 0)
     if _repeats < repeat:
         run(seconds, message, repeat - 1, _repeats + 1)
     sys.stdout.write('\n')
