@@ -27,8 +27,15 @@ arg_parser.add_argument(
 arg_parser.add_argument(
     '--list-locations', '-l', action='store_true', default=False,
     help='List available backup locations then exit.')
-arg_parser.add_argument('--verbose', '-v', action='store_true', default=False)
-arg_parser.add_argument('--dry-run', action='store_true', default=False)
+arg_parser.add_argument(
+    '--debug', '-d', action='store_true', default=False,
+    help='Show what rsync is doing (add --verbose; print command)')
+arg_parser.add_argument(
+    '--quiet', '-q', action='store_true', default=False,
+    help='Hide default output (show no output unless --debug)')
+arg_parser.add_argument(
+    '--dry-run', action='store_true', default=False,
+    help="Don't actually copy any files (passed through to rsync)")
 arg_parser.add_argument('--project-dir', '-p', type=path_type, default=None)
 arg_parser.add_argument('--all', '-a', action='store_true', default=False)
 arg_parser.add_argument(
@@ -115,7 +122,7 @@ for loc, loc_paths in paths_in.items():
 rsync_cmd = ['rsync', '-rltz', '--delete']
 if args.dry_run:
     rsync_cmd.append('--dry-run')
-if args.verbose:
+if args.debug:
     rsync_cmd.append('--verbose')
 for e in excludes:
     rsync_cmd += ['--exclude', e]
@@ -141,11 +148,16 @@ for loc in locations:
         list_available_locations()
         sys.exit(1)
 
-for loc, path in selected_locations:
-    print('*> Syncing to {0}...'.format(path))
-    cmd = rsync_cmd[:]
-    cmd += paths.get('__main__', [])
-    cmd += paths.get(loc, [])
-    cmd.append(path)
-    print('*> rsync command: {0}\n'.format(' '.join(cmd)))
+for loc, dest in selected_locations:
+    loc_paths = paths.get('__main__', []) + paths.get(loc, [])
+    cmd = rsync_cmd.copy()
+    cmd.extend(loc_paths)
+    cmd.append(dest)
+    if args.debug:
+        print('==> {0}'.format(' '.join(cmd)))
+    if not args.quiet:
+        print('==> Syncing to {0}...'.format(dest))
+        print('\n'.join(loc_paths))
     return_code = subprocess.call(cmd)
+    if not args.quiet:
+        print('==> Finished syncing to {0}'.format(dest))
