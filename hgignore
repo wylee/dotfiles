@@ -3,6 +3,7 @@
 ^build$
 ^var$
 ^tags$
+^\.env$
 ^\.coverage$
 
 # Project directories
