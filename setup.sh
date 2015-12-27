@@ -82,13 +82,15 @@ if [ "$(uname -s)" = "Darwin" ]; then
         $brew_path install \
             ack \
             bash-completion \
-            gpg \
+            gpg2 \
+            gpg-agent \
             git \
             mercurial \
+            openssl \
             pass \
-            python2 \
+            python \
             python3 \
-            sox \
+            pyenv \
             vim
     fi
 else
