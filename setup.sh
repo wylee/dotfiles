@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -eu
+
 REPO_DIR="${HOME}/.files"
 
 function save_original () {
@@ -21,7 +23,7 @@ function link () {
         echo "${file} does not exist in .files repo" 1>&2
         return 1
     fi
-    if [ "${2}" ]; then
+    if [ "${2-}" ]; then
         local target="${2}"
     else
         local target="${HOME}/.${1}"
