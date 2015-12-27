@@ -14,6 +14,7 @@ Host static.bycycle.org
     User bycycle
 
 Host hera.rc.pdx.edu hera
+    User wbaldwin
     HostName hera.rc.pdx.edu
     IdentityFile ~/.ssh/id_rsa
     ForwardAgent yes
@@ -23,11 +24,14 @@ Host hera-rsync
     IdentityFile ~/.ssh/id_rsa-rsync
 
 Host hrimfaxi.oit.pdx.edu hrimfaxi
+    User wbaldwin
     HostName hrimfaxi.oit.pdx.edu
     IdentityFile ~/.ssh/id_rsa
     ForwardAgent yes
+    ProxyCommand ssh -W %h:%p hera.rc.pdx.edu
 
 Host merope.rc.pdx.edu merope
+    User wbaldwin
     HostName merope.rc.pdx.edu
     IdentityFile ~/.ssh/id_rsa
     ForwardAgent yes
