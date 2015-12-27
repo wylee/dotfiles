@@ -70,7 +70,7 @@ vcs_info() {
 }
 # DATE                                                                     TIME
 # USER@HOST
-# PWD (HGINFO)
+# PWD (VCS INFO)
 # PROMPT
 PS1="\
 ${GREY}\d ${RED}\$(hr)${GREY} \t
