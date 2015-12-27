@@ -88,6 +88,10 @@ bind -m vi-insert "\C-l":clear-screen
 PROJECT_DIR="$(first_of ~/Projects ~/projects)"
 export PROJECT_DIR
 
+# pyenv
+# PYENV_ROOT is where Python versions will be installed
+export PYENV_ROOT=/usr/local/var/pyenv
+
 PATH="/usr/local/bin:${PATH}"
 # Local scripts take priority over anything else
 LOCAL_BIN="${HOME}/.local/bin"
