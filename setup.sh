@@ -31,7 +31,7 @@ function link () {
             local target="${HOME}/${1}"
         fi
     fi
-    local target_dir="$(dirname ${target})" 
+    local target_dir="$(dirname ${target})"
     if [ ! -d "${target_dir}" ]; then
         echo "Target directory \"${target_dir}\" does not exist" 1>&2
         return 1
