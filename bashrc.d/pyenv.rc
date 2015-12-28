@@ -1,2 +1,6 @@
 # PYENV_ROOT is where Python versions will be installed
-export PYENV_ROOT=/usr/local/var/pyenv
+export PYENV_ROOT="$(brew --prefix)/var/pyenv"
+
+# This sets up pyenv shims and bash completion; run `pyenv init -` to
+# see everything it does.
+eval "$(pyenv init -)"
