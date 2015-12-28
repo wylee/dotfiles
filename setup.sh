@@ -56,7 +56,6 @@ else
 fi
 
 link ackrc
-link aliasrc
 link bashrc
 test -d ~/.bashrc.d || mkdir ~/.bashrc.d
 for f in $(find "${REPO_DIR}/bashrc.d" -maxdepth 1 -type f -name "*.rc"); do
