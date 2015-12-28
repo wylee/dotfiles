@@ -1,0 +1,13 @@
+# Don't put duplicate lines in the history.
+HISTCONTROL=ignoredups:ignorespace
+HISTSIZE=1000
+HISTFILESIZE=2000
+
+# Don't add certain commands to BASH history.
+# & = ignore duplicates
+# [ ]* = ignore commands starting with a space
+# ? and ?? = ignore all 1 and 2 character commands
+export HISTIGNORE="&:[ ]*:?:??"
+
+# Append to the history file; don't overwrite it
+shopt -s histappend

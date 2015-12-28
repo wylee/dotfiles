@@ -58,6 +58,10 @@ fi
 link ackrc
 link aliasrc
 link bashrc
+test -d ~/.bashrc.d || mkdir ~/.bashrc.d
+for f in $(find "${REPO_DIR}/bashrc.d" -maxdepth 1 -type f -name "*.rc"); do
+    link "bashrc.d/$(basename "$f")"
+done
 link checkoutmanager.cfg
 link gitconfig
 link gitignore
@@ -68,8 +72,9 @@ link live-backup.cfg
 link profile
 link tmux.conf
 link vimrc
+test -d ~/.ssh || mkdir ~/.ssh
 link ssh/config
-link Library/LaunchAgents/gpg-agent.plist
+test -d ~/Library/LaunchAgents && link Library/LaunchAgents/gpg-agent.plist
 
 if [ "$(uname -s)" = "Darwin" ]; then
     # Install Homebrew & some packages

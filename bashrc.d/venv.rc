@@ -1,0 +1,115 @@
+RED="$(tput setaf 1)"
+GREEN="$(tput setaf 2)"
+RESET="$(tput sgr 0)"
+VENV_DIR=".env"
+VENV_BIN="${VENV_DIR}/bin"
+NODE_DIR="node_modules"
+NODE_BIN="${NODE_DIR}/.bin"
+
+function cd {
+    builtin cd "$@"
+    if [ "$PWD" = "$HOME" ]; then
+        deactivateenv
+    elif [ -f "${VENV_BIN}/python" ]; then
+        activateenv
+    fi
+}
+
+function cdenv {
+    builtin cd "${HOME}/Projects/${1}"
+    activateenv
+}
+
+function activateenv {
+    if [ ! -f "${VENV_BIN}/python" ]; then
+        if [ "$1" != "silent" ]; then
+            echo "${RED}This is not a virtualenv directory${RESET}" 1>&2
+        fi
+        return
+    fi
+
+    # Do nothing if this virtualenv is already active
+    if [ -n "$_VENV_CURRENT" ] && [ "$PWD" = "$_VENV_CURRENT" ]; then
+        return
+    fi
+
+    deactivateenv
+
+    export PROJECT_NAME="$(basename $PWD)"
+    export _VENV_CURRENT="$PWD"
+    export _VENV_ORIGINAL_PATH="$PATH"
+
+    if [ -d "${NODE_BIN}" ]; then
+        export PATH="${PWD}/${VENV_BIN}:${PWD}/${NODE_BIN}:${PATH}"
+    else
+        export PATH="${PWD}/${VENV_BIN}:${PATH}"
+    fi
+
+    hash -r 2>/dev/null
+    echo -e "${GREEN}Activated ${_VENV_CURRENT}${RESET}"
+}
+
+function deactivateenv {
+    if [ -n "$_VENV_CURRENT" ]; then
+        local venv_current="$_VENV_CURRENT"
+        unset PROJECT_NAME
+        unset _VENV_CURRENT
+        export PATH="$_VENV_ORIGINAL_PATH"
+        unset _VENV_ORIGINAL_PATH
+        hash -r 2>/dev/null
+        echo -e "${RED}Deactivated ${venv_current}${RESET}"
+    fi
+}
+
+# Brown noise
+function bn {
+    local pid_file="${HOME}/.brown-noise.pid"
+    if [ -f "$pid_file" ]; then
+        kill -s kill $(cat "$pid_file")
+        rm "$pid_file"
+    else
+        AUDIODEV="Built-in Output" \
+            play -q -c 2 --null \
+                synth brownnoise \
+                band -n 1500 1500 \
+                tremolo .0333333 30 \
+                reverb &
+        local PID=$!
+        echo -n $PID > "$pid_file"
+    fi
+}
+
+function _complete_cdenv {
+    local candidates=$(/bin/ls ${HOME}/Projects)
+    COMPREPLY=( $(compgen -W "${candidates}" -- $2) )
+}
+complete -F _complete_cdenv -o default cdenv
+
+
+# Invoke (pyinvoke.org) tab-completion script to be sourced with Bash shell.
+# Known to work on Bash 3.x, untested on 4.x.
+_complete_invoke() {
+    local candidates
+
+    # COMP_WORDS contains the entire command string up til now (including
+    # program name).
+    # We hand it to Invoke so it can figure out the current context: spit back
+    # core options, task names, the current task's options, or some combo.
+    candidates=`invoke --complete -- ${COMP_WORDS[*]}`
+
+    # `compgen -W` takes list of valid options & a partial word & spits back
+    # possible matches. Necessary for any partial word completions (vs
+    # completions performed when no partial words are present).
+    #
+    # $2 is the current word or token being tabbed on, either empty string or a
+    # partial word, and thus wants to be compgen'd to arrive at some subset of
+    # our candidate list which actually matches.
+    #
+    # COMPREPLY is the list of valid completions handed back to `complete`.
+    COMPREPLY=( $(compgen -W "${candidates}" -- $2) )
+}
+# Tell shell builtin to use the above for completing 'inv'/'invoke':
+# * -F: use given function name to generate completions.
+# * -o default: when function generates no results, use filenames.
+# * positional args: program names to complete for.
+complete -F _complete_invoke -o default invoke inv

@@ -1,0 +1,40 @@
+PROMPT_COMMAND='echo -ne "\033]0;$(hostname -s):$(basename ${PWD})\007"'
+
+source_if "/usr/local/etc/bash_completion.d/git-prompt.sh"
+
+# Fancy pants prompt
+RED='\[\e[0;31m\]'
+GREEN='\[\e[0;32m\]'
+BLUE='\[\e[0;34m\]'
+CYAN='\[\e[0;36m\]'
+YELLOW='\[\e[1;33m\]'
+GREY='\[\e[1;30m\]'
+RESET_COLOR='\[\e[0;0m\]'
+hr() {
+    printf '=%.0s' $(seq $((${COLUMNS} - 20)))
+}
+vcs_info() {
+    if [ "$PWD" != "$HOME" ]; then
+        if [ -d "${PWD}/.hg" ]; then
+            hg -R . branch 2>/dev/null | awk '{print " (hg:"$1")"}'
+        elif [ -d "${PWD}/.git" ]; then
+            __git_ps1
+        fi
+    fi
+}
+venv_info() {
+    if [ -n "$_VENV_CURRENT" ]; then
+        printf "(venv:$(basename $_VENV_CURRENT))"
+    fi
+}
+# DATE                                                                     TIME
+# USER@HOST
+# PWD (VCS INFO)
+# PROMPT
+PS1="\
+${GREY}\d ${RED}\$(hr)${GREY} \t
+${RED}\u${YELLOW}@${GREEN}\H
+${CYAN}\w\$(vcs_info) \$(venv_info)
+${YELLOW}>${RESET_COLOR} \
+"
+export PS1
