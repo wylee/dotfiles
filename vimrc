@@ -125,6 +125,8 @@ augroup vimrc
     autocmd BufRead,BufNewFile *.commit set filetype=commit
     autocmd FileType commit setlocal sw=4 sts=4 tw=72 syntax=gitcommit
 
+    autocmd BufRead,BufNewFile ~/.bashrc.d/*.rc set filetype=sh
+
     " Python files:
     "     - Don't auto-wrap code
     "     - Make comments wrap at column 72 (works with format option c)
