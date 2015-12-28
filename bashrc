@@ -1,112 +1,56 @@
 # ~/.bashrc: executed by bash(1) for non-login shells.
+#
+# This file contains basic bash options. Additional bash config will be
+# included from the following locations:
+#
+# ~/.bashrc.after
+# ~/.bashrc.d/*.rc
+# ~/.bashrc.before
 
 function source_if () {
-    if [ -f "$1" ]; then
-        source "$1"
-        return 0
-    fi
-    return 1
+    test -f "${1}" && source "${1}"
+}
+
+function first_of () {
+    for item in "$@"; do
+        test -e "$item" && echo -n "$item" && break
+    done
 }
 
 source_if ~/.bashrc.before
 
-function first_of () {
-    for p in $@; do
-        if [ -e "$p" ]; then
-            echo "$p"
-            return 0
-        fi
-    done
-    return 1
-}
-
-# If not running interactively, don't do anything
+# If not running interactively, don't do anything.
 [ -z "$PS1" ] && return
-
-# Don't put duplicate lines in the history.
-HISTCONTROL=ignoredups:ignorespace
-HISTSIZE=1000
-HISTFILESIZE=2000
-
-# Don't add certain commands to BASH history.
-# & = ignore duplicates
-# [ ]* = ignore commands starting with a space
-# ? and ?? = ignore all 1 and 2 character commands
-export HISTIGNORE="&:[ ]*:?:??"
-
-# Append to the history file; don't overwrite it
-shopt -s histappend
 
 # check the window size after each command and, if necessary,
 # update the values of LINES and COLUMNS.
 shopt -s checkwinsize
 
-# Make less more friendly for non-text input files; see lesspipe(1)
+# Make less more friendly for non-text input files; see lesspipe(1).
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
-
-PROMPT_COMMAND='echo -ne "\033]0;$(hostname -s):$(basename ${PWD})\007"'
-
-source_if "/usr/local/etc/bash_completion.d/git-prompt.sh"
-
-# Fancy pants prompt
-RED='\[\e[0;31m\]'
-GREEN='\[\e[0;32m\]'
-BLUE='\[\e[0;34m\]'
-CYAN='\[\e[0;36m\]'
-YELLOW='\[\e[1;33m\]'
-GREY='\[\e[1;30m\]'
-RESET_COLOR='\[\e[0;0m\]'
-hr() {
-    printf '=%.0s' $(seq $((${COLUMNS} - 20)))
-}
-vcs_info() {
-    if [ "$PWD" != "$HOME" ]; then
-        if [ -d "${PWD}/.hg" ]; then
-            hg -R . branch 2>/dev/null | awk '{print " (hg:"$1")"}'
-        elif [ -d "${PWD}/.git" ]; then
-            __git_ps1
-        fi
-    fi
-}
-# DATE                                                                     TIME
-# USER@HOST
-# PWD (VCS INFO)
-# PROMPT
-PS1="\
-${GREY}\d ${RED}\$(hr)${GREY} \t
-${RED}\u${YELLOW}@${GREEN}\H
-${CYAN}\w\$(vcs_info)
-${YELLOW}>${RESET_COLOR} \
-"
-export PS1
-
-export EDITOR=vim
 
 set -o vi
 bind -m vi-insert "\C-l":clear-screen
+export EDITOR=vim
 
-PROJECT_DIR="$(first_of ~/Projects ~/projects)"
-export PROJECT_DIR
-
-# pyenv
-# PYENV_ROOT is where Python versions will be installed
-export PYENV_ROOT=/usr/local/var/pyenv
-
-PATH="/usr/local/bin:${PATH}"
-# Local scripts take priority over anything else
-LOCAL_BIN="${HOME}/.local/bin"
-if [ -d "$LOCAL_BIN" ]; then
-    PATH="${LOCAL_BIN}:${PATH}"
-fi
-export PATH
+export PROJECT_DIR="$(first_of ~/Projects ~/projects)"
 
 if ! shopt -oq posix; then
     source_if "/etc/bash_completion"
-    if [ -x /usr/local/bin/brew ]; then
-        source_if "$(brew --prefix)/etc/bash_completion"
-    fi
+    which brew >/dev/null && source_if "$(brew --prefix)/etc/bash_completion"
 fi
 
-source_if ~/.aliasrc
-source_if ~/.gpg-agent-info && export GPG_AGENT_INFO && export GPG_TTY=$(tty)
+# Add /usr/local/bin if it's not already in $PATH.
+echo "$PATH" | grep "/usr/local/bin" 1>/dev/null || export PATH="/usr/local/bin:${PATH}"
+
+# Include additonal bash config from ~/.bashrc.d/*.rc.
+for f in $(find "${HOME}/.bashrc.d" -maxdepth 1 \( -type f -or -type l \) -name "*.rc"); do
+    source "$f"
+done
+
+# The local bin directory takes precedence over everything else, no
+# matter what.
+local LOCAL_BIN_DIR="${HOME}/.local/bin"
+test -d "$LOCAL_BIN_DIR" && export PATH="${LOCAL_BIN_DIR}:${PATH}"
+
 source_if ~/.bashrc.after

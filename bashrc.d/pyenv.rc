@@ -1,0 +1,2 @@
+# PYENV_ROOT is where Python versions will be installed
+export PYENV_ROOT=/usr/local/var/pyenv
