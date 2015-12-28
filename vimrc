@@ -96,7 +96,7 @@ set list
 set listchars=tab:»\ ,trail:·
 set shiftwidth=4
 set softtabstop=4
-set textwidth=79
+set textwidth=99
 
 function <SID>strip_trailing_whitespace()
     let l = line(".")
@@ -115,12 +115,12 @@ augroup vimrc
     autocmd FocusLost * :wa
 
     autocmd FileType css setlocal sw=4 sts=4
-    autocmd FileType html setlocal sw=4 sts=4
+    autocmd FileType html setlocal sw=4 sts=4 textwidth=99
     autocmd FileType javascript setlocal sw=4 sts=4
     autocmd FileType text setlocal sw=2 sts=2 tw=76
 
     autocmd BufRead,BufNewFile *.mako set filetype=mako
-    autocmd FileType mako setlocal sw=4 sts=4
+    autocmd FileType mako setlocal sw=2 sts=2
 
     autocmd BufRead,BufNewFile *.commit set filetype=commit
     autocmd FileType commit setlocal sw=4 sts=4 tw=72 syntax=gitcommit
@@ -128,7 +128,7 @@ augroup vimrc
     " Python files:
     "     - Don't auto-wrap code
     "     - Make comments wrap at column 72 (works with format option c)
-    "     - Display right margin in column 80
+    "     - Display right margin in column 100
     autocmd FileType python setlocal fo-=t tw=72 cc=100
 
     " Set default completion function only if one isn't already set on the
