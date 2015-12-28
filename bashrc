@@ -50,7 +50,7 @@ done
 
 # The local bin directory takes precedence over everything else, no
 # matter what.
-local LOCAL_BIN_DIR="${HOME}/.local/bin"
+LOCAL_BIN_DIR="${HOME}/.local/bin"
 test -d "$LOCAL_BIN_DIR" && export PATH="${LOCAL_BIN_DIR}:${PATH}"
 
 source_if ~/.bashrc.after
