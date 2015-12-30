@@ -67,6 +67,7 @@ link gitignore
 link hgignore
 link hgrc
 link ideavimrc
+link inputrc
 link live-backup.cfg
 link profile
 link tmux.conf
