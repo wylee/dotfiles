@@ -102,7 +102,7 @@ else
     echo "Skipping Homebrew install since this doesn't appear to be a Mac"
 fi
 
-if which pip >/dev/null; then
+if which pip >/dev/null 2>&1; then
     echo "pip already installed at $(which pip)"
 else
     echo -n "Getting pip installer..."
