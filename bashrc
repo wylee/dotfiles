@@ -37,7 +37,7 @@ export PROJECT_DIR="$(first_of ~/Projects ~/projects)"
 
 if ! shopt -oq posix; then
     source_if "/etc/bash_completion"
-    which brew >/dev/null && source_if "$(brew --prefix)/etc/bash_completion"
+    which brew >/dev/null 2>&1 && source_if "$(brew --prefix)/etc/bash_completion"
 fi
 
 # Add /usr/local/bin if it's not already in $PATH.
