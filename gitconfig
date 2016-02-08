@@ -2,6 +2,9 @@
     name = Wyatt Lee Baldwin
     email = wyatt.lee.baldwin@gmail.com
 
+[branch "master"]
+    mergeOptions = --no-ff
+
 [color]
     ui = true
 
