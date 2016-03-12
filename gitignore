@@ -21,6 +21,7 @@
 /docs/.build
 /*.egg-info/
 /*.egg
+/.python-version
 
 # Buildout
 /bin/
