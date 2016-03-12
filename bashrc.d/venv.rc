@@ -24,6 +24,7 @@ function activateenv {
     if [ ! -f "${VENV_BIN}/python" ]; then
         if [ "$1" != "silent" ]; then
             echo "${RED}This is not a virtualenv directory${RESET}" 1>&2
+            deactivateenv
         fi
         return
     fi
