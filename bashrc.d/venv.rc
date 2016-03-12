@@ -81,7 +81,7 @@ function bn {
 }
 
 function _complete_cdenv {
-    local candidates=$(/bin/ls ${HOME}/Projects)
+    local candidates=$(/bin/ls -d ${HOME}/Projects/*/ | xargs basename)
     COMPREPLY=( $(compgen -W "${candidates}" -- $2) )
 }
 complete -F _complete_cdenv -o default cdenv
