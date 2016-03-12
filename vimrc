@@ -115,9 +115,10 @@ augroup vimrc
     autocmd FocusLost * :wa
 
     autocmd FileType css setlocal sw=4 sts=4
-    autocmd FileType html setlocal sw=4 sts=4 textwidth=99
+    autocmd FileType html setlocal sw=4 sts=4
     autocmd FileType javascript setlocal sw=4 sts=4
-    autocmd FileType text setlocal sw=2 sts=2 tw=76
+    autocmd FileType markdown setlocal sw=2 sts=2 tw=72
+    autocmd FileType text setlocal sw=2 sts=2 tw=72
 
     autocmd BufRead,BufNewFile *.mako set filetype=mako
     autocmd FileType mako setlocal sw=2 sts=2
