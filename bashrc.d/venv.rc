@@ -16,8 +16,25 @@ function cd {
 }
 
 function cdenv {
-    builtin cd "${HOME}/Projects/${1}"
-    activateenv
+    # Args:
+    #     env_dir: A subdirectory of $PROJECT_DIR [optional]
+    #
+    # If env_dir is passed (as $1), cd into $PROJECT_DIR/$env_dir and
+    # then activate the virtualenv in that directory.
+    #
+    # If env_dir isn't passed, cd into the current env directory.
+    if [ -n "${1}" ]; then
+        local env_dir="${PROJECT_DIR}/${1}"
+    elif [ -n "${_VENV_CURRENT}" ]; then
+        local env_dir="${_VENV_CURRENT}"
+    fi
+    if [ -n "${env_dir}" ]; then
+        builtin cd "${env_dir}"
+        activateenv
+    else
+        echo "${RED}No env passed and no env is already active${RESET}" 1>&2
+        deactivateenv
+    fi
 }
 
 function activateenv {
@@ -81,7 +98,7 @@ function bn {
 }
 
 function _complete_cdenv {
-    local candidates=$(/bin/ls -d ${HOME}/Projects/*/ | xargs basename)
+    local candidates=$(/bin/ls -d ${PROJECT_DIR}/*/ | xargs basename)
     COMPREPLY=( $(compgen -W "${candidates}" -- $2) )
 }
 complete -F _complete_cdenv -o default cdenv
