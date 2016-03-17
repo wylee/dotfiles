@@ -2,7 +2,7 @@
 HISTCONTROL=ignoredups:ignorespace
 HISTSIZE=500000
 HISTFILESIZE=100000
-HISTTIMEFORMAT="%F %T"
+HISTTIMEFORMAT="%F %T "
 
 # Don't add certain commands to BASH history.
 # & = ignore duplicates
