@@ -1,6 +1,7 @@
 #### At root of repo
 /build/
 /docs/_build
+/node_modules/
 /var/
 /MANIFEST
 /scratch
