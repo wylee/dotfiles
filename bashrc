@@ -47,9 +47,13 @@ fi
 echo "$PATH" | grep "/usr/local/bin" 1>/dev/null || export PATH="/usr/local/bin:${PATH}"
 
 # Include additonal bash config from ~/.bashrc.d/*.rc.
-for f in $(find "${HOME}/.bashrc.d" -maxdepth 1 \( -type f -or -type l \) -name "*.rc"); do
-    source "$f"
-done
+
+BASHRC_DIR="${HOME}/.bashrc.d"
+if [ -d "${BASHRC_DIR}" ]; then
+    for f in $(find "${BASHRC_DIR}" -maxdepth 1 \( -type f -or -type l \) -name "*.rc"); do
+        source "$f"
+    done
+fi
 
 # The local bin directory takes precedence over everything else, no
 # matter what.
