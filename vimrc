@@ -123,8 +123,8 @@ augroup vimrc
     autocmd BufRead,BufNewFile *.mako set filetype=mako
     autocmd FileType mako setlocal sw=2 sts=2
 
-    autocmd BufRead,BufNewFile *.commit set filetype=commit
-    autocmd FileType commit setlocal sw=4 sts=4 tw=72 syntax=gitcommit
+    autocmd BufRead,BufNewFile *.commit set filetype=gitcommit
+    autocmd FileType gitcommit setlocal sw=4 sts=4 tw=72
 
     autocmd BufRead,BufNewFile ~/.bashrc.d/*.rc set filetype=sh
 
