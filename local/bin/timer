@@ -88,6 +88,7 @@ def run(seconds, message=DEFAULT_MESSAGE, repeat=0, _repeats=0):
     if abs(end_datetime - expected_end_datetime) > datetime.timedelta(seconds=1):
         print('Expected:', format_datetime(expected_end_datetime))
     if _repeats < repeat:
+        print('=' * 80)
         run(seconds, message, repeat - 1, _repeats + 1)
 
 
