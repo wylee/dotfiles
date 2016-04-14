@@ -9,6 +9,7 @@ Times can be specified in the following formats:
 
 """
 import argparse
+import datetime
 import re
 import sys
 import time
@@ -46,6 +47,10 @@ def format_time(seconds_):
     return ':'.join('{:0>2}'.format(p) for p in (hours, minutes, seconds))
 
 
+def format_datetime(dt):
+    return dt.strftime('%H:%M:%S')
+
+
 def print_message(message, elapsed, remaining):
     format_args = {
         'elapsed': format_time(elapsed),
@@ -59,7 +64,10 @@ def print_message(message, elapsed, remaining):
 
 
 def run(seconds, message=DEFAULT_MESSAGE, repeat=0, _repeats=0):
+    start_datetime = datetime.datetime.now()
+    expected_end_datetime = start_datetime + datetime.timedelta(seconds=seconds)
     start_time = time.perf_counter()
+    print('Started:', format_datetime(start_datetime))
     for elapsed in range(seconds):
         print_message(message, elapsed, seconds - elapsed)
         # Sleep for ~1 second, adjusting for skew.
@@ -78,9 +86,13 @@ def run(seconds, message=DEFAULT_MESSAGE, repeat=0, _repeats=0):
         sys.stderr.write(err)
     else:
         print_message(message, real_elapsed, 0)
+    print()
+    end_datetime = datetime.datetime.now()
+    print('Ended:', format_datetime(end_datetime))
+    if abs(end_datetime - expected_end_datetime) > datetime.timedelta(seconds=1):
+        print('Expected:', format_datetime(expected_end_datetime))
     if _repeats < repeat:
         run(seconds, message, repeat - 1, _repeats + 1)
-    sys.stdout.write('\n')
 
 
 if __name__ == '__main__':
