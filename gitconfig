@@ -7,9 +7,6 @@
     new = !git log --oneline --reverse origin/$(git rev-parse --abbrev-ref HEAD)..
     new-since = !git log --oneline --reverse ${1}..
 
-[branch "master"]
-    mergeOptions = --no-ff
-
 [color]
     ui = true
 
