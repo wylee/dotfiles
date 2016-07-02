@@ -12,8 +12,11 @@ default_config_file = '~/.live-backup.cfg'
 default_project_dir = os.environ.get('PROJECT_DIR', '~/Projects')
 
 
-def as_list(v, sep=None):
-    return v.strip().split(sep)
+def as_list(v, sep='\n'):
+    items = v.splitlines() if sep == '\n' else v.split(sep)
+    items = [item.strip() for item in items]
+    items = [item for item in items if item]
+    return items
 
 
 def path_type(val):
@@ -79,7 +82,7 @@ available_locations = collections.OrderedDict(
 location_groups = collections.OrderedDict()
 if 'location-groups' in config_parser:
     for group, group_locations in config_parser.items('location-groups'):
-        group_locations = group_locations.strip().split()
+        group_locations = as_list(group_locations, sep=None)
         for group_loc in group_locations:
             if group_loc not in available_locations:
                 exit('Bad location in {} group: {}'.format(group, group_loc))
@@ -102,16 +105,15 @@ def list_available_locations():
 if args.list_locations:
     exit(list_available_locations(), code=0)
 
+section = config_parser['live-backup']
 
 if not args.project_dir:
     # Get from config file or fall back to default
-    project_dir = config_parser.get(
-        'live-backup', 'project-dir', fallback=default_project_dir)
+    project_dir = section.get('project-dir', fallback=default_project_dir)
     project_dir = path_type(project_dir)
 else:
     project_dir = args.project_dir
 
-section = config_parser['live-backup']
 paths_in = {
     '__main__': as_list(section.get('paths', [])),
 }
@@ -120,8 +122,7 @@ for k, v in section.items():
         _, loc = k.split('.', 1)
         paths_in[loc] = as_list(section[k])
 
-excludes = config_parser.get('live-backup', 'excludes')
-excludes = as_list(excludes)
+excludes = as_list(section.get('excludes', []))
 
 
 # Expand input paths:
