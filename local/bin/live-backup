@@ -154,7 +154,7 @@ locations = args.locations
 if not locations:
     locations = section.get('default-locations')
     if not args.all and locations:
-        locations = as_list(locations)
+        locations = as_list(locations, sep=None)
     else:
         locations = available_locations.keys()
 
