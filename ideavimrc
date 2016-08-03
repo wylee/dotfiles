@@ -5,3 +5,4 @@ set ignorecase
 set incsearch
 set showmatch
 set smartcase
+set surround
