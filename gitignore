@@ -7,7 +7,9 @@
 /scratch
 /tags
 /.coverage
+/.eggs/
 /.env*/
+/.tox/
 /*.commit
 
 # Project directories
