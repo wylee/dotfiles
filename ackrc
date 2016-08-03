@@ -6,7 +6,10 @@
 
 # Ignore virtualenvs
 --ignore-dir=.env
+
+# Ignore project directories
 --ignore-dir=.idea
+--ignore-dir=.tox
 
 # Ignore vendor files
 --ignore-dir=vendor
