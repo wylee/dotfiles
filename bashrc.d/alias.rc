@@ -59,18 +59,55 @@ fi
 
 # Brown noise
 function bn {
+    # Kill brown noise script if running.
+    # Start brown noise script if not running.
+    killbn || runbn
+}
+
+function runbn {
+    # Run brown noise script.
+    #
+    # Returns:
+    #     0: Script was started
+    #     1: Script was not started (already running)
     local pid_file="${HOME}/.brown-noise.pid"
     if [ -f "$pid_file" ]; then
-        kill -s kill $(cat "$pid_file")
-        rm "$pid_file"
+        echo "Brown noise script with PID '$pid' already running" 1>&2
+        echo "Clean up first with kilbn" 1>&2
+        return 1
+    fi
+    AUDIODEV="Built-in Output" \
+    play -q -c 2 --null \
+        synth brownnoise \
+        band -n 1500 1500 \
+        tremolo .0333333 30 \
+        reverb &
+    local PID=$!
+    echo -n $PID > "$pid_file"
+    echo "Brown noise script started"
+    return 0
+}
+
+function killbn {
+    # Kill brown noise script.
+    #
+    # Returns:
+    #     0: Script was killed
+    #     1: Script was not running
+    #     2: Script could not be killed
+    local pid_file="${HOME}/.brown-noise.pid"
+    if [ -f "$pid_file" ]; then
+        local pid="$(cat "$pid_file")"
+        if kill -s kill $pid; then
+            rm "$pid_file"
+            echo "Brown noise script with PID $pid killed"
+            return 0
+        else
+            echo "Brown noise script with PID '$pid' could not be killed" 1>&2
+            return 2
+        fi
     else
-        AUDIODEV="Built-in Output" \
-        play -q -c 2 --null \
-            synth brownnoise \
-            band -n 1500 1500 \
-            tremolo .0333333 30 \
-            reverb &
-        local PID=$!
-        echo -n $PID > "$pid_file"
+        echo "Brown noise script not running" 1>&2
+        return 1
     fi
 }
