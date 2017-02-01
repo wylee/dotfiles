@@ -15,19 +15,15 @@ function save_original () {
     if [ -f "$file" ]; then
         local save_file="${file}.original"
         mv -i "$file" "$save_file"
-        echo "${YELLOW}Saved ${file} to ${save_file}${RESET}"
+        echo "${BLUE}Saved ${file} to ${save_file}${RESET}"
     fi
 }
 
 function link () {
     # Args:
-    #     $1: path relative to file in dot files repo OR absolute path
+    #     $1: path relative to file in dot files repo
     #     $2: target path (optional; default is $HOME/.$1 or $HOME/$1)
-    if [ "${1}" = "${1#/}" ]; then
-        local file="${REPO_DIR}/${1}"
-    else
-        local file="${1}"
-    fi
+    local file="${REPO_DIR}/${1}"
     if [ ! -f "${file}" ]; then
         echo "${RED}${file} does not exist in .files repo${RESET}" 1>&2
         return 1
@@ -85,11 +81,11 @@ link vimrc
 link ssh/config
 
 for file in "${REPO_DIR}/bashrc.d/"*.rc; do
-    link "${file}" "${HOME}/.bashrc.d/$(basename "${file}")"
+    link "bashrc.d/$(basename "${file}")"
 done
 
 for file in "${REPO_DIR}/local/bin/"*; do
-    link "${file}" "${HOME}/.local/bin/$(basename "${file}")"
+    link "local/bin/$(basename "${file}")"
 done
 
 test -d ~/Library/LaunchAgents && link Library/LaunchAgents/gpg-agent.plist
@@ -119,24 +115,42 @@ else
     echo "${YELLOW}Skipping Homebrew install since this doesn't appear to be a Mac${RESET}"
 fi
 
-if which pip >/dev/null 2>&1; then
-    echo "${YELLOW}pip already installed at $(which pip)${RESET}"
-else
-    echo -n "${BLUE}Getting pip installer..."
-    curl -O https://bootstrap.pypa.io/get-pip.py
-    echo "${GREEN}Done${RESET}"
-    echo -n "${BLUE}Installing pip for Python 2..."
-    python get-pip.py
-    echo "${GREEN}Done${RESET}"
-    echo -n "${BLUE}Installing pip for Python 3..."
-    python3 get-pip.py
-    echo "${GREEN}Done${RESET}"
-    rm get-pip.py
-fi
+function get_pip_installer () {
+    if [ -f "get-pip.py" ]; then
+        echo "${BLUE}Pip installer already downloaded"
+    else
+        echo -n "${BLUE}Getting pip installer... "
+        curl -O https://bootstrap.pypa.io/get-pip.py
+        echo "${GREEN}Done${RESET}"
+    fi
+}
 
-echo -n "${BLUE}Installing Python tools..."
+function install_pip () {
+    local version="${1}"
+    local pip_exe="pip${version}"
+    local python_exe="python${version}"
+    if which "${pip_exe}" >/dev/null 2>&1; then
+        echo "${YELLOW}${pip_exe} already installed at $(which "${pip_exe}")${RESET}"
+    else
+        get_pip_installer
+        echo -n "${BLUE}Installing pip for Python ${version}... "
+        ${python_exe} get-pip.py --upgrade --force-reinstall
+        if which pyenv >/dev/null 2>&1; then
+            pyenv rehash
+        fi
+        echo "${GREEN}Done${RESET}"
+    fi
+}
+
+install_pip 2
+install_pip 3
+test -f get-pip.py && rm get-pip.py
+
+echo -n "${BLUE}Installing/upgrading Python tools... "
 pip2 install -U setuptools >/dev/null
+pip2 install -U pip >/dev/null
 pip3 install -U setuptools >/dev/null
+pip3 install -U pip >/dev/null
 pip3 install -U checkoutmanager >/dev/null
 pip3 install -U virtualenv >/dev/null
 echo "${GREEN}Done${RESET}"
