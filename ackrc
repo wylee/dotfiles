@@ -1,3 +1,7 @@
+# Ignore build directories
+--ignore-dir=build
+--ignore-dir=dist
+
 # Ignore Buildout directories
 --ignore-dir=bin
 --ignore-dir=develop-eggs
@@ -6,6 +10,7 @@
 
 # Ignore virtualenvs
 --ignore-dir=.env
+--ignore-dir=venv
 
 # Ignore project directories
 --ignore-dir=.idea
