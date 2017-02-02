@@ -98,10 +98,22 @@ function bn {
 }
 
 function _complete_cdenv {
-    local candidates=$(/bin/ls -d ${PROJECT_DIR}/*/ | xargs basename)
-    COMPREPLY=( $(compgen -W "${candidates}" -- $2) )
+    local cmd="$1"
+    local current="$2"
+    local IFS='
+'
+    local candidate
+    local candidate_basename
+    COMPREPLY=()
+    for path in "${PROJECT_DIR}/${current}"*/; do
+        candidate_basename="$(basename ${path})"
+        if [ -d "$path" ] && [[ ! "$candidate_basename" =~ ^[._] ]]; then
+            candidate="${path#${PROJECT_DIR}/}"
+            COMPREPLY+=("$candidate")
+        fi
+    done
 }
-complete -F _complete_cdenv -o default cdenv
+complete -F _complete_cdenv -o filenames -o nospace cdenv
 
 
 # Invoke (pyinvoke.org) tab-completion script to be sourced with Bash shell.
