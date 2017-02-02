@@ -73,7 +73,7 @@ function runbn {
     local pid_file="${HOME}/.brown-noise.pid"
     if [ -f "$pid_file" ]; then
         echo "Brown noise script with PID '$pid' already running" 1>&2
-        echo "Clean up first with kilbn" 1>&2
+        echo "Clean up first with killbn" 1>&2
         return 1
     fi
     AUDIODEV="Built-in Output" \
@@ -98,8 +98,8 @@ function killbn {
     local pid_file="${HOME}/.brown-noise.pid"
     if [ -f "$pid_file" ]; then
         local pid="$(cat "$pid_file")"
+        rm "$pid_file"
         if kill -s kill $pid; then
-            rm "$pid_file"
             echo "Brown noise script with PID $pid killed"
             return 0
         else
