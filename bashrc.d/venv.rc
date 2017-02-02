@@ -1,5 +1,6 @@
 RED="$(tput setaf 1)"
 GREEN="$(tput setaf 2)"
+BLUE="$(tput setaf 4)"
 RESET="$(tput sgr 0)"
 VENV_DIR=".env"
 VENV_BIN="${VENV_DIR}/bin"
@@ -25,8 +26,8 @@ function cdenv {
     # If env_dir isn't passed, cd into the current env directory.
     if [ -n "${1}" ]; then
         local env_dir="${PROJECT_DIR}/${1}"
-    elif [ -n "${_VENV_CURRENT}" ]; then
-        local env_dir="${_VENV_CURRENT}"
+    elif [ -n "${_ENV_CURRENT}" ]; then
+        local env_dir="${_ENV_CURRENT}"
     fi
     if [ -n "${env_dir}" ]; then
         builtin cd "${env_dir}"
@@ -38,44 +39,55 @@ function cdenv {
 }
 
 function activateenv {
-    if [ ! -f "${VENV_BIN}/python" ]; then
+    local env_type
+
+    if [ -f "${VENV_BIN}/python" ]; then
+        env_type="virtualenv"
+    elif [ -d "${NODE_DIR}" ]; then
+        env_type="node"
+    else
         if [ "$1" != "silent" ]; then
-            echo "${RED}This is not a virtualenv directory${RESET}" 1>&2
+            echo "${RED}This is not an env directory${RESET}" 1>&2
             deactivateenv
         fi
         return
     fi
 
     # Do nothing if this virtualenv is already active
-    if [ -n "$_VENV_CURRENT" ] && [ "$PWD" = "$_VENV_CURRENT" ]; then
+    if [ -n "$_ENV_CURRENT" ] && [ "$PWD" = "$_ENV_CURRENT" ]; then
         return
     fi
 
     deactivateenv
 
     export PROJECT_NAME="$(basename $PWD)"
-    export _VENV_CURRENT="$PWD"
-    export _VENV_ORIGINAL_PATH="$PATH"
+    export _ENV_CURRENT="$PWD"
+    export _ENV_ORIGINAL_PATH="$PATH"
 
-    if [ -d "${NODE_BIN}" ]; then
-        export PATH="${PWD}/${VENV_BIN}:${PWD}/${NODE_BIN}:${PATH}"
-    else
+    if [ "$env_type" = "virtualenv" ]; then
+        if [ -d "${NODE_BIN}" ]; then
+            export PATH="${PWD}/${NODE_BIN}:${PATH}"
+        elif [ -d "${PROJECT_NAME}/static/${NODE_BIN}" ]; then
+            export PATH="${PWD}/${PROJECT_NAME}/static/${NODE_BIN}:${PATH}"
+        fi
         export PATH="${PWD}/${VENV_BIN}:${PATH}"
+    elif [ "$env_type" = "node" ]; then
+        export PATH="${PWD}/${NODE_BIN}:${PATH}"
     fi
 
     hash -r 2>/dev/null
-    echo -e "${GREEN}Activated ${_VENV_CURRENT}${RESET}"
+    echo -e "${GREEN}Activated ${_ENV_CURRENT} (${env_type}) ${RESET}"
 }
 
 function deactivateenv {
-    if [ -n "$_VENV_CURRENT" ]; then
-        local venv_current="$_VENV_CURRENT"
+    if [ -n "$_ENV_CURRENT" ]; then
+        local env_current="$_ENV_CURRENT"
         unset PROJECT_NAME
-        unset _VENV_CURRENT
-        export PATH="$_VENV_ORIGINAL_PATH"
-        unset _VENV_ORIGINAL_PATH
+        unset _ENV_CURRENT
+        export PATH="$_ENV_ORIGINAL_PATH"
+        unset _ENV_ORIGINAL_PATH
         hash -r 2>/dev/null
-        echo -e "${RED}Deactivated ${venv_current}${RESET}"
+        echo -e "${RED}Deactivated ${env_current}${RESET}"
     fi
 }
 

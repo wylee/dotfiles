@@ -22,9 +22,9 @@ vcs_info() {
         fi
     fi
 }
-venv_info() {
-    if [ -n "$_VENV_CURRENT" ]; then
-        printf "(venv:$(basename $_VENV_CURRENT))"
+env_info() {
+    if [ -n "$_ENV_CURRENT" ]; then
+        printf "(env:$(basename $_ENV_CURRENT))"
     fi
 }
 # DATE                                                                     TIME
@@ -34,7 +34,7 @@ venv_info() {
 PS1="\
 ${GREY}\d ${RED}\$(hr)${GREY} \t
 ${RED}\u${YELLOW}@${GREEN}\H
-${CYAN}\w\$(vcs_info) \$(venv_info)
+${CYAN}\w\$(vcs_info) \$(env_info)
 ${YELLOW}>${RESET_COLOR} \
 "
 export PS1
