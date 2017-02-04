@@ -1,5 +1,5 @@
 [ui]
-username = Wyatt Lee Baldwin <self@wyattbaldwin.com>
+username = Wyatt Baldwin <self@wyattbaldwin.com>
 ignore = ~/.hgignore
 merge = meld
 pager =
