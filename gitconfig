@@ -1,6 +1,6 @@
 [user]
-    name = Wyatt Lee Baldwin
-    email = wyatt.lee.baldwin@gmail.com
+    name = Wyatt Baldwin
+    email = self@wyattbaldwin.com
 
 [alias]
     push-all = !git push --follow-tags all && git fetch --all
@@ -18,13 +18,3 @@
 
 [rebase]
     autoSquash = true
-
-[filter "hawser"]
-	clean = git hawser clean %f
-	smudge = git hawser smudge %f
-	required = true
-
-[filter "media"]
-	clean = git media clean %f
-	smudge = git media smudge %f
-	required = true
