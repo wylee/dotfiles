@@ -32,18 +32,16 @@ def exit(*print_args, code=1, file=sys.stderr, sep='\n', **print_kwargs):
 
 def debug(*print_args, file=sys.stderr, **print_kwargs):
     if args.debug:
-        print(*print_args, file=file, **print_kwargs)
-        print(*print_args, **print_kwargs)
+        print('DEBUG', *print_args, file=file, **print_kwargs)
 
 
-def info(*print_args, **print_kwargs):
+def info(*print_args, file=sys.stdout, **print_kwargs):
     if args.debug or not args.quiet:
-        print(*print_args, **print_kwargs)
+        print(*print_args, file=file, **print_kwargs)
 
 
 def warn(*print_args, file=sys.stderr, **print_kwargs):
-    print(*print_args, file=file, **print_kwargs)
-    print(*print_args, **print_kwargs)
+    print('WARN', *print_args, file=file, **print_kwargs)
 
 
 arg_parser = argparse.ArgumentParser()
@@ -88,31 +86,14 @@ if 'location-groups' in config_parser:
                 exit('Bad location in {} group: {}'.format(group, group_loc))
         location_groups[group] = group_locations
 
-
-def list_available_locations():
-    info = ['Available backup locations:\n']
-    for k, v in available_locations.items():
-        info.append('    - {0}: {1}'.format(k, v))
-    info.append('\nLocation groups:\n')
-    if location_groups:
-        for k, v in location_groups.items():
-            info.append('    - {0}: {1}'.format(k, ', '.join(v)))
-    else:
-        info.append('    No location groups')
-    return '\n'.join(info)
-
-
-if args.list_locations:
-    exit(list_available_locations(), code=0)
-
 section = config_parser['live-backup']
 
 if not args.project_dir:
     # Get from config file or fall back to default
     project_dir = section.get('project-dir', fallback=default_project_dir)
-    project_dir = path_type(project_dir)
 else:
     project_dir = args.project_dir
+project_dir = path_type(project_dir)
 
 paths_in = {
     '__main__': as_list(section.get('paths', [])),
@@ -130,15 +111,21 @@ excludes = as_list(section.get('excludes', []))
 #   - ~ is expanded
 #   - shell style globs are too
 paths = {}
+paths_not_found = []
 for loc, loc_paths in paths_in.items():
     paths[loc] = []
     for i, path in enumerate(loc_paths):
         path = path.format(project_dir=project_dir)
         path = os.path.expanduser(path)
         glob_paths = glob.glob(path)
-        paths[loc] += glob_paths
         if not glob_paths:
-            warn('Path not found: {0}\n'.format(path))
+            paths_not_found.append(path)
+        else:
+            paths[loc] += glob_paths
+if paths_not_found:
+    for path in paths_not_found:
+        warn('Path not found: {0}'.format(path))
+    print()
 
 
 rsync_cmd = ['rsync', '-rltz', '--delete']
@@ -151,10 +138,10 @@ for e in excludes:
 
 
 locations = args.locations
+default_locations = as_list(section.get('default-locations'), sep=None)
 if not locations:
-    locations = section.get('default-locations')
-    if not args.all and locations:
-        locations = as_list(locations, sep=None)
+    if not args.all and default_locations:
+        locations = default_locations
     else:
         locations = available_locations.keys()
 
@@ -173,7 +160,29 @@ for loc in locations:
         )
 
 
-info('==> Excluded paths:')
+def list_available_locations():
+    info = ['Available backup locations:\n']
+    for k, v in available_locations.items():
+        info.append('    - {0}: {1}'.format(k, v))
+    info.append('\nLocation groups:\n')
+    if location_groups:
+        for k, v in location_groups.items():
+            info.append('    - {0}: {1}'.format(k, ', '.join(v)))
+    else:
+        info.append('    No location groups')
+    if section.get('default-locations'):
+        info.append('\nDefault locations:\n')
+        info.append('    - {0}'.format(', '.join(default_locations)))
+    info.append('\nProject directory:\n')
+    info.append('    - {0}'.format(project_dir))
+    return '\n'.join(info)
+
+
+if args.list_locations:
+    exit(list_available_locations(), code=0)
+
+
+info('Excluded paths:')
 for e in excludes:
     info(e)
 
@@ -182,8 +191,8 @@ for loc, dest in selected_locations:
     cmd = rsync_cmd.copy()
     cmd.extend(loc_paths)
     cmd.append(dest)
-    debug('==> {0}'.format(' '.join(cmd)))
-    info('==> Syncing to {0}...'.format(dest))
+    debug('{0}'.format(' '.join(cmd)))
+    info('Syncing to {0}...'.format(dest))
     info('\n'.join(loc_paths))
     return_code = subprocess.call(cmd)
-    info('==> Finished syncing to {0}'.format(dest))
+    info('Finished syncing to {0}'.format(dest))
