@@ -18,3 +18,6 @@
 
 [rebase]
     autoSquash = true
+
+[tag]
+    sort = version:refname
