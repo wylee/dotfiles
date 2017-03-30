@@ -76,6 +76,7 @@ link ideavimrc
 link inputrc
 link live-backup.cfg
 link profile
+link pythonrc
 link tmux.conf
 link vimrc
 link ssh/config
