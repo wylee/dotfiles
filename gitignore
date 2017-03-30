@@ -1,7 +1,6 @@
 #### At root of repo
 /build/
 /docs/_build
-/node_modules/
 /var/
 /MANIFEST
 /scratch
@@ -37,3 +36,4 @@
 git.commit
 *.py[cdo]
 .*.swp
+node_modules/
