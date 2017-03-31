@@ -3,6 +3,7 @@
     email = self@wyattbaldwin.com
 
 [alias]
+    fixup = !git commit --fixup
     push-all = !git push --follow-tags all && git fetch --all
     new = !git log --oneline --reverse @{upstream}..
     new-since = !git log --oneline --reverse ${1}..
