@@ -31,8 +31,7 @@ def seconds_from_str(arg):
     d = match.groupdict()
     h, m, s = d.get('hours', 0), d.get('minutes', 0), d.get('seconds')
     h, m, s = int(h), int(m), int(s)
-    seconds = 3600 * h + 60 * m + s
-    return seconds
+    return h, m, s
 
 
 def get_hours_minutes_and_seconds(seconds):
@@ -59,9 +58,20 @@ def print_message(message, elapsed, remaining):
     print('\r', ' ' * 80, '\r', message.format(**format_args), sep='', end='', flush=True)
 
 
-def run(seconds, message=DEFAULT_MESSAGE, repeat=0, _repeats=0):
+def run(time_tuple, message=DEFAULT_MESSAGE, end_at=False, repeat=0, _repeats=0):
     start_datetime = datetime.datetime.now()
-    expected_end_datetime = start_datetime + datetime.timedelta(seconds=seconds)
+    h, m, s = time_tuple
+
+    if end_at:
+        expected_end_time = datetime.time(hour=h, minute=m, second=s)
+        expected_end_datetime = datetime.datetime.combine(start_datetime.date(), expected_end_time)
+    else:
+        delta = datetime.timedelta(hours=h, minutes=m, seconds=s)
+        expected_end_datetime = start_datetime + delta
+
+    seconds = (expected_end_datetime - start_datetime).total_seconds()
+    seconds = int(round(seconds))
+
     start_time = time.perf_counter()
     print('Started:', format_datetime(start_datetime))
     print('Ends at:', format_datetime(expected_end_datetime))
@@ -98,6 +108,7 @@ if __name__ == '__main__':
             description=__doc__,
             formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('time', type=seconds_from_str, help='[[H:]M:]S')
+    parser.add_argument('-e', '--end-at', action='store_true', default=False)
     parser.add_argument('--repeat', type=int, default=0)
     parser.add_argument(
         '--message', default=DEFAULT_MESSAGE,
@@ -105,6 +116,6 @@ if __name__ == '__main__':
              '{elapsed}, {remaining} ["%s"]' % DEFAULT_MESSAGE)
     args = parser.parse_args()
     try:
-        run(args.time, args.message, args.repeat)
+        run(args.time, args.message, args.end_at, args.repeat)
     except KeyboardInterrupt:
         print_message('Aborted\n', 0, 0)
