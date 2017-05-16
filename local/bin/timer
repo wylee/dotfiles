@@ -109,7 +109,7 @@ if __name__ == '__main__':
             formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('time', type=seconds_from_str, help='[[H:]M:]S')
     parser.add_argument('-e', '--end-at', action='store_true', default=False)
-    parser.add_argument('--repeat', type=int, default=0)
+    parser.add_argument('-r', '--repeat', type=int, default=0)
     parser.add_argument(
         '--message', default=DEFAULT_MESSAGE,
         help='Message to display, updated every second; can include format strings: '
