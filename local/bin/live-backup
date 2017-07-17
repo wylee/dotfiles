@@ -70,9 +70,9 @@ args = arg_parser.parse_args()
 
 config_parser = configparser.ConfigParser()
 config_parser.read(args.config_file)
-section = config_parser['live-backup']
+config = config_parser['live-backup']
 
-env = args.env or os.getenv('LIVE_BACKUP_ENV') or section.get('env')
+env = args.env or os.getenv('LIVE_BACKUP_ENV') or config.get('env')
 
 available_locations = config_parser.items('available-locations')
 available_locations = collections.OrderedDict(
@@ -92,20 +92,20 @@ if 'location-groups' in config_parser:
 
 if not args.project_dir:
     # Get from config file or fall back to default
-    project_dir = section.get('project-dir', fallback=default_project_dir)
+    project_dir = config.get('project-dir', fallback=default_project_dir)
 else:
     project_dir = args.project_dir
 project_dir = path_type(project_dir)
 
 paths_in = {
-    '__main__': as_list(section.get('paths', [])),
+    '__main__': as_list(config.get('paths', [])),
 }
-for k, v in section.items():
+for k, v in config.items():
     if k.startswith('paths.'):
         _, loc = k.split('.', 1)
-        paths_in[loc] = as_list(section[k])
+        paths_in[loc] = as_list(config[k])
 
-excludes = as_list(section.get('excludes', []))
+excludes = as_list(config.get('excludes', []))
 
 
 # Expand input paths:
@@ -140,7 +140,7 @@ for e in excludes:
 
 
 locations = args.locations
-default_locations = as_list(section.get('default-locations'), sep=None)
+default_locations = as_list(config.get('default-locations'), sep=None)
 if not locations:
     if not args.all and default_locations:
         locations = default_locations
@@ -172,7 +172,7 @@ def list_available_locations():
             info.append('    - {0}: {1}'.format(k, ', '.join(v)))
     else:
         info.append('    No location groups')
-    if section.get('default-locations'):
+    if config.get('default-locations'):
         info.append('\nDefault locations:\n')
         info.append('    - {0}'.format(', '.join(default_locations)))
     info.append('\nProject directory:\n')
