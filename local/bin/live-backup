@@ -47,6 +47,7 @@ def warn(*print_args, file=sys.stderr, **print_kwargs):
 arg_parser = argparse.ArgumentParser()
 arg_parser.add_argument(
     '--config-file', '-c', type=path_type, default=default_config_file)
+arg_parser.add_argument('--env', '-e', default=None)
 arg_parser.add_argument(
     '--list-locations', '-l', action='store_true', default=False,
     help='List available backup locations then exit.')
@@ -69,11 +70,13 @@ args = arg_parser.parse_args()
 
 config_parser = configparser.ConfigParser()
 config_parser.read(args.config_file)
+section = config_parser['live-backup']
 
+env = args.env or os.getenv('LIVE_BACKUP_ENV') or section.get('env')
 
 available_locations = config_parser.items('available-locations')
 available_locations = collections.OrderedDict(
-    (k, path_type(v)) for (k, v) in available_locations
+    (k, path_type(v).format(env=env)) for (k, v) in available_locations
 )
 
 
@@ -86,7 +89,6 @@ if 'location-groups' in config_parser:
                 exit('Bad location in {} group: {}'.format(group, group_loc))
         location_groups[group] = group_locations
 
-section = config_parser['live-backup']
 
 if not args.project_dir:
     # Get from config file or fall back to default
