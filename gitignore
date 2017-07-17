@@ -35,6 +35,7 @@
 #### Anywhere in repo
 .DS_Store
 git.commit
+*.css.map
 *.py[cdo]
 .*.swp
 node_modules/
