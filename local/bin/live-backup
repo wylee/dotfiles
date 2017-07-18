@@ -1,200 +1,276 @@
-#!/usr/local/bin/python3
+#!/usr/local/bin/python3.6
 import argparse
 import collections
 import configparser
 import glob
 import os
+import shutil
 import subprocess
 import sys
 
 
-default_config_file = '~/.live-backup.cfg'
-default_project_dir = os.environ.get('PROJECT_DIR', '~/Projects')
+OPTIONS = {
+    'env': None,
+    'config_file': '~/.live-backup.cfg',
+    'project_dir': os.environ.get('PROJECT_DIR', '~/Projects'),
+    'default_locations': [],
+    'locations': [],
+    'list_locations': False,
+    'all': False,
+    'debug': False,
+    'quiet': False,
+    'dry_run': False,
+}
+
+
+class LiveBackupRunner:
+
+    def __init__(self):
+        self.args = self.parse_args()
+
+        # Bootstrap
+        self.config = {}
+        self.debug = OPTIONS['debug']
+        self.dry_run = OPTIONS['dry_run']
+        self.quiet = OPTIONS['quiet']
+
+        self.config_parser = configparser.ConfigParser()
+        self.config_file = as_path(self.get_option('config_file'))
+
+        with open(self.config_file) as fp:
+            self.config_parser.read_file(fp)
+
+        self.config = self.get_config('live-backup')
+        self.debug = as_bool(self.get_option('debug'))
+        self.dry_run = as_bool(self.get_option('dry_run'))
+        self.quiet = as_bool(self.get_option('quiet'))
+
+        self.env = self.get_option('env')
+        self.project_dir = as_path(self.get_option('project_dir'))
+        self.default_locations = as_list(self.get_option('default_locations'), sep=None)
+        self.all = as_bool(self.get_option('all'))
+        self.list_locations = self.get_option('list_locations')
+
+    def run(self):
+        if self.list_locations:
+            self.exit(self.list_available_locations(), code=0)
+
+        paths_in = {'__main__': as_list(self.config.get('paths', []))}
+        for k, v in self.config.items():
+            if k.startswith('paths.'):
+                _, location = k.split('.', 1)
+                paths_in[location] = as_list(config[k])
+
+        # Expand input paths:
+        #   - project_dir is injected
+        #   - ~ is expanded
+        #   - shell style globs are too
+        paths = {}
+        paths_not_found = []
+        for location, location_paths in paths_in.items():
+            paths[location] = []
+            for i, path in enumerate(location_paths):
+                path = path.format(project_dir=self.project_dir)
+                path = os.path.expanduser(path)
+                glob_paths = glob.glob(path)
+                if not glob_paths:
+                    paths_not_found.append(path)
+                else:
+                    paths[location] += glob_paths
+        if paths_not_found:
+            for path in paths_not_found:
+                print(f'Path not found: {path}', file=sys.stderr)
+            self.exit(code=1)
+
+        excludes = as_list(self.config.get('excludes', []))
+
+        rsync_cmd = ['rsync', '-rltz', '--delete']
+        if self.dry_run:
+            rsync_cmd.append('--dry-run')
+        if self.debug:
+            rsync_cmd.append('--verbose')
+        for exclude in excludes:
+            rsync_cmd += ['--exclude', exclude]
+
+        selected_locations = []
+        locations = self.locations
+        location_groups = self.locaction_groups
+        available_locations = self.available_locations
+        for location in locations:
+            if location in location_groups:
+                locations = [(l, available_locations[l]) for l in location_groups[location]]
+                selected_locations.extend(locations)
+            elif location in available_locations:
+                selected_locations.append((location, available_locations[location]))
+            else:
+                self.exit(
+                    f'"{location}" is not a valid location key\n',
+                    self.list_available_locations(),
+                    code=1)
+
+        self.print_hr()
+        self.info('Excluded paths')
+        self.print_hr()
+        for exclude in excludes:
+            self.info(exclude)
+
+        for location, destination in selected_locations:
+            location_paths = paths.get('__main__', []) + paths.get(location, [])
+            cmd = rsync_cmd.copy()
+            cmd.extend(location_paths)
+            cmd.append(destination)
+            cmd_str = ' '.join(cmd)
+            self.print_hr()
+            self.info(f'Syncing to {destination}')
+            self.debug_info(f'{cmd_str}')
+            self.print_hr()
+            self.info('\n'.join(location_paths))
+            return_code = subprocess.call(cmd)
+            self.print_hr()
+            self.info(f'Finished syncing to {destination}')
+
+        self.print_hr()
+
+    @property
+    def locations(self):
+        locations = self.get_option('locations')
+        if locations:
+            return as_list(locations)
+        elif self.all or not self.default_locations:
+            return self.available_locations.keys()
+        return self.default_locations
+
+    @property
+    def available_locations(self):
+        config = self.get_config('available-locations')
+        return collections.OrderedDict(
+            (k, as_path(v).format(env=self.env)) for (k, v) in config.items())
+
+    @property
+    def locaction_groups(self):
+        config = self.get_config('location-groups', {})
+        location_groups = collections.OrderedDict()
+        for group, group_locations in config.items():
+            group_locations = as_list(group_locations, sep=None)
+            for group_loc in group_locations:
+                if group_loc not in available_locations:
+                    self.exit(f'Bad location in {group} group: {group_loc}')
+            location_groups[group] = group_locations
+        return location_groups
+
+    def list_available_locations(self):
+        info = ['Available backup locations:\n']
+        for k, v in self.available_locations.items():
+            info.append('    - {0}: {1}'.format(k, v))
+
+        info.append('\nLocation groups:\n')
+        location_groups = self.locaction_groups
+        if location_groups:
+            for k, v in location_groups.items():
+                info.append('    - {0}: {1}'.format(k, ', '.join(v)))
+        else:
+            info.append('    No location groups')
+
+        info.append('\nDefault locations:\n')
+        default_locations = self.default_locations
+        if default_locations:
+            default_locations_str = ', '.join(default_locations)
+            info.append(f'    - {default_locations_str}')
+        else:
+            info.append('    No default locations')
+
+        info.append('\nProject directory:\n')
+        info.append(f'    - {self.project_dir}')
+        return '\n'.join(info)
+
+    def parse_args(self, argv=None):
+        arg_parser = argparse.ArgumentParser(argument_default=argparse.SUPPRESS)
+        arg_parser.add_argument('--env', '-e')
+        arg_parser.add_argument('--config-file', '-c', type=as_path)
+        arg_parser.add_argument('--project-dir', '-p', type=as_path)
+        arg_parser.add_argument('locations', nargs='*', help='Back up to the specified locations')
+        arg_parser.add_argument('--all', '-a', action='store_true')
+        arg_parser.add_argument(
+            '--list-locations', '-l', action='store_true',
+            help='List available backup locations then exit.')
+        arg_parser.add_argument(
+            '--debug', '-d', action='store_true',
+            help='Show what rsync is doing (add --verbose; print command)')
+        arg_parser.add_argument(
+            '--dry-run', action='store_true',
+            help="Don't actually copy any files (passed through to rsync)")
+        arg_parser.add_argument(
+            '--quiet', '-q', action='store_true',
+            help='Hide default output (show no output unless --debug)')
+        return arg_parser.parse_args(argv)
+
+    def get_config(self, section, default=None):
+        if section in self.config_parser:
+            return self.config_parser[section]
+        elif default is not None:
+            return default
+        raise configparser.NoSectionError(section)
+
+    def get_option(self, name):
+        # Get option from: command line > env > config > default
+        if name not in OPTIONS:
+            raise KeyError(f'Unknown option: {name}')
+        env_name = f'LIVE_BACKUP_OPTION_{name.upper()}'
+        if hasattr(self.args, name):
+            value = getattr(self.args, name)
+            self.debug_info(f'Got {name} from args')
+        elif env_name in os.environ:
+            value = os.environ[env_name]
+            self.debug_info(f'Got {name} from environ')
+        elif name in self.config:
+            value = self.config[name]
+            self.debug_info(f'Got {name} from config')
+        else:
+            value = OPTIONS[name]
+            self.debug_info(f'Got {name} from defaults')
+        return value
+
+    def print_hr(self):
+        term_size = shutil.get_terminal_size()
+        columns = term_size.columns
+        print('=' * columns)
+
+    def debug_info(self, *print_args, file=sys.stderr, **print_kwargs):
+        if self.debug:
+            print('[DEBUG]', *print_args, file=file, **print_kwargs)
+
+    def info(self, *print_args, file=sys.stdout, **print_kwargs):
+        if self.debug or not self.quiet:
+            print(*print_args, file=file, **print_kwargs)
+
+    def exit(self, *print_args, code=1, sep='\n', **print_kwargs):
+        if print_args:
+            if 'file' not in print_kwargs:
+                print_kwargs['file'] = sys.stderr if code else sys.stdout
+            print(*print_args, sep=sep, **print_kwargs)
+        sys.exit(code)
+
+
+def as_bool(v):
+    if isinstance(v, bool):
+        return v
+    return v == 'true'
 
 
 def as_list(v, sep='\n'):
+    if isinstance(v, list):
+        return v
     items = v.splitlines() if sep == '\n' else v.split(sep)
     items = [item.strip() for item in items]
     items = [item for item in items if item]
     return items
 
 
-def path_type(val):
+def as_path(val):
     val = os.path.expanduser(val)
     return val
 
 
-def exit(*print_args, code=1, file=sys.stderr, sep='\n', **print_kwargs):
-    if print_args:
-        print(*print_args, file=file, sep=sep, **print_kwargs)
-    sys.exit(code)
-
-
-def debug(*print_args, file=sys.stderr, **print_kwargs):
-    if args.debug:
-        print('DEBUG', *print_args, file=file, **print_kwargs)
-
-
-def info(*print_args, file=sys.stdout, **print_kwargs):
-    if args.debug or not args.quiet:
-        print(*print_args, file=file, **print_kwargs)
-
-
-def warn(*print_args, file=sys.stderr, **print_kwargs):
-    print('WARN', *print_args, file=file, **print_kwargs)
-
-
-arg_parser = argparse.ArgumentParser()
-arg_parser.add_argument(
-    '--config-file', '-c', type=path_type, default=default_config_file)
-arg_parser.add_argument('--env', '-e', default=None)
-arg_parser.add_argument(
-    '--list-locations', '-l', action='store_true', default=False,
-    help='List available backup locations then exit.')
-arg_parser.add_argument(
-    '--debug', '-d', action='store_true', default=False,
-    help='Show what rsync is doing (add --verbose; print command)')
-arg_parser.add_argument(
-    '--quiet', '-q', action='store_true', default=False,
-    help='Hide default output (show no output unless --debug)')
-arg_parser.add_argument(
-    '--dry-run', action='store_true', default=False,
-    help="Don't actually copy any files (passed through to rsync)")
-arg_parser.add_argument('--project-dir', '-p', type=path_type, default=None)
-arg_parser.add_argument('--all', '-a', action='store_true', default=False)
-arg_parser.add_argument(
-    'locations', nargs='*', default=[],
-    help='Back up to the specified locations')
-args = arg_parser.parse_args()
-
-
-config_parser = configparser.ConfigParser()
-config_parser.read(args.config_file)
-config = config_parser['live-backup']
-
-env = args.env or os.getenv('LIVE_BACKUP_ENV') or config.get('env')
-
-available_locations = config_parser.items('available-locations')
-available_locations = collections.OrderedDict(
-    (k, path_type(v).format(env=env)) for (k, v) in available_locations
-)
-
-
-location_groups = collections.OrderedDict()
-if 'location-groups' in config_parser:
-    for group, group_locations in config_parser.items('location-groups'):
-        group_locations = as_list(group_locations, sep=None)
-        for group_loc in group_locations:
-            if group_loc not in available_locations:
-                exit('Bad location in {} group: {}'.format(group, group_loc))
-        location_groups[group] = group_locations
-
-
-if not args.project_dir:
-    # Get from config file or fall back to default
-    project_dir = config.get('project-dir', fallback=default_project_dir)
-else:
-    project_dir = args.project_dir
-project_dir = path_type(project_dir)
-
-paths_in = {
-    '__main__': as_list(config.get('paths', [])),
-}
-for k, v in config.items():
-    if k.startswith('paths.'):
-        _, loc = k.split('.', 1)
-        paths_in[loc] = as_list(config[k])
-
-excludes = as_list(config.get('excludes', []))
-
-
-# Expand input paths:
-#   - project_dir is injected
-#   - ~ is expanded
-#   - shell style globs are too
-paths = {}
-paths_not_found = []
-for loc, loc_paths in paths_in.items():
-    paths[loc] = []
-    for i, path in enumerate(loc_paths):
-        path = path.format(project_dir=project_dir)
-        path = os.path.expanduser(path)
-        glob_paths = glob.glob(path)
-        if not glob_paths:
-            paths_not_found.append(path)
-        else:
-            paths[loc] += glob_paths
-if paths_not_found:
-    for path in paths_not_found:
-        warn('Path not found: {0}'.format(path))
-    print()
-
-
-rsync_cmd = ['rsync', '-rltz', '--delete']
-if args.dry_run:
-    rsync_cmd.append('--dry-run')
-if args.debug:
-    rsync_cmd.append('--verbose')
-for e in excludes:
-    rsync_cmd += ['--exclude', e]
-
-
-locations = args.locations
-default_locations = as_list(config.get('default-locations'), sep=None)
-if not locations:
-    if not args.all and default_locations:
-        locations = default_locations
-    else:
-        locations = available_locations.keys()
-
-selected_locations = []
-for loc in locations:
-    if loc in location_groups:
-        locations = [(l, available_locations[l]) for l in location_groups[loc]]
-        selected_locations.extend(locations)
-    elif loc in available_locations:
-        selected_locations.append((loc, available_locations[loc]))
-    else:
-        exit(
-            '"{0}" is not a valid location key\n'.format(loc),
-            list_available_locations(),
-            code=1
-        )
-
-
-def list_available_locations():
-    info = ['Available backup locations:\n']
-    for k, v in available_locations.items():
-        info.append('    - {0}: {1}'.format(k, v))
-    info.append('\nLocation groups:\n')
-    if location_groups:
-        for k, v in location_groups.items():
-            info.append('    - {0}: {1}'.format(k, ', '.join(v)))
-    else:
-        info.append('    No location groups')
-    if config.get('default-locations'):
-        info.append('\nDefault locations:\n')
-        info.append('    - {0}'.format(', '.join(default_locations)))
-    info.append('\nProject directory:\n')
-    info.append('    - {0}'.format(project_dir))
-    return '\n'.join(info)
-
-
-if args.list_locations:
-    exit(list_available_locations(), code=0)
-
-
-info('Excluded paths:')
-for e in excludes:
-    info(e)
-
-for loc, dest in selected_locations:
-    loc_paths = paths.get('__main__', []) + paths.get(loc, [])
-    cmd = rsync_cmd.copy()
-    cmd.extend(loc_paths)
-    cmd.append(dest)
-    debug('{0}'.format(' '.join(cmd)))
-    info('Syncing to {0}...'.format(dest))
-    info('\n'.join(loc_paths))
-    return_code = subprocess.call(cmd)
-    info('Finished syncing to {0}'.format(dest))
+if __name__ == '__main__':
+    live_backup_runner = LiveBackupRunner()
+    live_backup_runner.run()
