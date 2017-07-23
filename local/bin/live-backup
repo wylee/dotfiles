@@ -59,7 +59,7 @@ class LiveBackupRunner:
         for k, v in self.config.items():
             if k.startswith('paths.'):
                 _, location = k.split('.', 1)
-                paths_in[location] = as_list(config[k])
+                paths_in[location] = as_list(self.config[k])
 
         # Expand input paths:
         #   - project_dir is injected
@@ -216,6 +216,7 @@ class LiveBackupRunner:
         if name not in OPTIONS:
             raise KeyError(f'Unknown option: {name}')
         env_name = f'LIVE_BACKUP_OPTION_{name.upper()}'
+        config_name = name.replace('_', '-')
         if hasattr(self.args, name):
             value = getattr(self.args, name)
             self.debug_info(f'Got {name} from args')
@@ -225,6 +226,9 @@ class LiveBackupRunner:
         elif name in self.config:
             value = self.config[name]
             self.debug_info(f'Got {name} from config')
+        elif config_name in self.config:
+            value = self.config[config_name]
+            self.debug_info(f'Got {config_name} from config')
         else:
             value = OPTIONS[name]
             self.debug_info(f'Got {name} from defaults')
