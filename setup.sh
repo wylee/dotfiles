@@ -52,12 +52,12 @@ function link () {
 }
 
 if [ -e "$REPO_DIR" ]; then
-    if [ ! -d "${REPO_DIR}/.hg" ]; then
-        echo "${RED}${REPO_DIR} exists but doesn't appear to be an hg repo${RESET}"
+    if [ ! -d "${REPO_DIR}/.git" ]; then
+        echo "${RED}${REPO_DIR} exists but doesn't appear to be a git repo${RESET}"
         exit 1
     fi
 else
-    hg clone https://bitbucket.org/wyatt/dotfiles $REPO_DIR
+    git clone https://github.com/wylee/dotfiles "$REPO_DIR"
 fi
 
 test -d ~/.bashrc.d || mkdir ~/.bashrc.d
