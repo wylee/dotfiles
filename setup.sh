@@ -2,13 +2,42 @@
 
 set -eu
 
-REPO_DIR="${HOME}/.files"
-
 RED="$(tput setaf 1)"
 GREEN="$(tput setaf 2)"
 YELLOW="$(tput setaf 3)"
 BLUE="$(tput setaf 4)"
 RESET="$(tput sgr0)"
+
+REPO_DIR="${HOME}/.files"
+
+while [[ $# -gt 0 ]]; do
+    option="$1"
+    case $option in
+        -e|--env)
+            ENV="$2"
+            shift
+            ;;
+        -r|--repo)
+            REPO_DIR="$2"
+            shift
+            ;;
+        -h|--help)
+            echo "Install local config (AKA dot files)"
+            echo "Usage: ./setup.sh [-r <repo>]"
+            echo "    -r|--repo => Path to config directory [${REPO_DIR}]"
+            exit
+            ;;
+        -*)
+            echo "Unknown option: ${option}" 1>&2
+            exit 1
+            ;;
+        *)
+            echo "Unknown positional option: ${option}" 1>&2
+            exit 1
+            ;;
+    esac
+    shift
+done
 
 function save_original () {
     local file="$1"
