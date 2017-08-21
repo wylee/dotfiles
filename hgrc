@@ -8,6 +8,7 @@ pager =
 color =
 convert =
 fetch =
+histedit =
 largefiles =
 mq =
 rebase =
