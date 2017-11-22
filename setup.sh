@@ -94,7 +94,6 @@ test -d ~/.local || mkdir ~/.local
 test -d ~/.local/bin || mkdir ~/.local/bin
 test -d ~/.ssh || mkdir ~/.ssh
 
-link ackrc
 link bashrc
 link checkoutmanager.cfg
 link gitconfig
@@ -129,7 +128,6 @@ if [ "$(uname -s)" = "Darwin" ]; then
         ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
         "$brew_path" doctor
         "$brew_path" install \
-            ack \
             bash-completion \
             gpg2 \
             gpg-agent \
@@ -139,6 +137,7 @@ if [ "$(uname -s)" = "Darwin" ]; then
             python \
             python3 \
             pyenv \
+            ripgrep \
             vim
     fi
 else
