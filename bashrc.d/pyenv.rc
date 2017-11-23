@@ -4,3 +4,10 @@ export PYENV_ROOT="$(brew --prefix)/var/pyenv"
 # This sets up pyenv shims and bash completion; run `pyenv init -` to
 # see everything it does.
 eval "$(pyenv init -)"
+
+function pyenv-install {
+    local cflags="-I$(brew --prefix openssl)/include -I$(brew --prefix zlib)/include"
+    local ldflags="-L$(brew --prefix openssl)/lib -L$(brew --prefix zlib)/lib"
+    local configure_opts="--enable-shared"
+    CFLAGS="$cflags" LDFLAGS="$ldflags" PYTHON_CONFIGURE_OPTS="$configure_opts" pyenv install "$@"
+}
