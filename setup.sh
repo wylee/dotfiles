@@ -128,7 +128,6 @@ if [ "$(uname -s)" = "Darwin" ]; then
         "$brew_path" install \
             bash-completion \
             git \
-            python \
             python3 \
             pyenv \
             ripgrep \
@@ -165,13 +164,10 @@ function install_pip () {
     fi
 }
 
-install_pip 2
 install_pip 3
 test -f get-pip.py && rm get-pip.py
 
 echo -n "${BLUE}Installing/upgrading Python tools... "
-pip2 install -U setuptools >/dev/null
-pip2 install -U pip >/dev/null
 pip3 install -U setuptools >/dev/null
 pip3 install -U pip >/dev/null
 pip3 install -U checkoutmanager >/dev/null
