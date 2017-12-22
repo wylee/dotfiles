@@ -128,10 +128,12 @@ if [ "$(uname -s)" = "Darwin" ]; then
         "$brew_path" install \
             bash-completion \
             git \
+            node \
             python3 \
             pyenv \
             ripgrep \
             vim
+        npm -g install npm
     fi
 else
     echo "${YELLOW}Skipping Homebrew install since this doesn't appear to be a Mac${RESET}"
