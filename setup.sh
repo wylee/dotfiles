@@ -128,7 +128,6 @@ if [ "$(uname -s)" = "Darwin" ]; then
         "$brew_path" install \
             bash-completion \
             git \
-            mercurial \
             python \
             python3 \
             pyenv \
