@@ -125,16 +125,17 @@ if [ "$(uname -s)" = "Darwin" ]; then
     else
         ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
         "$brew_path" doctor
-        "$brew_path" install \
-            bash-completion \
-            git \
-            node \
-            python3 \
-            pyenv \
-            ripgrep \
-            vim
-        npm -g install npm
     fi
+    echo "Installing Homebrew packages..."
+    "$brew_path" install \
+        bash-completion \
+        git \
+        node \
+        python3 \
+        pyenv \
+        ripgrep \
+        vim
+    npm -g install npm
 else
     echo "${YELLOW}Skipping Homebrew install since this doesn't appear to be a Mac${RESET}"
 fi
