@@ -117,8 +117,6 @@ for file in "${REPO_DIR}/local/bin/"*; do
     link "local/bin/$(basename "$file")"
 done
 
-test -d ~/Library/LaunchAgents && link Library/LaunchAgents/gpg-agent.plist
-
 if [ "$(uname -s)" = "Darwin" ]; then
     # Install Homebrew & some packages
     brew_path="/usr/local/bin/brew"
@@ -129,11 +127,8 @@ if [ "$(uname -s)" = "Darwin" ]; then
         "$brew_path" doctor
         "$brew_path" install \
             bash-completion \
-            gpg2 \
-            gpg-agent \
             git \
             mercurial \
-            pass \
             python \
             python3 \
             pyenv \
