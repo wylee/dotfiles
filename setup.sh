@@ -131,6 +131,7 @@ if [ "$(uname -s)" = "Darwin" ]; then
         bash-completion \
         git \
         node \
+        pwgen \
         python3 \
         pyenv \
         ripgrep \
