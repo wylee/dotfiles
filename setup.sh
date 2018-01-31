@@ -93,6 +93,7 @@ test -d ~/.bashrc.d || mkdir ~/.bashrc.d
 test -d ~/.local || mkdir ~/.local
 test -d ~/.local/bin || mkdir ~/.local/bin
 test -d ~/.ssh || mkdir ~/.ssh
+test -d ~/.tmux || mkdir ~/.tmux
 
 link bashrc
 link checkoutmanager.cfg
@@ -117,6 +118,10 @@ for file in "${REPO_DIR}/local/bin/"*; do
     link "local/bin/$(basename "$file")"
 done
 
+for file in "${REPO_DIR}/tmux/"*.conf; do
+    link "tmux/$(basename "$file")"
+done
+
 if [ "$(uname -s)" = "Darwin" ]; then
     # Install Homebrew & some packages
     brew_path="/usr/local/bin/brew"
@@ -135,6 +140,7 @@ if [ "$(uname -s)" = "Darwin" ]; then
         python3 \
         pyenv \
         ripgrep \
+        tmux reattach-to-user-namespace \
         vim
     npm -g install npm
 else
