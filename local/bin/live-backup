@@ -55,42 +55,21 @@ class LiveBackupRunner:
         if self.list_locations:
             self.exit(self.list_available_locations(), code=0)
 
-        paths_in = {'__main__': as_list(self.config.get('paths', []))}
-        for k, v in self.config.items():
-            if k.startswith('paths.'):
-                _, location = k.split('.', 1)
-                paths_in[location] = as_list(self.config[k])
+        paths, paths_not_found = self.paths
+        excludes = self.excludes
+        default_excludes = excludes['__main__']
 
-        # Expand input paths:
-        #   - project_dir is injected
-        #   - ~ is expanded
-        #   - shell style globs are too
-        paths = {}
-        paths_not_found = []
-        for location, location_paths in paths_in.items():
-            paths[location] = []
-            for i, path in enumerate(location_paths):
-                path = path.format(project_dir=self.project_dir)
-                path = os.path.expanduser(path)
-                glob_paths = glob.glob(path)
-                if not glob_paths:
-                    paths_not_found.append(path)
-                else:
-                    paths[location] += glob_paths
         if paths_not_found:
             for path in paths_not_found:
                 print(f'Path not found: {path}', file=sys.stderr)
             self.exit(code=1)
 
-        excludes = as_list(self.config.get('excludes', []))
-
         rsync_cmd = ['rsync', '-rltz', '--delete']
         if self.dry_run:
             rsync_cmd.append('--dry-run')
-        if self.debug:
-            rsync_cmd.append('--verbose')
-        for exclude in excludes:
-            rsync_cmd += ['--exclude', exclude]
+        rsync_cmd.append('--verbose')
+        for exclude in default_excludes:
+            rsync_cmd.extend(('--exclude', exclude))
 
         selected_locations = []
         locations = self.locations
@@ -108,28 +87,66 @@ class LiveBackupRunner:
                     self.list_available_locations(),
                     code=1)
 
-        self.print_hr()
-        self.info('Excluded paths')
-        self.print_hr()
-        for exclude in excludes:
-            self.info(exclude)
-
         for location, destination in selected_locations:
-            location_paths = paths.get('__main__', []) + paths.get(location, [])
-            cmd = rsync_cmd.copy()
-            cmd.extend(location_paths)
-            cmd.append(destination)
-            cmd_str = ' '.join(cmd)
-            self.print_hr()
-            self.info(f'Syncing to {destination}')
-            self.debug_info(f'{cmd_str}')
-            self.print_hr()
-            self.info('\n'.join(location_paths))
-            return_code = subprocess.call(cmd)
-            self.print_hr()
-            self.info(f'Finished syncing to {destination}')
+            location_paths = paths['__main__'] + paths.get(location, [])
+            for location_path in location_paths:
+                base_name = os.path.basename(location_path)
+                path_excludes = excludes.get(base_name, [])
+                cmd = rsync_cmd.copy()
+                if path_excludes:
+                    for exclude in path_excludes:
+                        cmd.extend(('--exclude', exclude))
+                cmd.append(location_path)
+                cmd.append(destination)
+                cmd_str = ' '.join(cmd)
+                self.print_hr()
+                self.info(f'Syncing {location_path} to {destination}')
+                self.debug_info(f'{cmd_str}')
+                self.print_hr()
+                self.info(location_path)
+                subprocess.check_call(cmd)
+                self.print_hr()
+                self.info(f'Finished syncing {location_path} to {destination}')
 
         self.print_hr()
+
+    @property
+    def paths(self):
+        paths_in = collections.OrderedDict()
+        paths_in['__main__'] = as_list(self.config.get('paths', []))
+        for k, v in self.config.items():
+            if k.startswith('paths.'):
+                _, location = k.split('.', 1)
+                paths_in[location] = as_list(self.config[k])
+
+        # Expand input paths:
+        #   - project_dir is injected
+        #   - ~ is expanded
+        #   - shell style globs are too
+        paths = collections.OrderedDict()
+        paths_not_found = []
+        for location, location_paths in paths_in.items():
+            paths[location] = []
+            for i, path in enumerate(location_paths):
+                path = path.format(project_dir=self.project_dir)
+                path = os.path.expanduser(path)
+                glob_paths = glob.glob(path)
+                if not glob_paths:
+                    paths_not_found.append(path)
+                else:
+                    paths[location] += glob_paths
+
+        return paths, paths_not_found
+
+    @property
+    def excludes(self):
+        excludes = collections.OrderedDict()
+        excludes['__main__'] = as_list(self.config.get('excludes', []))
+        for k, v in self.config.items():
+            if k.startswith('excludes.'):
+                _, base_name = k.split('.', 1)
+                excludes[base_name] = as_list(self.config[k])
+        return excludes
 
     @property
     def locations(self):
