@@ -125,13 +125,15 @@ done
 if [ "$(uname -s)" = "Darwin" ]; then
     # Install Homebrew & some packages
     brew_path="/usr/local/bin/brew"
+
     if [ -f "$brew_path" ]; then
         echo "${YELLOW}Homebrew already installed at prefix $($brew_path --prefix)${RESET}"
     else
         ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
         "$brew_path" doctor
     fi
-    echo "Installing Homebrew packages..."
+
+    echo "${BLUE}Installing Homebrew packages...${RESET}"
     "$brew_path" install \
         bash-completion \
         git \
@@ -142,7 +144,9 @@ if [ "$(uname -s)" = "Darwin" ]; then
         ripgrep \
         tmux reattach-to-user-namespace \
         vim
-    npm -g install npm
+
+    echo "${BLUE}Installing/updating npm...${RESET}"
+    npm -g install npm >/dev/null
 else
     echo "${YELLOW}Skipping Homebrew install since this doesn't appear to be a Mac${RESET}"
 fi
@@ -184,7 +188,7 @@ pip3 install -U checkoutmanager >/dev/null
 pip3 install -U virtualenv >/dev/null
 echo "${GREEN}Done${RESET}"
 
-mkdir -p "${HOME}/.vim/{autoload,bundle}"
+mkdir -p "${HOME}/.vim/"{autoload,bundle}
 echo -n "${BLUE}Checking out Pathogen plugins... "
 checkoutmanager co vim-pathogen >/dev/null
 echo "${GREEN}Done${RESET}"
