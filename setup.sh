@@ -80,6 +80,33 @@ function link () {
     return 0
 }
 
+function get_pip_installer () {
+    if [ -f "get-pip.py" ]; then
+        echo "${BLUE}Pip installer already downloaded"
+    else
+        echo -n "${BLUE}Getting pip installer... "
+        curl -O https://bootstrap.pypa.io/get-pip.py
+        echo "${GREEN}Done${RESET}"
+    fi
+}
+
+function install_pip () {
+    local version="${1}"
+    local pip_exe="pip${version}"
+    local python_exe="python${version}"
+    if which "${pip_exe}" >/dev/null 2>&1; then
+        echo "${YELLOW}${pip_exe} already installed at $(which "${pip_exe}")${RESET}"
+    else
+        get_pip_installer
+        echo -n "${BLUE}Installing pip for Python ${version}... "
+        "$python_exe" get-pip.py --upgrade --force-reinstall
+        if which pyenv >/dev/null 2>&1; then
+            pyenv rehash
+        fi
+        echo "${GREEN}Done${RESET}"
+    fi
+}
+
 if [ -e "$REPO_DIR" ]; then
     if [ ! -d "${REPO_DIR}/.git" ]; then
         echo "${RED}${REPO_DIR} exists but doesn't appear to be a git repo${RESET}"
@@ -163,32 +190,7 @@ else
     echo "${YELLOW}Skipping Homebrew install since this doesn't appear to be a Mac${RESET}"
 fi
 
-function get_pip_installer () {
-    if [ -f "get-pip.py" ]; then
-        echo "${BLUE}Pip installer already downloaded"
-    else
-        echo -n "${BLUE}Getting pip installer... "
-        curl -O https://bootstrap.pypa.io/get-pip.py
-        echo "${GREEN}Done${RESET}"
-    fi
-}
 
-function install_pip () {
-    local version="${1}"
-    local pip_exe="pip${version}"
-    local python_exe="python${version}"
-    if which "${pip_exe}" >/dev/null 2>&1; then
-        echo "${YELLOW}${pip_exe} already installed at $(which "${pip_exe}")${RESET}"
-    else
-        get_pip_installer
-        echo -n "${BLUE}Installing pip for Python ${version}... "
-        "$python_exe" get-pip.py --upgrade --force-reinstall
-        if which pyenv >/dev/null 2>&1; then
-            pyenv rehash
-        fi
-        echo "${GREEN}Done${RESET}"
-    fi
-}
 
 install_pip 3
 test -f get-pip.py && rm get-pip.py
