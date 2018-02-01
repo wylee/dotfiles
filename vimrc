@@ -32,9 +32,6 @@ nnoremap k gk
 " Convenient Esc
 inoremap jj <ESC>
 
-" Convenient save key for insert mode
-inoremap <F2> <C-o>:w<CR>
-
 " Copy to system clipboard
 noremap <leader>y "+y
 " Paste from system clipboard
@@ -147,35 +144,7 @@ augroup END
 " Supertab
 let g:SuperTabDefaultCompletionType = "context"
 
-" Tagbar
-let g:tagbar_usearrows=1
-let g:tagbar_left=1
-nnoremap <leader>tb :TagbarToggle<CR>
-
-" Ack search; ! keeps Ack from opening the first match automatically
-nnoremap <leader>a :Ack!<space>
-
 " NERDCommenter
 " Make comment toggling easier
 nmap <silent> <leader>/ <leader>c<space>
 xmap <silent> <leader>/ <leader>c<space>
-
-" \n to toggle NERDTree
-noremap <silent> <leader>n :NERDTreeToggle<CR>
-
-" Rope for Python
-map <F2> :RopeFindOccurrences<CR>
-map <F3> :RopeGotoDefinition<CR>
-map <F4> :RopeShowDoc<CR>
-let ropevim_extended_complete=1
-let ropevim_guess_project=1
-
-" CtrlP 'o' is for open
-let g:ctrlp_map = '<leader>o'
-let g:ctrlp_custom_ignore = '\v(\.py[cdo]$|tags)'
-nnoremap <silent> <leader>O :<C-u>CtrlPCurFile<CR>
-nnoremap <silent> <leader>bo :<C-u>CtrlPBuffer<CR>
-
-" Gundo
-let g:gundo_right=1
-nnoremap <leader>u :GundoToggle<CR>
