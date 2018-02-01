@@ -10,6 +10,7 @@ RESET="$(tput sgr0)"
 
 REPO_DIR="${HOME}/.files"
 BREW="yes"
+NPM="yes"
 
 while [[ $# -gt 0 ]]; do
     option="$1"
@@ -25,11 +26,15 @@ while [[ $# -gt 0 ]]; do
         --no-brew)
             BREW="no"
             ;;
+        --no-npm)
+            NPM="no"
+            ;;
         -h|--help)
             echo "Install local config (AKA dot files)"
             echo "Usage: ./setup.sh [-r <repo>]"
             echo "    -r|--repo => Path to config directory [${REPO_DIR}]"
             echo "    --no-brew => Skip installation of Homebrew and packages"
+            echo "    --no-npm => Skip npm update"
             exit
             ;;
         -*)
@@ -150,8 +155,12 @@ elif [ "$(uname -s)" = "Darwin" ]; then
         tmux reattach-to-user-namespace \
         vim
 
-    echo "${BLUE}Installing/updating npm...${RESET}"
-    npm -g install npm >/dev/null
+    if [ "$NPM" = "no" ]; then
+        echo "${YELLOW}Skipping npm installation/update${RESET}"
+    else
+        echo "${BLUE}Installing/updating npm...${RESET}"
+        npm -g install npm >/dev/null
+    fi
 
     fish_path="/usr/local/bin/fish"
     if grep $fish_path /etc/shells >/dev/null; then
