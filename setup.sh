@@ -9,6 +9,7 @@ BLUE="$(tput setaf 4)"
 RESET="$(tput sgr0)"
 
 REPO_DIR="${HOME}/.files"
+BREW="yes"
 
 while [[ $# -gt 0 ]]; do
     option="$1"
@@ -21,10 +22,14 @@ while [[ $# -gt 0 ]]; do
             REPO_DIR="$2"
             shift
             ;;
+        --no-brew)
+            BREW="no"
+            ;;
         -h|--help)
             echo "Install local config (AKA dot files)"
             echo "Usage: ./setup.sh [-r <repo>]"
             echo "    -r|--repo => Path to config directory [${REPO_DIR}]"
+            echo "    --no-brew => Skip installation of Homebrew and packages"
             exit
             ;;
         -*)
@@ -116,8 +121,9 @@ else
     git clone https://github.com/wylee/dotfiles "$REPO_DIR"
 fi
 
-
-if [ "$(uname -s)" = "Darwin" ]; then
+if [ "$BREW" = "no" ]; then
+    echo "${YELLOW}Skipping Homebrew installation and setup${RESET}"
+elif [ "$(uname -s)" = "Darwin" ]; then
     # Install Homebrew & some packages
     brew_path="/usr/local/bin/brew"
 
