@@ -15,7 +15,7 @@ OPTIONS = {
     'project_dir': os.environ.get('PROJECT_DIR', '~/Projects'),
     'default_locations': [],
     'locations': [],
-    'list_locations': False,
+    'info': False,
     'all': False,
     'debug': False,
     'quiet': False,
@@ -49,11 +49,11 @@ class LiveBackupRunner:
         self.project_dir = as_path(self.get_option('project_dir'))
         self.default_locations = as_list(self.get_option('default_locations'), sep=None)
         self.all = as_bool(self.get_option('all'))
-        self.list_locations = self.get_option('list_locations')
+        self.do_show_info = self.get_option('info')
 
     def run(self):
-        if self.list_locations:
-            self.exit(self.list_available_locations(), code=0)
+        if self.do_show_info:
+            self.exit(self.show_info(), code=0)
 
         paths, paths_not_found = self.paths
         excludes = self.excludes
@@ -82,10 +82,7 @@ class LiveBackupRunner:
             elif location in available_locations:
                 selected_locations.append((location, available_locations[location]))
             else:
-                self.exit(
-                    f'"{location}" is not a valid location key\n',
-                    self.list_available_locations(),
-                    code=1)
+                self.exit(f'"{location}" is not a valid location key\n', self.show_info(), code=1)
 
         for location, destination in selected_locations:
             location_paths = paths['__main__'] + paths.get(location, [])
@@ -175,18 +172,21 @@ class LiveBackupRunner:
             location_groups[group] = group_locations
         return location_groups
 
-    def list_available_locations(self):
-        info = ['Available backup locations:\n']
-        for k, v in self.available_locations.items():
-            info.append('    - {0}: {1}'.format(k, v))
+    def show_info(self):
+        info = []
 
-        info.append('\nLocation groups:\n')
+        info.append('Project directory:\n')
+        info.append(f'    - {self.project_dir}')
+
+        info.append('\nAvailable backup locations:\n')
+        for k, v in self.available_locations.items():
+            info.append(f'    - {k}: {v}')
+
         location_groups = self.locaction_groups
         if location_groups:
+            info.append('\nLocation groups:\n')
             for k, v in location_groups.items():
-                info.append('    - {0}: {1}'.format(k, ', '.join(v)))
-        else:
-            info.append('    No location groups')
+                info.append(f'    - {k}: {v}')
 
         info.append('\nDefault locations:\n')
         default_locations = self.default_locations
@@ -196,8 +196,24 @@ class LiveBackupRunner:
         else:
             info.append('    No default locations')
 
-        info.append('\nProject directory:\n')
-        info.append(f'    - {self.project_dir}')
+        info.append('\nPaths:\n')
+        paths, paths_not_found = self.paths
+        for location, location_paths in paths.items():
+            if location != '__main__':
+                info.append(f'\nAdditional paths for location {location}:\n')
+            for location_path in location_paths:
+                info.append(f'    - {location_path}')
+
+        info.append('\nExcludes:\n')
+        excludes = self.excludes
+        for base_name, path_excludes in excludes.items():
+            path_excludes = excludes.get(base_name, [])
+            if path_excludes:
+                if base_name != '__main__':
+                    info.append(f'\nAdditional excludes for path {base_name}:\n')
+                for exclude in path_excludes:
+                    info.append(f'    - {exclude}')
+
         return '\n'.join(info)
 
     def parse_args(self, argv=None):
@@ -208,8 +224,8 @@ class LiveBackupRunner:
         arg_parser.add_argument('locations', nargs='*', help='Back up to the specified locations')
         arg_parser.add_argument('--all', '-a', action='store_true')
         arg_parser.add_argument(
-            '--list-locations', '-l', action='store_true',
-            help='List available backup locations then exit.')
+            '--info', '-i', action='store_true',
+            help='List paths & available backup locations then exit.')
         arg_parser.add_argument(
             '--debug', '-d', action='store_true',
             help='Show what rsync is doing (add --verbose; print command)')
