@@ -128,7 +128,10 @@ elif [ "$(uname -s)" = "Darwin" ]; then
     brew_path="/usr/local/bin/brew"
 
     if [ -f "$brew_path" ]; then
-        echo "${YELLOW}Homebrew already installed at prefix $($brew_path --prefix)${RESET}"
+        echo -n "${YELLOW}Homebrew already installed at prefix $($brew_path --prefix); "
+        echo "upgrading...${RESET}"
+        "$brew_path" update
+        "$brew_path" upgrade
     else
         ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
         "$brew_path" doctor
