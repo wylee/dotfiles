@@ -90,6 +90,7 @@ else
 fi
 
 test -d ~/.bashrc.d || mkdir ~/.bashrc.d
+test -d ~/.config/fish || mkdir ~/.config/fish
 test -d ~/.local || mkdir ~/.local
 test -d ~/.local/bin || mkdir ~/.local/bin
 test -d ~/.ssh || mkdir ~/.ssh
@@ -97,6 +98,7 @@ test -d ~/.tmux || mkdir ~/.tmux
 
 link bashrc
 link checkoutmanager.cfg
+link config/fish/config.fish
 link gitconfig
 link gitignore
 link hgignore
@@ -136,6 +138,7 @@ if [ "$(uname -s)" = "Darwin" ]; then
     echo "${BLUE}Installing Homebrew packages...${RESET}"
     "$brew_path" install \
         bash-completion \
+        fish \
         git \
         node \
         pwgen \
@@ -147,6 +150,15 @@ if [ "$(uname -s)" = "Darwin" ]; then
 
     echo "${BLUE}Installing/updating npm...${RESET}"
     npm -g install npm >/dev/null
+
+    fish_path="/usr/local/bin/fish"
+    if grep $fish_path /etc/shells >/dev/null; then
+        echo "${YELLOW}${fish_path} already in /etc/shells${RESET}"
+    else
+        echo "${BLUE}Adding fish to /etc/shells...${RESET}"
+        echo $fish_path | sudo tee -a /etc/shells
+    fi
+    echo "${BLUE}To make fish the default shell, run: chsh -s $fish_path${RESET}"
 else
     echo "${YELLOW}Skipping Homebrew install since this doesn't appear to be a Mac${RESET}"
 fi
