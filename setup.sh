@@ -116,40 +116,6 @@ else
     git clone https://github.com/wylee/dotfiles "$REPO_DIR"
 fi
 
-test -d ~/.bashrc.d || mkdir ~/.bashrc.d
-test -d ~/.config/fish || mkdir ~/.config/fish
-test -d ~/.local || mkdir ~/.local
-test -d ~/.local/bin || mkdir ~/.local/bin
-test -d ~/.ssh || mkdir ~/.ssh
-test -d ~/.tmux || mkdir ~/.tmux
-
-link bashrc
-link checkoutmanager.cfg
-link config/fish/config.fish
-link gitconfig
-link gitignore
-link hgignore
-link hgrc
-link ideavimrc
-link inputrc
-link live-backup.cfg
-link profile
-link pythonrc
-link tmux.conf
-link vimrc
-link ssh/config
-
-for file in "${REPO_DIR}/bashrc.d/"*.rc; do
-    link "bashrc.d/$(basename "$file")"
-done
-
-for file in "${REPO_DIR}/local/bin/"*; do
-    link "local/bin/$(basename "$file")"
-done
-
-for file in "${REPO_DIR}/tmux/"*.conf; do
-    link "tmux/$(basename "$file")"
-done
 
 if [ "$(uname -s)" = "Darwin" ]; then
     # Install Homebrew & some packages
@@ -190,7 +156,40 @@ else
     echo "${YELLOW}Skipping Homebrew install since this doesn't appear to be a Mac${RESET}"
 fi
 
+test -d ~/.bashrc.d || mkdir ~/.bashrc.d
+test -d ~/.config/fish || mkdir ~/.config/fish
+test -d ~/.local || mkdir ~/.local
+test -d ~/.local/bin || mkdir ~/.local/bin
+test -d ~/.ssh || mkdir ~/.ssh
+test -d ~/.tmux || mkdir ~/.tmux
 
+link bashrc
+link checkoutmanager.cfg
+link config/fish/config.fish
+link gitconfig
+link gitignore
+link hgignore
+link hgrc
+link ideavimrc
+link inputrc
+link live-backup.cfg
+link profile
+link pythonrc
+link tmux.conf
+link vimrc
+link ssh/config
+
+for file in "${REPO_DIR}/bashrc.d/"*.rc; do
+    link "bashrc.d/$(basename "$file")"
+done
+
+for file in "${REPO_DIR}/local/bin/"*; do
+    link "local/bin/$(basename "$file")"
+done
+
+for file in "${REPO_DIR}/tmux/"*.conf; do
+    link "tmux/$(basename "$file")"
+done
 
 install_pip 3
 test -f get-pip.py && rm get-pip.py
