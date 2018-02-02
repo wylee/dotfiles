@@ -183,7 +183,6 @@ test -d ~/.tmux || mkdir ~/.tmux
 
 link bashrc
 link checkoutmanager.cfg
-link config/fish/config.fish
 link gitconfig
 link gitignore
 link hgignore
@@ -199,6 +198,10 @@ link ssh/config
 
 for file in "${REPO_DIR}/bashrc.d/"*.rc; do
     link "bashrc.d/$(basename "$file")"
+done
+
+for file in "${REPO_DIR}/config/fish/"*.fish; do
+    link "config/fish/$(basename "$file")"
 done
 
 for file in "${REPO_DIR}/local/bin/"*; do
