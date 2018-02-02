@@ -17,19 +17,3 @@ alias lsl '/bin/ls -lFG'
 alias lsal '/bin/ls -alFG'
 
 alias x 'exit'
-
-# Go up one or more directories
-# Less tedious than `cd ../../../../...`
-function up -a times
-    set dir (pwd)
-    if set -q $times
-        set times 1
-    end
-    for i in (seq $times)
-        set dir (dirname $dir)
-        if test $dir = /
-            break
-        end
-    end
-    cd $dir
-end

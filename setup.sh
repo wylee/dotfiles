@@ -176,6 +176,7 @@ fi
 
 test -d ~/.bashrc.d || mkdir ~/.bashrc.d
 test -d ~/.config/fish || mkdir ~/.config/fish
+test -d ~/.config/fish/functions || mkdir ~/.config/fish/functions
 test -d ~/.local || mkdir ~/.local
 test -d ~/.local/bin || mkdir ~/.local/bin
 test -d ~/.ssh || mkdir ~/.ssh
@@ -202,6 +203,10 @@ done
 
 for file in "${REPO_DIR}/config/fish/"*.fish; do
     link "config/fish/$(basename "$file")"
+done
+
+for file in "${REPO_DIR}/config/fish/functions/"*.fish; do
+    link "config/fish/functions/$(basename "$file")"
 done
 
 for file in "${REPO_DIR}/local/bin/"*; do
