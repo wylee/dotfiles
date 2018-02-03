@@ -14,6 +14,14 @@ function __init
             source "$f"
         end
     end
+
+    __prepend_path ~/.local/bin
+end
+
+function __prepend_path -a path -d "Add path to front of PATH if it's not already in PATH"
+    if test -d $path; and not string match -qr $path $PATH
+        set -g -x PATH $path $PATH
+    end
 end
 
 if [ "$TERM" = "screen" ]
