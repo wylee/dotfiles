@@ -39,6 +39,7 @@ noremap <leader>p "+p
 noremap <leader>P "+P
 
 " Basics
+set shell=/bin/bash
 set autowrite
 set backspace=indent,eol,start
 " Fixes 'crontab: temp file must be edited in place' on Mac OS
