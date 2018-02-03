@@ -109,6 +109,7 @@ noremap <leader>s :call <SID>strip_trailing_whitespace()<CR>
 
 augroup vimrc
     autocmd!
+    autocmd BufWritePost <buffer> silent redraw
 
     autocmd FocusLost * :wa
 
