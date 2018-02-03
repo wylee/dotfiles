@@ -1,3 +1,3 @@
 set PYENV_ROOT (brew --prefix)/var/pyenv
-set -g -x PATH $PYENV_ROOT/shims $PATH
+__prepend_path $PYENV_ROOT/shims
 pyenv rehash
