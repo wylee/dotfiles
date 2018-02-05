@@ -6,8 +6,14 @@ export PYENV_ROOT="$(brew --prefix)/var/pyenv"
 eval "$(pyenv init -)"
 
 function pyenv-install {
-    local cflags="-I$(brew --prefix openssl)/include -I$(brew --prefix zlib)/include"
-    local ldflags="-L$(brew --prefix openssl)/lib -L$(brew --prefix zlib)/lib"
+    local openssl_prefix="$(brew --prefix openssl)"
+    local readline_prefix="$(brew --prefix readline)"
+    local zlib_prefix="$(brew --prefix zlib)"
+
+    local cppflags="-I${openssl_prefix}/include -I${readline_prefix} -I${zlib_prefix}/include"
+    local ldflags="-L${openssl_prefix}/lib -L${readline_prefix} -L${zlib_prefix}/lib"
+
     local configure_opts="--enable-shared"
-    CFLAGS="$cflags" LDFLAGS="$ldflags" PYTHON_CONFIGURE_OPTS="$configure_opts" pyenv install "$@"
+
+    CPPFLAGS="$cppflags" LDFLAGS="$ldflags" PYTHON_CONFIGURE_OPTS="$configure_opts" pyenv install "$@"
 }
