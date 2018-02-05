@@ -50,15 +50,19 @@ def format_datetime(dt):
     return dt.strftime('%H:%M:%S')
 
 
-def print_message(message, elapsed, remaining):
+def print_message(message, elapsed, remaining, end=''):
     format_args = {
         'elapsed': format_time(elapsed),
         'remaining': format_time(remaining),
     }
-    print('\r', ' ' * 80, '\r', message.format(**format_args), sep='', end='', flush=True)
+    print('\r', ' ' * 80, '\r', message.format(**format_args), sep='', end=end, flush=True)
 
 
-def run(time_tuple, message=DEFAULT_MESSAGE, end_at=False, repeat=0, _repeats=0):
+def run(time_tuple, message=DEFAULT_MESSAGE, end_at=False, repeat=0, quiet=False, verbose=False, *,
+        _repeats=0):
+    if quiet and verbose:
+        raise ValueError('Cannot specify quiet and verbose at the same time')
+
     start_datetime = datetime.datetime.now()
     h, m, s = time_tuple
 
@@ -73,10 +77,14 @@ def run(time_tuple, message=DEFAULT_MESSAGE, end_at=False, repeat=0, _repeats=0)
     seconds = int(round(seconds))
 
     start_time = time.perf_counter()
-    print('Started:', format_datetime(start_datetime))
-    print('Ends at:', format_datetime(expected_end_datetime))
+
+    if verbose:
+        print('Started:', format_datetime(start_datetime))
+        print('Ends at:', format_datetime(expected_end_datetime))
+
     for elapsed in range(seconds):
-        print_message(message, elapsed, seconds - elapsed)
+        if not quiet:
+            print_message(message, elapsed, seconds - elapsed)
         # Sleep for ~1 second, adjusting for skew.
         sleep_time = 1 - ((time.perf_counter() - start_time) - elapsed)
         # When the calculated sleep time is less than zero, that
@@ -85,22 +93,29 @@ def run(time_tuple, message=DEFAULT_MESSAGE, end_at=False, repeat=0, _repeats=0)
         # up" by not sleeping.
         if sleep_time > 0:
             time.sleep(sleep_time)
+
     end_time = time.perf_counter()
     real_elapsed = end_time - start_time
     real_remaining = seconds - real_elapsed
+
     if round(real_remaining) < 0:
         err = '\rError: Timer overran by {:.3f} seconds'.format(-real_remaining)
-        print(err, file=sys.stderr, end='')
-    else:
-        print_message(message, real_elapsed, 0)
-    print()
+        print(err, file=sys.stderr)
+    elif not quiet:
+        print_message(message, real_elapsed, 0, end='\n')
+
     end_datetime = datetime.datetime.now()
-    print('Stopped:', format_datetime(end_datetime))
+
+    if verbose:
+        print('Stopped:', format_datetime(end_datetime))
+
     if abs(end_datetime - expected_end_datetime) > datetime.timedelta(seconds=1):
-        print('Expected:', format_datetime(expected_end_datetime))
+        print('Expected:', format_datetime(expected_end_datetime), file=sys.stderr)
+
     if _repeats < repeat:
-        print('=' * 80)
-        run(seconds, message, repeat - 1, _repeats + 1)
+        if not quiet:
+            print('=' * 80)
+        run(seconds, message, repeat - 1, quiet, verbose, _repeats=_repeats + 1)
 
 
 if __name__ == '__main__':
@@ -120,8 +135,18 @@ if __name__ == '__main__':
         '--message', default=DEFAULT_MESSAGE,
         help='Message to display, updated every second; can include format strings: '
              '{elapsed}, {remaining} ["%s"]' % DEFAULT_MESSAGE)
+
+    verbosity_group = parser.add_mutually_exclusive_group()
+    verbosity_group.add_argument(
+        '-q', '--quiet', action='store_true', default=False,
+        help='Print nothing')
+    verbosity_group.add_argument(
+        '-v', '--verbose', action='store_true', default=False,
+        help='Print additional info')
+
     args = parser.parse_args()
     try:
-        run(args.time, args.message, args.end_at, args.repeat)
+        run(args.time, args.message, args.end_at, args.repeat, args.quiet, args.verbose)
     except KeyboardInterrupt:
-        print_message('Aborted\n', 0, 0)
+        if not args.quiet:
+            print_message('Aborted\n', 0, 0)
