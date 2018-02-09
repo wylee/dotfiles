@@ -29,8 +29,10 @@ inoremap <End>   <NOP>
 nnoremap j gj
 nnoremap k gk
 
-" Convenient Esc
+" Convenient escape, save, and save-and-quit
 inoremap jj <ESC>
+inoremap jk <ESC>:w<Enter>
+inoremap qq <ESC>:w<Enter>:q<Enter>
 
 " Copy to system clipboard
 noremap <leader>y "+y
