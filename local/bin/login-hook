@@ -1,0 +1,20 @@
+#!/bin/sh
+# Login hook for macOS
+# Enabled via `defaults write com.apple.loginwindow LoginHook`
+
+echo "Mapping keys:"
+echo
+echo "    caps lock => left control"
+echo "    left control => caps lock"
+echo "    power/eject => escape [doesn't work]"
+echo "    right option => escape"
+echo
+hidutil property --set '{"UserKeyMapping": [
+    {"HIDKeyboardModifierMappingSrc": 0x700000039, "HIDKeyboardModifierMappingDst": 0x7000000E0},
+    {"HIDKeyboardModifierMappingSrc": 0x7000000E0, "HIDKeyboardModifierMappingDst": 0x700000039},
+    {"HIDKeyboardModifierMappingSrc": 0x700000066, "HIDKeyboardModifierMappingDst": 0x700000029},
+    {"HIDKeyboardModifierMappingSrc": 0x7000000E6, "HIDKeyboardModifierMappingDst": 0x700000029},
+]}' >/dev/null
+
+echo "Setting $0 as login hook..."
+defaults write com.apple.loginwindow LoginHook "$0"
