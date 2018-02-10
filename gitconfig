@@ -9,6 +9,7 @@
     new = !git log --oneline --reverse @{upstream}..
     new-since = !git log --oneline --reverse ${1}..
     new-since-last-tag = !git log --oneline --reverse $(git tag | tail -n 1)..
+    latest = !git log --oneline --reverse -10
 
 [color]
     ui = true
