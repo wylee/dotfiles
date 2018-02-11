@@ -24,10 +24,10 @@ function __prepend_path -a path -d "Add path to front of PATH if it's not alread
     end
 end
 
-if [ "$TERM" = "screen" ]
-    __init
-else
-    if which -s tmux
+if test -n "$TERM"
+    if test "$TERM" = "screen"
+        __init
+    else if which -s tmux
         echo "Starting tmux..."
         exec tmux
     else
