@@ -70,19 +70,19 @@ function activateenv -a option
 
     deactivateenv
 
-    set -g -x PROJECT_NAME (basename $PWD)
-    set -g -x _ENV_CURRENT $PWD
-    set -g -x _ENV_ORIGINAL_PATH $PATH
+    set -gx PROJECT_NAME (basename $PWD)
+    set -gx _ENV_CURRENT $PWD
+    set -gx _ENV_ORIGINAL_PATH $PATH
 
     if [ "$type" = "virtualenv" ]
         if [ -d node_modules/.bin ]
-            set -g -x PATH $PWD/$node_modules_bin $PATH
+            set -gx PATH $PWD/$node_modules_bin $PATH
         else if [ -d "$PROJECT_NAME/static/$node_modules_bin" ]
-            set -g -x PATH $PWD/$PROJECT_NAME/static/$node_modules_bin $PATH
+            set -gx PATH $PWD/$PROJECT_NAME/static/$node_modules_bin $PATH
         end
-        set -g -x PATH $PWD/$python_bin $PATH
+        set -gx PATH $PWD/$python_bin $PATH
     else if [ "$type" = "node" ]
-        set -g -x PATH $PWD/$node_modules_bin $PATH
+        set -gx PATH $PWD/$node_modules_bin $PATH
     end
 
     hash -r 2>/dev/null
@@ -96,7 +96,7 @@ function deactivateenv
         set env_current $_ENV_CURRENT
         set -e PROJECT_NAME
         set -e _ENV_CURRENT
-        set -g -x PATH $_ENV_ORIGINAL_PATH
+        set -gx PATH $_ENV_ORIGINAL_PATH
         set -e _ENV_ORIGINAL_PATH
         hash -r 2>/dev/null
         set_color red
