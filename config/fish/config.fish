@@ -9,6 +9,7 @@ function __init
         set -gx fish_greeting "Shell started" (date $fish_prompt_date_format)
     end
 
+    __prepend_path /usr/local/opt/postgresql@9.4/bin
     __prepend_path ~/.local/bin
 
     set script_path (status -f)
