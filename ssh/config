@@ -1,38 +1,59 @@
-Host github.com github
-    HostName github.com
-    IdentityFile ~/.ssh/id_rsa-github
+Host *
+    UseKeychain yes
+    AddKeysToAgent yes
+
+# Code ----------------------------------------------------------------
 
 Host bitbucket.org bitbucket
     HostName bitbucket.org
     IdentityFile ~/.ssh/id_rsa-bitbucket
 
+Host github.com github
+    HostName github.com
+    IdentityFile ~/.ssh/id_rsa-github
+
+Host gitlab.com gitlab
+    HostName gitlab.com
+    IdentityFile ~/.ssh/id_rsa-gitlab
+
 Host pypi.python.org pypi
     HostName pypi.python.org
     IdentityFile ~/.ssh/id_rsa-pypi
 
-Host static.bycycle.org
-    User bycycle
+# wyattbaldwin.com ----------------------------------------------------
 
-Host hera.rc.pdx.edu hera
+Host wyattbaldwin.com
+    User ubuntu
+    IdentityFile ~/.ssh/id_rsa-sites
+
+# byCycle -------------------------------------------------------------
+
+Host bycycle.org
+    User ubuntu
+    IdentityFile ~/.ssh/id_rsa-bycycle
+
+Host info.bycycle.org
+    User ubuntu
+    IdentityFile ~/.ssh/id_rsa-sites
+
+# Tangled -------------------------------------------------------------
+
+Host tangledframework.org
+    User ubuntu
+    IdentityFile ~/.ssh/id_rsa-sites
+
+# PSU -----------------------------------------------------------------
+
+Host hera.rc.pdx.edu
     User wbaldwin
     HostName hera.rc.pdx.edu
-    IdentityFile ~/.ssh/id_rsa
+    IdentityFile ~/.ssh/id_rsa-psu
     ForwardAgent yes
+    LogLevel QUIET
+    ServerAliveInterval 300
 
-Host hera-rsync
-    HostName hera.rc.pdx.edu
-    IdentityFile ~/.ssh/id_rsa-rsync
-
-Host hrimfaxi.oit.pdx.edu hrimfaxi
+Host *.rc.pdx.edu *.oit.pdx.edu !hera.rc.pdx.edu
     User wbaldwin
-    HostName hrimfaxi.oit.pdx.edu
-    IdentityFile ~/.ssh/id_rsa
-    ForwardAgent yes
-    ProxyCommand ssh -W %h:%p hera.rc.pdx.edu
-
-Host merope.rc.pdx.edu merope
-    User wbaldwin
-    HostName merope.rc.pdx.edu
-    IdentityFile ~/.ssh/id_rsa
-    ForwardAgent yes
-    ProxyCommand ssh -W %h:%p hera.rc.pdx.edu
+    IdentityFile ~/.ssh/id_rsa-psu
+    ProxyJump hera.rc.pdx.edu
+    ServerAliveInterval 300
