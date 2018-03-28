@@ -148,6 +148,7 @@ elif [ "$(uname -s)" = "Darwin" ]; then
         fish \
         git \
         node \
+        pipenv \
         pwgen \
         python3 \
         pyenv \

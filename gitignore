@@ -9,6 +9,7 @@
 /.eggs/
 /.env*/
 /.tox/
+/.venv*/
 /*.commit
 
 # Project directories

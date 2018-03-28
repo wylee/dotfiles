@@ -48,10 +48,16 @@ end
 function activateenv -a option
     set python_bin .env/bin
     set python_exe $python_bin/python
+    set alt_python_bin .venv/bin
+    set alt_python_exe $alt_python_bin/python
     set node_modules_bin node_modules/.bin
 
     if test -f $python_exe
         set type virtualenv
+    else if test -f $alt_python_exe
+        set type virtualenv
+        set python_bin $alt_python_bin
+        set python_exe $alt_python_exe
     else if test -d node_modules
         set type node
     else
