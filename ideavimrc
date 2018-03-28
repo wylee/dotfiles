@@ -6,7 +6,3 @@ set incsearch
 set showmatch
 set smartcase
 set surround
-
-" Convenient insert mode save and save-and-quit
-inoremap jj <ESC>:w<Enter>
-inoremap qq <ESC>:w<Enter>:q<Enter>
