@@ -225,6 +225,7 @@ echo -n "${BLUE}Installing/upgrading Python tools... "
 pip3 install -U setuptools >/dev/null
 pip3 install -U pip >/dev/null
 pip3 install -U checkoutmanager >/dev/null
+pip3 install -U twine >/dev/null
 pip3 install -U virtualenv >/dev/null
 echo "${GREEN}Done${RESET}"
 
