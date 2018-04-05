@@ -118,6 +118,7 @@ augroup vimrc
     autocmd FileType javascript setlocal sw=4 sts=4
     autocmd FileType markdown setlocal sw=2 sts=2 tw=72
     autocmd FileType text setlocal sw=2 sts=2 tw=72
+    autocmd FileType yaml setlocal sw=2 sts=2 tw=79
 
     autocmd BufRead,BufNewFile *.mako set filetype=mako
     autocmd FileType mako setlocal sw=2 sts=2
