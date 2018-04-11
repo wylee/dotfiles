@@ -177,6 +177,7 @@ class LiveBackupRunner:
     def locaction_groups(self):
         config = self.get_config('location-groups', {})
         location_groups = collections.OrderedDict()
+        available_locations = self.available_locations
         for group, group_locations in config.items():
             group_locations = as_list(group_locations, sep=None)
             for group_loc in group_locations:
