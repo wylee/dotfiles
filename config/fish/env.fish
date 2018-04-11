@@ -46,21 +46,35 @@ function cdenv -a env_dir
 end
 
 function activateenv -a option
-    set python_bin .env/bin
-    set python_exe $python_bin/python
-    set alt_python_bin .venv/bin
-    set alt_python_exe $alt_python_bin/python
-    set node_modules_bin node_modules/.bin
+    set virtualenv_bin .env/bin
+    set python_exe $virtualenv_bin/python
 
-    if test -f $python_exe
-        set type virtualenv
-    else if test -f $alt_python_exe
-        set type virtualenv
-        set python_bin $alt_python_bin
+    set alt_virtualenv_bin .venv/bin
+    set alt_python_exe $alt_virtualenv_bin/python
+
+    set node_modules_bin node_modules/.bin
+    set alt_node_modules_bin */static/node_modules/.bin
+    set alt_node_modules_bin $alt_node_modules_bin[1]
+
+    set is_virtualenv
+    set is_node_env
+
+    if test -f "$python_exe"
+        set is_virtualenv true
+    else if test -f "$alt_python_exe"
+        set is_virtualenv true
+        set virtualenv_bin $alt_virtualenv_bin
         set python_exe $alt_python_exe
-    else if test -d node_modules
-        set type node
-    else
+    end
+
+    if test -d "$node_modules_bin"
+        set is_node_env "true"
+    else if test -d "$alt_node_modules_bin"
+        set is_node_env true
+        set node_modules_bin $alt_node_modules_bin
+    end
+
+    if test -z "$is_virtualenv" -a -z "$is_node_env"
         if [ "$option" != "silent" ]
             set_color red
             echo "This is not an env directory" 1>&2
@@ -70,7 +84,7 @@ function activateenv -a option
     end
 
     # Do nothing if this virtualenv is already active
-    if [ "$PWD" = "$_ENV_CURRENT" ]
+    if test "$PWD" = "$_ENV_CURRENT"
         return
     end
 
@@ -80,20 +94,23 @@ function activateenv -a option
     set -gx _ENV_CURRENT $PWD
     set -gx _ENV_ORIGINAL_PATH $PATH
 
-    if [ "$type" = "virtualenv" ]
-        if [ -d node_modules/.bin ]
-            set -gx PATH $PWD/$node_modules_bin $PATH
-        else if [ -d "$PROJECT_NAME/static/$node_modules_bin" ]
-            set -gx PATH $PWD/$PROJECT_NAME/static/$node_modules_bin $PATH
-        end
-        set -gx PATH $PWD/$python_bin $PATH
-    else if [ "$type" = "node" ]
+    if test -n "$is_virtualenv"
+        set env_type virtualenv
+        set -gx PATH $PWD/$virtualenv_bin $PATH
+    end
+
+    if test -n "$is_node_env"
         set -gx PATH $PWD/$node_modules_bin $PATH
+        if test -n "$env_type"
+            set env_type "$env_type, node"
+        else
+            set env_type "node"
+        end
     end
 
     hash -r 2>/dev/null
     set_color green
-    echo -e "Activated $_ENV_CURRENT ($type)"
+    echo -e "Activated $_ENV_CURRENT ($env_type)"
     set_color normal
 end
 
