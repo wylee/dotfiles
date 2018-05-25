@@ -27,12 +27,6 @@
 /*.egg
 /.python-version
 
-# Buildout
-/bin/
-/develop-eggs/
-/parts/
-/.installed.cfg
-
 #### Anywhere in repo
 .DS_Store
 git.commit
