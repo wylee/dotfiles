@@ -116,6 +116,7 @@ augroup vimrc
     autocmd FileType css setlocal sw=4 sts=4
     autocmd FileType html setlocal sw=4 sts=4
     autocmd FileType javascript setlocal sw=4 sts=4
+    autocmd FileType json setlocal sw=2 sts=2
     autocmd FileType markdown setlocal sw=2 sts=2 tw=72
     autocmd FileType text setlocal sw=2 sts=2 tw=72
     autocmd FileType yaml setlocal sw=2 sts=2 tw=79
