@@ -147,6 +147,7 @@ elif [ "$(uname -s)" = "Darwin" ]; then
         bash-completion \
         fish \
         git \
+        lastpass-cli --with-pinentry \
         node \
         pipenv \
         pwgen \
