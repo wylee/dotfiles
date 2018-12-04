@@ -12,6 +12,21 @@ REPO_DIR="${HOME}/.files"
 BREW="yes"
 NPM="yes"
 
+BREW_PACKAGES=(
+    bash-completion
+    fish
+    git
+    "lastpass-cli --with-pinentry"
+    node
+    pipenv
+    pwgen
+    python3
+    pyenv
+    ripgrep
+    tmux reattach-to-user-namespace
+    vim
+)
+
 while [[ $# -gt 0 ]]; do
     option="$1"
     case $option in
@@ -143,19 +158,15 @@ elif [ "$(uname -s)" = "Darwin" ]; then
     fi
 
     echo "${BLUE}Installing Homebrew packages...${RESET}"
-    "$brew_path" install \
-        bash-completion \
-        fish \
-        git \
-        lastpass-cli --with-pinentry \
-        node \
-        pipenv \
-        pwgen \
-        python3 \
-        pyenv \
-        ripgrep \
-        tmux reattach-to-user-namespace \
-        vim
+
+    for package in "${BREW_PACKAGES[@]}"; do
+        words=($package)
+        if "$brew_path" ls --versions ${words[0]} >/dev/null; then
+            echo "Skipping package ${words[0]} (already installed)"
+        else
+            "$brew_path" install $package
+        fi
+    done
 
     if [ "$NPM" = "no" ]; then
         echo "${YELLOW}Skipping npm installation/update${RESET}"
@@ -172,6 +183,9 @@ elif [ "$(uname -s)" = "Darwin" ]; then
         echo $fish_path | sudo tee -a /etc/shells
     fi
     echo "${BLUE}To make fish the default shell, run: chsh -s $fish_path${RESET}"
+
+    echo "${BLUE}Running 'brew cleanup'...${RESET}"
+    "$brew_path" cleanup
 else
     echo "${YELLOW}Skipping Homebrew install since this doesn't appear to be a Mac${RESET}"
 fi
