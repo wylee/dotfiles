@@ -31,6 +31,7 @@ Host old.wyattbaldwin.com
 Host bycycle.org
     User ubuntu
     IdentityFile ~/.ssh/id_rsa-bycycle
+    Port 1046
 
 Host info.bycycle.org
     User ubuntu
