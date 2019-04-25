@@ -179,8 +179,9 @@ elif [ "$(uname -s)" = "Darwin" ]; then
     if [ "$NPM" = "no" ]; then
         echo "${YELLOW}Skipping npm installation/update${RESET}"
     else
-        echo "${BLUE}Installing/updating npm...${RESET}"
-        npm -g install npm >/dev/null
+        echo -n "${BLUE}Installing/updating npm... ${RESET}"
+        npm -g install npm &>/dev/null
+        echo "${GREEN}Done${RESET}"
     fi
 
     fish_path="/usr/local/bin/fish"
