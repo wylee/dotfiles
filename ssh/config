@@ -22,7 +22,7 @@ Host pypi.org
 
 # wyattbaldwin.com ----------------------------------------------------
 
-Host wyattbaldwin.com
+Host old.wyattbaldwin.com
     User ubuntu
     IdentityFile ~/.ssh/id_rsa-sites
 
