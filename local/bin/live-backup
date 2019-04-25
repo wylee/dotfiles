@@ -15,6 +15,7 @@ OPTIONS = {
     'project_dir': os.environ.get('PROJECT_DIR', '~/Projects'),
     'default_locations': [],
     'locations': [],
+    'only_paths': [],
     'info': False,
     'all': False,
     'debug': False,
@@ -48,6 +49,7 @@ class LiveBackupRunner:
         self.env = self.get_option('env')
         self.project_dir = as_path(self.get_option('project_dir'))
         self.default_locations = as_list(self.get_option('default_locations'), sep=None)
+        self.only_paths = set(as_list(self.get_option('only_paths')))
         self.all = as_bool(self.get_option('all'))
         self.do_show_info = self.get_option('info')
 
@@ -56,6 +58,7 @@ class LiveBackupRunner:
             self.exit(self.show_info(), code=0)
 
         paths, paths_not_found = self.paths
+        excludes = self.excludes
 
         if paths_not_found:
             for path in paths_not_found:
@@ -64,7 +67,7 @@ class LiveBackupRunner:
 
         selected_locations = []
         locations = self.locations
-        location_groups = self.locaction_groups
+        location_groups = self.location_groups
         available_locations = self.available_locations
         for location in locations:
             if location in location_groups:
@@ -75,21 +78,26 @@ class LiveBackupRunner:
             else:
                 self.exit(f'"{location}" is not a valid location key\n', self.show_info(), code=1)
 
-        excludes = self.excludes
+        default_paths = paths['__default__']
+        default_excludes = excludes['__default__']
+        only_paths = self.only_paths
 
         for location, destination in selected_locations:
-            location_paths = paths['__main__'] + paths.get(location, [])
-            has_path_excludes = any(
-                excludes.get(os.path.basename(location_path))
-                for location_path in location_paths
-            )
-            if has_path_excludes:
-                for location_path in location_paths:
-                    base_name = os.path.basename(location_path)
-                    path_excludes = excludes.get(base_name, ())
+            batch_paths = []
+            location_paths = paths.get(location) or default_paths
+            for location_path in location_paths:
+                base_name = os.path.basename(location_path)
+                if only_paths and location_path not in only_paths and base_name not in only_paths:
+                    self.debug_info(f'Skipping {location_path}')
+                    continue
+                path_excludes = excludes.get(base_name)
+                if path_excludes:
                     self.rsync([location_path], destination, path_excludes)
-            else:
-                self.rsync(location_paths, destination)
+                else:
+                    self.debug_info(f'Batching {location_path}')
+                    batch_paths.append(location_path)
+            if batch_paths:
+                self.rsync(batch_paths, destination, default_excludes)
 
         self.print_hr()
 
@@ -97,10 +105,8 @@ class LiveBackupRunner:
         rsync_cmd = ['rsync', '-rltz', '--delete']
         if self.dry_run:
             rsync_cmd.append('--dry-run')
-        rsync_cmd.append('--verbose')
-        default_excludes = self.excludes['__main__']
-        for exclude in default_excludes:
-            rsync_cmd.extend(('--exclude', exclude))
+        if not self.quiet:
+            rsync_cmd.append('--verbose')
         return rsync_cmd.copy()
 
     def rsync(self, paths, destination, excludes=()):
@@ -123,11 +129,20 @@ class LiveBackupRunner:
     @property
     def paths(self):
         paths_in = collections.OrderedDict()
-        paths_in['__main__'] = as_list(self.config.get('paths', []))
+        paths_in['__default__'] = as_list(self.config.get('paths', []))
+        no_default_paths = {'__default__'}
+
         for k, v in self.config.items():
             if k.startswith('paths.'):
                 _, location = k.split('.', 1)
                 paths_in[location] = as_list(self.config[k])
+                no_default_paths.add(location)
+
+        for k, v in self.config.items():
+            if k.startswith('additional_paths.'):
+                _, location = k.split('.', 1)
+                paths_in.setdefault(location, [])
+                paths_in[location] += as_list(self.config[k])
 
         # Expand input paths:
         #   - project_dir is injected
@@ -136,8 +151,11 @@ class LiveBackupRunner:
         paths = collections.OrderedDict()
         paths_not_found = []
         for location, location_paths in paths_in.items():
-            paths[location] = []
-            for i, path in enumerate(location_paths):
+            if location in no_default_paths :
+                paths[location] = []
+            else:
+                paths[location] = paths['__default__'].copy()
+            for path in location_paths:
                 path = path.format(project_dir=self.project_dir)
                 path = os.path.expanduser(path)
                 glob_paths = glob.glob(path)
@@ -150,12 +168,29 @@ class LiveBackupRunner:
 
     @property
     def excludes(self):
-        excludes = collections.OrderedDict()
-        excludes['__main__'] = as_list(self.config.get('excludes', []))
+        excludes_in = collections.OrderedDict()
+        excludes_in['__default__'] = as_list(self.config.get('excludes', []))
+        no_default_excludes = {'__default__'}
+
         for k, v in self.config.items():
             if k.startswith('excludes.'):
                 _, base_name = k.split('.', 1)
-                excludes[base_name] = as_list(self.config[k])
+                excludes_in[base_name] = as_list(self.config[k])
+                no_default_excludes.add(base_name)
+
+        for k, v in self.config.items():
+            if k.startswith('additional_excludes.'):
+                _, base_name = k.split('.', 1)
+                excludes_in.setdefault(base_name, [])
+                excludes_in[base_name] += as_list(self.config[k])
+
+        excludes = collections.OrderedDict()
+        for base_name, path_excludes in excludes_in.items():
+            if base_name in no_default_excludes :
+                excludes[base_name] = path_excludes
+            else:
+                excludes[base_name] = excludes_in['__default__'].copy() + path_excludes
+
         return excludes
 
     @property
@@ -174,7 +209,7 @@ class LiveBackupRunner:
             (k, as_path(v).format(env=self.env)) for (k, v) in config.items())
 
     @property
-    def locaction_groups(self):
+    def location_groups(self):
         config = self.get_config('location-groups', {})
         location_groups = collections.OrderedDict()
         available_locations = self.available_locations
@@ -196,7 +231,7 @@ class LiveBackupRunner:
         for k, v in self.available_locations.items():
             info.append(f'    - {k}: {v}')
 
-        location_groups = self.locaction_groups
+        location_groups = self.location_groups
         if location_groups:
             info.append('\nLocation groups:\n')
             for k, v in location_groups.items():
@@ -210,21 +245,21 @@ class LiveBackupRunner:
         else:
             info.append('    No default locations')
 
-        info.append('\nPaths:\n')
+        info.append('\nDefault paths:\n')
         paths, paths_not_found = self.paths
         for location, location_paths in paths.items():
-            if location != '__main__':
-                info.append(f'\nAdditional paths for location {location}:\n')
+            if location != '__default__':
+                info.append(f'\nPaths for location {location}:\n')
             for location_path in location_paths:
                 info.append(f'    - {location_path}')
 
-        info.append('\nExcludes:\n')
+        info.append('\nDefault excludes:\n')
         excludes = self.excludes
         for base_name, path_excludes in excludes.items():
             path_excludes = excludes.get(base_name, [])
             if path_excludes:
-                if base_name != '__main__':
-                    info.append(f'\nAdditional excludes for path {base_name}:\n')
+                if base_name != '__default__':
+                    info.append(f'\nExcludes for path {base_name}:\n')
                 for exclude in path_excludes:
                     info.append(f'    - {exclude}')
 
@@ -236,6 +271,9 @@ class LiveBackupRunner:
         arg_parser.add_argument('--config-file', '-c', type=as_path)
         arg_parser.add_argument('--project-dir', '-p', type=as_path)
         arg_parser.add_argument('locations', nargs='*', help='Back up to the specified locations')
+        arg_parser.add_argument(
+                '--paths', '-P', dest='only_paths', nargs='*',
+                help='Back up only the specified paths')
         arg_parser.add_argument('--all', '-a', action='store_true')
         arg_parser.add_argument(
             '--info', '-i', action='store_true',
@@ -265,20 +303,23 @@ class LiveBackupRunner:
         env_name = f'LIVE_BACKUP_OPTION_{name.upper()}'
         config_name = name.replace('_', '-')
         if hasattr(self.args, name):
+            source = 'args'
             value = getattr(self.args, name)
-            self.debug_info(f'Got {name} from args')
         elif env_name in os.environ:
+            source = 'environ'
+            name = env_name
             value = os.environ[env_name]
-            self.debug_info(f'Got {name} from environ')
         elif name in self.config:
+            source = 'config'
             value = self.config[name]
-            self.debug_info(f'Got {name} from config')
         elif config_name in self.config:
+            source = 'config'
+            name = config_name
             value = self.config[config_name]
-            self.debug_info(f'Got {config_name} from config')
         else:
+            source = 'defaults'
             value = OPTIONS[name]
-            self.debug_info(f'Got {name} from defaults')
+        self.debug_info(f'Got {name} from {source}: {value}')
         return value
 
     def print_hr(self):
