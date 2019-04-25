@@ -27,6 +27,14 @@ BREW_PACKAGES=(
     vim
 )
 
+PYTHON_PACKAGES=(
+    setuptools
+    pip
+    checkoutmanager
+    twine
+    virtualenv
+)
+
 while [[ $# -gt 0 ]]; do
     option="$1"
     case $option in
@@ -237,11 +245,9 @@ install_pip 3
 test -f get-pip.py && rm get-pip.py
 
 echo -n "${BLUE}Installing/upgrading Python tools... "
-pip3 install -U setuptools >/dev/null
-pip3 install -U pip >/dev/null
-pip3 install -U checkoutmanager >/dev/null
-pip3 install -U twine >/dev/null
-pip3 install -U virtualenv >/dev/null
+for package in "${PYTHON_PACKAGES[@]}"; do
+    pip3 install -U "${package}" >/dev/null
+done
 echo "${GREEN}Done${RESET}"
 
 mkdir -p "${HOME}/.vim/"{autoload,bundle}
