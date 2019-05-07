@@ -156,7 +156,7 @@ class LiveBackupRunner:
             else:
                 paths[location] = paths['__default__'].copy()
             for path in location_paths:
-                path = path.format(project_dir=self.project_dir)
+                path = path.format(env=self.env, project_dir=self.project_dir)
                 path = os.path.expanduser(path)
                 glob_paths = glob.glob(path)
                 if not glob_paths:
