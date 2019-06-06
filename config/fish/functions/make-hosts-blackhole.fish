@@ -28,7 +28,7 @@ function make-hosts-blackhole
         echo 'Skipping download of hosts file'
     else
         echo "Downloading hosts file: $hosts_file_url..."
-        curl $hosts_file_url >$hosts
+        curl -sS $hosts_file_url >$hosts
     end
 
     if set -q _flag_no_create
@@ -61,14 +61,17 @@ function make-hosts-blackhole
         echo 'Skipping upload of hosts file to router'
     else
         echo 'Uploading hosts file to router...'
-        scp $dnsmasq_hosts $router_ip:/config/user-data/$dnsmasq_hosts
-        ssh $router_ip sudo cp /config/user-data/$dnsmasq_hosts /etc/dnsmasq.d
+        scp -q $dnsmasq_hosts $router_ip:/config/user-data/$dnsmasq_hosts
+        ssh -q $router_ip sudo cp /config/user-data/$dnsmasq_hosts /etc/dnsmasq.d
     end
 
     if set -q _flag_no_reload
         echo 'Skipping restart of dnsmasq on router'
     else
         echo 'Restarting dnsmasq on router...'
-        ssh $router_ip sudo /etc/init.d/dnsmasq force-reload
+        ssh -q $router_ip sudo systemctl restart dnsmasq
     end
+
+    echo "Clearing local DNS cache..."
+    sudo killall -HUP mDNSResponder
 end
