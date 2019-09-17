@@ -20,10 +20,9 @@ BREW_PACKAGES=(
     "lastpass-cli --with-pinentry"
     node
     nvm
-    pipenv
     pwgen
-    python3
     pyenv
+    python3
     ripgrep
     tmux reattach-to-user-namespace
     vim
