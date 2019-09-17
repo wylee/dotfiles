@@ -242,6 +242,8 @@ for file in "${REPO_DIR}/config/fish/functions/"*.fish; do
     link "config/fish/functions/$(basename "$file")"
 done
 
+link "config/fish/functions/additional-blackhole-hosts"
+
 for file in "${REPO_DIR}/local/bin/"*; do
     link "local/bin/$(basename "$file")"
 done

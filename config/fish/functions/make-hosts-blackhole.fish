@@ -1,4 +1,3 @@
-# TODO: Add flag to skip downloading hosts file
 # TODO: Add whitelist
 function make-hosts-blackhole
     set -l options \
@@ -12,7 +11,9 @@ function make-hosts-blackhole
 
     argparse --name='make-hosts-blackhole' $options -- $argv or return
 
-    set -l hosts_file_url 'https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts'
+    set -l directory (dirname (status -f))
+    set -l additional_hosts_file "$directory/additional-blackhole-hosts"
+    set -l hosts_file_url 'https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling-porn/hosts'
     set -l hosts blackhole.hosts
     set -l dnsmasq_hosts dnsmasq.blackhole.conf
     set -l router_ip 192.168.1.1
@@ -42,13 +43,10 @@ function make-hosts-blackhole
         echo 'Skipping addition of additional hosts'
     else
         echo 'Adding additional hosts...'
-        set -l additional_hosts \
-            facebook.com \
-            hangouts.google.com \
-            reddit.com \
-            i.reddit.com
-        for host in $additional_hosts
-            echo "address=/$host/0.0.0.0" >>$dnsmasq_hosts
+        for host in (cat $additional_hosts_file)
+            if not string match --quiet '#*' $host
+                echo "address=/$host/0.0.0.0" >>$dnsmasq_hosts
+            end
         end
     end
 
@@ -67,11 +65,11 @@ function make-hosts-blackhole
 
     if set -q _flag_no_reload
         echo 'Skipping restart of dnsmasq on router'
+        echo 'Skpping clearing of local DNS cache'
     else
         echo 'Restarting dnsmasq on router...'
         ssh -q $router_ip sudo systemctl restart dnsmasq
+        echo "Clearing local DNS cache..."
+        sudo killall -HUP mDNSResponder
     end
-
-    echo "Clearing local DNS cache..."
-    sudo killall -HUP mDNSResponder
 end
