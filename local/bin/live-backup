@@ -17,6 +17,7 @@ OPTIONS = {
     'locations': [],
     'only_paths': [],
     'info': False,
+    'show_locations': False,
     'all': False,
     'debug': False,
     'quiet': False,
@@ -52,10 +53,14 @@ class LiveBackupRunner:
         self.only_paths = set(as_list(self.get_option('only_paths')))
         self.all = as_bool(self.get_option('all'))
         self.do_show_info = self.get_option('info')
+        self.do_show_locations = self.get_option('show_locations') and not self.do_show_info
 
     def run(self):
         if self.do_show_info:
             self.exit(self.show_info(), code=0)
+
+        if self.do_show_locations:
+            self.exit(self.show_locations(), code=0)
 
         paths, paths_not_found = self.paths
         excludes = self.excludes
@@ -227,15 +232,7 @@ class LiveBackupRunner:
         info.append('Project directory:\n')
         info.append(f'    - {self.project_dir}')
 
-        info.append('\nAvailable backup locations:\n')
-        for k, v in self.available_locations.items():
-            info.append(f'    - {k}: {v}')
-
-        location_groups = self.location_groups
-        if location_groups:
-            info.append('\nLocation groups:\n')
-            for k, v in location_groups.items():
-                info.append(f'    - {k}: {v}')
+        info.extend(('', self.show_locations()))
 
         info.append('\nDefault locations:\n')
         default_locations = self.default_locations
@@ -265,6 +262,22 @@ class LiveBackupRunner:
 
         return '\n'.join(info)
 
+    def show_locations(self):
+        info = []
+
+        info.append('Available backup locations:\n')
+        for k, v in self.available_locations.items():
+            info.append(f'    - {k}: {v}')
+
+        location_groups = self.location_groups
+        if location_groups:
+            info.append('\nLocation groups:\n')
+            for k, v in location_groups.items():
+                v = ', '.join(v)
+                info.append(f'    - {k}: {v}')
+
+        return '\n'.join(info)
+
     def parse_args(self, argv=None):
         arg_parser = argparse.ArgumentParser(argument_default=argparse.SUPPRESS)
         arg_parser.add_argument('--env', '-e')
@@ -278,6 +291,9 @@ class LiveBackupRunner:
         arg_parser.add_argument(
             '--info', '-i', action='store_true',
             help='List paths & available backup locations then exit.')
+        arg_parser.add_argument(
+            '--show-locations', '-l', action='store_true',
+            help='List available backup locations then exit.')
         arg_parser.add_argument(
             '--debug', '-d', action='store_true',
             help='Show what rsync is doing (add --verbose; print command)')
