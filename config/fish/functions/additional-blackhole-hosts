@@ -1,12 +1,8 @@
 # Additional hosts to block when running make-hosts-blackhole
 # Sorted by second level domain then third, fourth, etc
-portland.craigslist.org
 facebook.com
-hangouts.google.com
 hulu.com
 netflix.com
 news.google.com
-news.ycombinator.com
 reddit.com
 i.reddit.com
-vudu.com
