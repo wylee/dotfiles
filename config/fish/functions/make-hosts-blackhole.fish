@@ -21,8 +21,12 @@ function make-hosts-blackhole
     set -l router_ip 192.168.1.1
 
     if set -q _flag_help
+        echo 'Download list of hosts to block, convert to DNSmasq format, upload to router.'
+        echo
+
+        echo "Options:"
         for option in $options
-            echo $option
+            echo "    -"(string replace '/' ', --' (string replace '_' '-' $option))
         end
         return
     end
