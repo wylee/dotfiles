@@ -16,6 +16,8 @@ function make-hosts-blackhole
     set -l hosts_file_url 'https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling-porn/hosts'
     set -l hosts blackhole.hosts
     set -l dnsmasq_hosts dnsmasq.blackhole.conf
+    set -l router_dnsmasq_upload_path "/config/user-data/$dnsmasq_hosts"
+    set -l router_dnsmasq_dir '/etc/dnsmasq.d'
     set -l router_ip 192.168.1.1
 
     if set -q _flag_help
@@ -59,8 +61,8 @@ function make-hosts-blackhole
         echo 'Skipping upload of hosts file to router'
     else
         echo 'Uploading hosts file to router...'
-        scp -q $dnsmasq_hosts $router_ip:/config/user-data/$dnsmasq_hosts
-        ssh -q $router_ip sudo cp /config/user-data/$dnsmasq_hosts /etc/dnsmasq.d
+        scp -q $dnsmasq_hosts $router_ip:$router_dnsmasq_upload_path
+        ssh -q $router_ip sudo cp $router_dnsmasq_upload_path $router_dnsmasq_dir
     end
 
     if set -q _flag_no_reload
