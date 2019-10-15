@@ -7,6 +7,7 @@ function make-hosts-blackhole
         's/show' \
         'U/no_upload' \
         'R/no_reload' \
+        'k/keep_temp_files' \
         'h/help'
 
     argparse --name='make-hosts-blackhole' $options -- $argv or return
@@ -14,9 +15,11 @@ function make-hosts-blackhole
     set -l directory (dirname (status -f))
     set -l additional_hosts_file "$directory/additional-blackhole-hosts"
     set -l hosts_file_url 'https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling-porn/hosts'
-    set -l hosts blackhole.hosts
-    set -l dnsmasq_hosts dnsmasq.blackhole.conf
-    set -l router_dnsmasq_upload_path "/config/user-data/$dnsmasq_hosts"
+    set -l temp_dir (mktemp -d /tmp/make-hosts-blackhole.XXX)
+    set -l hosts (mktemp $temp_dir/blackhole.hosts.XXX)
+    set -l dnsmasq_hosts_basename dnsmasq.blackhole.conf
+    set -l dnsmasq_hosts (mktemp $temp_dir/$dnsmasq_hosts_basename.XXX)
+    set -l router_dnsmasq_upload_path "/config/user-data/$dnsmasq_hosts_basename"
     set -l router_dnsmasq_dir '/etc/dnsmasq.d'
     set -l router_ip 192.168.1.1
 
@@ -28,6 +31,8 @@ function make-hosts-blackhole
         for option in $options
             echo "    -"(string replace '/' ', --' (string replace '_' '-' $option))
         end
+
+        rm -r $temp_dir
         return
     end
 
@@ -78,5 +83,18 @@ function make-hosts-blackhole
         ssh -q $router_ip sudo systemctl restart dnsmasq
         echo "Clearing local DNS cache..."
         sudo killall -HUP mDNSResponder
+    end
+
+    if set -q _flag_keep_tempfiles
+        echo "Deleting temp files:"
+        for name in (rm -rv $temp_dir)
+            echo "    $name"
+        end
+    else
+        echo "Kept temp files:"
+        for file in $temp_dir/*
+            echo "    $temp_dir$file"
+        end
+        echo "    $temp_dir"
     end
 end
