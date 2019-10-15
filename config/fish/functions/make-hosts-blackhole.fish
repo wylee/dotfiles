@@ -34,14 +34,14 @@ function make-hosts-blackhole
     if set -q _flag_no_download
         echo 'Skipping download of hosts file'
     else
-        echo "Downloading hosts file: $hosts_file_url..."
+        echo "Downloading hosts file $hosts_file_url to $hosts..."
         curl -sS $hosts_file_url >$hosts
     end
 
     if set -q _flag_no_create
         echo 'Skipping creation of dnsmasq hosts file'
     else
-        echo 'Creating dnsmasg file...'
+        echo "Creating dnsmasg file at $dnsmasq_hosts..."
         sed -En 's!^0\.0\.0\.0 +([^ #]+).*$!address=/\1/0.0.0.0!p' $hosts >$dnsmasq_hosts
     end
 
@@ -64,8 +64,9 @@ function make-hosts-blackhole
     if set -q _flag_no_upload
         echo 'Skipping upload of hosts file to router'
     else
-        echo 'Uploading hosts file to router...'
+        echo "Uploading hosts file to router at $router_dnsmasq_upload_path..."
         scp -q $dnsmasq_hosts $router_ip:$router_dnsmasq_upload_path
+        echo "Copying hosts file to $router_dnsmasq_dir..."
         ssh -q $router_ip sudo cp $router_dnsmasq_upload_path $router_dnsmasq_dir
     end
 
