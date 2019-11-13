@@ -97,6 +97,7 @@ function activateenv -a option
     if test -n "$is_virtualenv"
         set env_type virtualenv
         set -gx PATH $PWD/$virtualenv_bin $PATH
+        set -gx VIRTUAL_ENV $_ENV_CURRENT
     end
 
     if test -n "$is_node_env"
@@ -119,6 +120,7 @@ function deactivateenv
         set env_current $_ENV_CURRENT
         set -e PROJECT_NAME
         set -e _ENV_CURRENT
+        set -e VIRTUAL_ENV
         set -gx PATH $_ENV_ORIGINAL_PATH
         set -e _ENV_ORIGINAL_PATH
         hash -r 2>/dev/null
