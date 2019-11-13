@@ -170,7 +170,7 @@ elif [ "$(uname -s)" = "Darwin" ]; then
         "$brew_path" update
         "$brew_path" upgrade
     else
-        ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+        /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
         "$brew_path" doctor
     fi
 
