@@ -271,6 +271,7 @@ echo "${GREEN}Done${RESET}"
 mkdir -p "${HOME}/.vim/"{autoload,bundle}
 echo -n "${BLUE}Checking out Pathogen plugins... "
 checkoutmanager co vim-pathogen >/dev/null
+checkoutmanager up vim-pathogen >/dev/null
 echo "${GREEN}Done${RESET}"
 pathogen_path="${HOME}/.vim/vim-pathogen/autoload/pathogen.vim"
 pathogen_link="${HOME}/.vim/autoload/pathogen.vim"
