@@ -20,6 +20,7 @@ REPO_DIR="${HOME}/.files"
 BREW="yes"
 NPM="yes"
 NVM_DIR="${HOME}/.nvm"
+PYTHON="yes"
 
 BREW_PACKAGES=(
     bash-completion
@@ -30,18 +31,24 @@ BREW_PACKAGES=(
     nvm
     pwgen
     pyenv
-    python3
     ripgrep
     tmux reattach-to-user-namespace
     vim
 )
 
+PYTHON_VERSIONS=(
+    3.8.0
+    3.7.5
+    3.6.9
+    3.5.8
+    3.4.10
+)
+
 PYTHON_PACKAGES=(
-    setuptools
-    pip
+    bpython
     checkoutmanager
+    poetry
     twine
-    virtualenv
 )
 
 while [[ $# -gt 0 ]]; do
@@ -60,6 +67,9 @@ while [[ $# -gt 0 ]]; do
             ;;
         --no-npm)
             NPM="no"
+            ;;
+        --no-python)
+            PYTHON="no"
             ;;
         -h|--help)
             echo "Install local config (AKA dot files)"
@@ -120,33 +130,6 @@ function link () {
         echo "${YELLOW}${target} already points to $(readlink ${target})${RESET}" 1>&2
     fi
     return 0
-}
-
-function get_pip_installer () {
-    if [ -f "get-pip.py" ]; then
-        echo "${BLUE}Pip installer already downloaded"
-    else
-        echo -n "${BLUE}Getting pip installer... "
-        curl -O https://bootstrap.pypa.io/get-pip.py
-        echo "${GREEN}Done${RESET}"
-    fi
-}
-
-function install_pip () {
-    local version="${1}"
-    local pip_exe="pip${version}"
-    local python_exe="python${version}"
-    if which "${pip_exe}" >/dev/null 2>&1; then
-        echo "${YELLOW}${pip_exe} already installed at $(which "${pip_exe}")${RESET}"
-    else
-        get_pip_installer
-        echo -n "${BLUE}Installing pip for Python ${version}... "
-        "$python_exe" get-pip.py --upgrade --force-reinstall
-        if which pyenv >/dev/null 2>&1; then
-            pyenv rehash
-        fi
-        echo "${GREEN}Done${RESET}"
-    fi
 }
 
 if [ -e "$REPO_DIR" ]; then
@@ -259,14 +242,53 @@ for file in "${REPO_DIR}/tmux/"*.conf; do
     link "tmux/$(basename "$file")"
 done
 
-install_pip 3
-test -f get-pip.py && rm get-pip.py
+if [ "$PYTHON" = "no" ]; then
+    echo "${YELLOW}Skipping Python installation ${RESET}"
+else
+    main_python_version="python${PYTHON_VERSIONS[0]:0:3}"
 
-echo -n "${BLUE}Installing/upgrading Python tools... "
-for package in "${PYTHON_PACKAGES[@]}"; do
-    pip3 install -U "${package}" >/dev/null
-done
-echo "${GREEN}Done${RESET}"
+    for version in $(pyenv versions --bare); do
+        if ! printf "%s\n" ${PYTHON_VERSIONS[@]} | grep -Eq "^${version}$"; then
+            echo "${YELLOW}Installed Python ${version} not in current install list ${RESET}"
+            read -p "${YELLOW}Uninstall Python ${version}? [yes/no] ${RESET}" answer
+            if [ "$answer" = "yes" ]; then
+                echo "${YELLOW}Uninstalling Python ${version}... ${RESET}"
+                pyenv uninstall -f $version
+                echo "${GREEN}Done${RESET}"
+            fi
+        fi
+    done
+
+    for version in "${PYTHON_VERSIONS[@]}"; do
+        echo "${BLUE}Installing Python ${version}... ${RESET}"
+        PYTHON_CONFIGURE_OPTS="--enable-shared" pyenv install -s $version
+        echo "${GREEN}Done${RESET}"
+    done
+
+    printf "%s\n" "${PYTHON_VERSIONS[@]}" >"${HOME}/.python-version"
+    echo "${GREEN}Created ~/.python-version${RESET}"
+
+    eval "$(pyenv init -)"
+
+    for version in "${PYTHON_VERSIONS[@]}"; do
+        echo -n "${BLUE}Upgrading pip for Python ${version}... ${RESET}"
+        python${version:0:3} -m pip install --upgrade --upgrade-strategy eager pip >/dev/null
+        echo "${GREEN}Done${RESET}"
+    done
+
+    echo -n "${BLUE}Installing/upgrading pipx... ${RESET}"
+    $main_python_version -m pip install --user --upgrade --upgrade-strategy eager pipx >/dev/null
+    echo "${GREEN}Done${RESET}"
+
+    echo "${BLUE}Installing/upgrading Python tools... ${RESET}"
+    for package in "${PYTHON_PACKAGES[@]}"; do
+        echo -n "${BLUE}Installing/upgrading ${package}... ${RESET}"
+        $main_python_version -m pipx install "${package}" >/dev/null
+        $main_python_version -m pipx upgrade "${package}" >/dev/null
+        echo "${GREEN}Done${RESET}"
+    done
+    echo "${GREEN}Done${RESET}"
+fi
 
 mkdir -p "${HOME}/.vim/"{autoload,bundle}
 echo -n "${BLUE}Checking out Pathogen plugins... "
