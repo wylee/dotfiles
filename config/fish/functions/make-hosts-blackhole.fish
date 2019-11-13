@@ -29,7 +29,7 @@ function make-hosts-blackhole
 
         echo "Options:"
         for option in $options
-            echo "    -"(string replace '/' ', --' (string replace '_' '-' $option))
+            echo "    -"(string replace '/' ', --' (string replace -a '_' '-' $option))
         end
 
         rm -r $temp_dir
