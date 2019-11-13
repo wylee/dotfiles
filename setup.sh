@@ -25,6 +25,7 @@ PYTHON="yes"
 BREW_PACKAGES=(
     bash-completion
     fish
+    gdal
     git
     lastpass-cli
     node
