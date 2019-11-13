@@ -25,7 +25,7 @@ BREW_PACKAGES=(
     bash-completion
     fish
     git
-    "lastpass-cli --with-pinentry"
+    lastpass-cli
     node
     nvm
     pwgen
