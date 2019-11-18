@@ -220,6 +220,7 @@ link pythonrc
 link tmux.conf
 link vimrc
 link ssh/config
+link 'Library/Application Support/pypoetry/config.toml'
 
 for file in "${REPO_DIR}/bashrc.d/"*.rc; do
     link "bashrc.d/$(basename "$file")"
