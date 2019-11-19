@@ -120,8 +120,9 @@ function link () {
     fi
     local target_dir="$(dirname "$target")"
     if [ ! -d "$target_dir" ]; then
-        echo "${RED}Target directory \"${target_dir}\" does not exist${RESET}" 1>&2
-        return 1
+        echo "${YELLOW}Target directory \"${target_dir}\" does not exist{RESET}" 1>&2
+        mkdir -p "${target_dir}"
+        echo "${BLUE}Created target directory: ${target_dir}"
     fi
     if [ ! -L "$target" ]; then
         save_original "$target"
