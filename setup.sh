@@ -285,9 +285,12 @@ else
 
     echo "${BLUE}Installing/upgrading Python tools... ${RESET}"
     for package in "${PYTHON_PACKAGES[@]}"; do
+        # XXX: Temporary special case for poetry
+        test "$package" = "poetry" && pip_args="--pip-args=--pre" || pip_args=""
+
         echo -n "${BLUE}Installing/upgrading ${package}... ${RESET}"
-        $main_python_version -m pipx install "${package}" >/dev/null
-        $main_python_version -m pipx upgrade "${package}" >/dev/null
+        $main_python_version -m pipx install "${package}" $pip_args >/dev/null
+        $main_python_version -m pipx upgrade "${package}" $pip_args >/dev/null
         echo "${GREEN}Done${RESET}"
     done
     echo "${GREEN}Done${RESET}"
