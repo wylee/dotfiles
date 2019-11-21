@@ -46,10 +46,12 @@ function cdenv -a env_dir
 end
 
 function activateenv -a option
-    set virtualenv_bin .env/bin
+    set virtualenv_dir .env
+    set virtualenv_bin $virtualenv_dir/bin
     set python_exe $virtualenv_bin/python
 
-    set alt_virtualenv_bin .venv/bin
+    set alt_virtualenv_dir .venv
+    set alt_virtualenv_bin $alt_virtualenv_dir/bin
     set alt_python_exe $alt_virtualenv_bin/python
 
     set node_modules_bin node_modules/.bin
@@ -63,6 +65,7 @@ function activateenv -a option
         set is_virtualenv true
     else if test -f "$alt_python_exe"
         set is_virtualenv true
+        set virtualenv_dir $alt_virtualenv_dir
         set virtualenv_bin $alt_virtualenv_bin
         set python_exe $alt_python_exe
     end
@@ -97,7 +100,7 @@ function activateenv -a option
     if test -n "$is_virtualenv"
         set env_type virtualenv
         set -gx PATH $PWD/$virtualenv_bin $PATH
-        set -gx VIRTUAL_ENV $_ENV_CURRENT
+        set -gx VIRTUAL_ENV $_ENV_CURRENT/$virtualenv_dir
     end
 
     if test -n "$is_node_env"
