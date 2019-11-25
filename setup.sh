@@ -2,19 +2,11 @@
 
 set -eu
 
-if [ -n "${TERM:+TERM_SET}" ]; then
-    RED="$(tput setaf 1)"
-    GREEN="$(tput setaf 2)"
-    YELLOW="$(tput setaf 3)"
-    BLUE="$(tput setaf 4)"
-    RESET="$(tput sgr0)"
-else
-    RED=""
-    GREEN=""
-    YELLOW=""
-    BLUE=""
-    RESET=""
-fi
+RED="$(tput setaf 1 || "")"
+GREEN="$(tput setaf 2 || "")"
+YELLOW="$(tput setaf 3 || "")"
+BLUE="$(tput setaf 4 || "")"
+RESET="$(tput sgr0 || "")"
 
 REPO_DIR="${HOME}/.files"
 BREW="yes"
