@@ -7,6 +7,7 @@ function make-hosts-blackhole
         's/show' \
         'U/no_upload' \
         'R/no_reload' \
+        'F/no_flush' \
         'k/keep_temp_files' \
         'h/help'
 
@@ -77,10 +78,14 @@ function make-hosts-blackhole
 
     if set -q _flag_no_reload
         echo 'Skipping restart of dnsmasq on router'
-        echo 'Skpping clearing of local DNS cache'
     else
         echo 'Restarting dnsmasq on router...'
         ssh -q $router_ip sudo systemctl restart dnsmasq
+    end
+
+    if set -q _flag_no_flush
+        echo 'Skipping clearing of local DNS cache'
+    else
         echo "Clearing local DNS cache..."
         sudo killall -HUP mDNSResponder
     end
