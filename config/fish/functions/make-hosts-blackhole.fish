@@ -66,7 +66,7 @@ function make-hosts-blackhole
 
         set _copy_lines yes
 
-        for line in (cat /etc/hosts)
+        while read line
             if test "$line" = "$etc_hosts_header"
                 set -e _copy_lines
             else if test "$line" = "$etc_hosts_footer"
@@ -74,7 +74,7 @@ function make-hosts-blackhole
             else if set -q _copy_lines
                 echo $line >>$etc_hosts
             end
-        end
+        end </etc/hosts
 
         set _last_line (string trim (tail -1 $etc_hosts))
         if not test "$_last_line" = ""
