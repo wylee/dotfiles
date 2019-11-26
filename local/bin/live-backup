@@ -291,6 +291,12 @@ class LiveBackupRunner:
                 v = ', '.join(v)
                 info.append(f'    - {k}: {v}')
 
+        default_locations = self.default_locations
+        if self.default_locations:
+            info.append('\nDefault backup locations:\n')
+            for loc in default_locations:
+                info.append(f'    - {loc}')
+
         return '\n'.join(info)
 
     def parse_args(self, argv=None):
