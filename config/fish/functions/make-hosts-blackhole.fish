@@ -141,10 +141,10 @@ function make-hosts-blackhole
 
     if set -q _flag_keep_temp_files
         echo "Kept temp files:"
-        for file in $temp_dir/*
-            echo "    $temp_dir$file"
-        end
         echo "    $temp_dir"
+        for file in $temp_dir/*
+            echo "    $file"
+        end
     else
         echo "Deleting temp files:"
         for name in (rm -rv $temp_dir)
