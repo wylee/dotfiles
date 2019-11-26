@@ -87,6 +87,12 @@ class LiveBackupRunner:
         default_excludes = excludes['__default__']
         only_paths = self.only_paths
 
+        if self.debug or not self.quiet:
+            print('Selected locations:\n')
+            for location, destination in selected_locations:
+                print(f'    - {location} => {destination}')
+            print()
+
         for location, destination in selected_locations:
             batch_paths = []
             location_paths = paths.get(location) or default_paths
