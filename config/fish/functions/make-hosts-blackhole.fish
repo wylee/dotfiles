@@ -7,6 +7,7 @@ function make-hosts-blackhole
         'U/no_upload' \
         'R/no_reload' \
         'F/no_flush' \
+        'H/hosts=' \
         'l/local' \
         's/show' \
         'k/keep_temp_files' \
@@ -43,7 +44,10 @@ function make-hosts-blackhole
         return
     end
 
-    if set -q _flag_no_download
+    if set -q _flag_hosts
+        echo "Using specified hosts file instead of downloading: $_flag_hosts"
+        set hosts $_flag_hosts
+    else if set -q _flag_no_download
         echo 'Skipping download of hosts file'
     else
         echo "Downloading hosts file $hosts_file_url to $hosts..."
