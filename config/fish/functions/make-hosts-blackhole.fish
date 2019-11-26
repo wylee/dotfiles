@@ -139,7 +139,7 @@ function make-hosts-blackhole
         sudo killall -HUP mDNSResponder
     end
 
-    if set -q _flag_keep_tempfiles
+    if set -q _flag_keep_temp_files
         echo "Kept temp files:"
         for file in $temp_dir/*
             echo "    $temp_dir$file"
