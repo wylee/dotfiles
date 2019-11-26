@@ -29,13 +29,16 @@ BREW_PACKAGES=(
     vim
 )
 
-PYTHON_VERSIONS=(
-    3.8.0
-    3.7.5
-    3.6.9
-    3.5.8
-    3.4.10
+PYTHON_VERSIONS=$(
+    for mv in 8 7 6 5 4; do
+        pyenv install -l | \
+            grep -E " +3\\.$mv\\.\d+\$" | \
+            tail -1 | \
+            sed 's/^ *//' | \
+            sed 's/ *$//'
+    done
 )
+PYTHON_VERSIONS=(${PYTHON_VERSIONS// / })
 
 PYTHON_PACKAGES=(
     bpython
@@ -243,7 +246,9 @@ else
     main_python_version="python${PYTHON_VERSIONS[0]:0:3}"
 
     for version in $(pyenv versions --bare); do
-        if ! printf "%s\n" ${PYTHON_VERSIONS[@]} | grep -Eq "^${version}$"; then
+        if printf "%s\n" ${PYTHON_VERSIONS[@]} | grep -Eq "^${version}$"; then
+            echo "${BLUE}Not uninstalling Python ${version}"
+        else
             echo "${YELLOW}Installed Python ${version} not in current install list ${RESET}"
             read -p "${YELLOW}Uninstall Python ${version}? [yes/no] ${RESET}" answer
             if [ "$answer" = "yes" ]; then
@@ -255,9 +260,16 @@ else
     done
 
     for version in "${PYTHON_VERSIONS[@]}"; do
-        echo "${BLUE}Installing Python ${version}... ${RESET}"
-        PYTHON_CONFIGURE_OPTS="--enable-shared" pyenv install -s $version
-        echo "${GREEN}Done${RESET}"
+        if pyenv versions --bare | grep -Eq "^${version}$"; then
+            echo "${YELLOW}Python ${version} already installed${RESET}"
+        else
+            read -p "${YELLOW}Install Python ${version}? [yes/no] ${RESET}" answer
+            if [ "$answer" = "yes" ]; then
+                echo "${BLUE}Installing Python ${version}... ${RESET}"
+                PYTHON_CONFIGURE_OPTS="--enable-shared" pyenv install "$version"
+                echo "${GREEN}Done${RESET}"
+            fi
+        fi
     done
 
     printf "%s\n" "${PYTHON_VERSIONS[@]}" >"${HOME}/.python-version"
