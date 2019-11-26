@@ -19,13 +19,13 @@ function make-hosts-blackhole
     set -l additional_hosts_file "$directory/additional-blackhole-hosts"
     set -l hosts_file_url 'https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling-porn/hosts'
     set -l temp_dir (mktemp -d /tmp/make-hosts-blackhole.XXX)
-    set -l hosts (mktemp $temp_dir/blackhole.hosts.XXX)
-    set -l etc_hosts (mktemp $temp_dir/blackhole.etc_hosts.XXX)
+    set -l hosts "$temp_dir/blackhole.hosts"
+    set -l etc_hosts "$temp_dir/blackhole.etc_hosts"
     set -l etc_hosts_header '# Black hole hosts'
     set -l etc_hosts_footer '# End black hole hosts'
     set -l etc_hosts_backup_file '/etc/hosts.blackhole.bak'
-    set -l dnsmasq_hosts_basename dnsmasq.blackhole.conf
-    set -l dnsmasq_hosts (mktemp $temp_dir/$dnsmasq_hosts_basename.XXX)
+    set -l dnsmasq_hosts_basename 'dnsmasq.blackhole.conf'
+    set -l dnsmasq_hosts "$temp_dir/$dnsmasq_hosts_basename"
     set -l router_dnsmasq_upload_path "/config/user-data/$dnsmasq_hosts_basename"
     set -l router_dnsmasq_dir '/etc/dnsmasq.d'
     set -l router_ip 192.168.1.1
