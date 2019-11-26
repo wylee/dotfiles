@@ -28,7 +28,7 @@ function make-hosts-blackhole
     set -l dnsmasq_hosts "$temp_dir/$dnsmasq_hosts_basename"
     set -l router_dnsmasq_upload_path "/config/user-data/$dnsmasq_hosts_basename"
     set -l router_dnsmasq_dir '/etc/dnsmasq.d'
-    set -l router_ip 192.168.1.1
+    set -l router_ip '192.168.1.1'
 
     if set -q _flag_help
         echo 'Download list of hosts to block, convert to DNSmasq format, upload to router.'
