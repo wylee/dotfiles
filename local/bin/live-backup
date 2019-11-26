@@ -339,9 +339,10 @@ class LiveBackupRunner:
         return value
 
     def print_hr(self):
-        term_size = shutil.get_terminal_size()
-        columns = term_size.columns
-        print('=' * columns)
+        if self.debug or not self.quiet:
+            term_size = shutil.get_terminal_size()
+            columns = term_size.columns
+            print('=' * columns)
 
     def debug_info(self, *print_args, file=sys.stderr, **print_kwargs):
         if self.debug:
