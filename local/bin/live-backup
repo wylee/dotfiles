@@ -18,6 +18,7 @@ OPTIONS = {
     'only_paths': [],
     'info': False,
     'show_locations': False,
+    'show_selected': False,
     'all': False,
     'debug': False,
     'quiet': False,
@@ -54,6 +55,10 @@ class LiveBackupRunner:
         self.all = as_bool(self.get_option('all'))
         self.do_show_info = self.get_option('info')
         self.do_show_locations = self.get_option('show_locations') and not self.do_show_info
+        self.do_show_selected = (
+            self.get_option('show_selected') and
+            not (self.do_show_info or self.do_show_locations)
+        )
 
     def run(self):
         if self.do_show_info:
@@ -91,6 +96,10 @@ class LiveBackupRunner:
             print('Selected locations:\n')
             for location, destination in selected_locations:
                 print(f'    - {location} => {destination}')
+
+        if self.do_show_selected:
+            self.exit()
+        else:
             print()
 
         for location, destination in selected_locations:
@@ -300,6 +309,9 @@ class LiveBackupRunner:
         arg_parser.add_argument(
             '--show-locations', '-l', action='store_true',
             help='List available backup locations then exit.')
+        arg_parser.add_argument(
+            '--show-selected', '-s', action='store_true',
+            help='Show selected locations then exit.')
         arg_parser.add_argument(
             '--debug', '-d', action='store_true',
             help='Show what rsync is doing (add --verbose; print command)')
