@@ -17,6 +17,7 @@ function __init
         end
     end
 
+    __prepend_path /usr/local/opt/postgresql@9.4/bin
     __prepend_path ~/.local/bin
 end
 
