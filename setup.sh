@@ -22,6 +22,7 @@ BREW_PACKAGES=(
     lastpass-cli
     node
     nvm
+    pass
     pwgen
     pyenv
     ripgrep
