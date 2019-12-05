@@ -23,6 +23,7 @@ BREW_PACKAGES=(
     fish
     gdal
     git
+    hugo
     lastpass-cli
     node
     nvm
