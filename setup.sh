@@ -2,11 +2,15 @@
 
 set -eu
 
-RED="$(tput setaf 1 || "")"
-GREEN="$(tput setaf 2 || "")"
-YELLOW="$(tput setaf 3 || "")"
-BLUE="$(tput setaf 4 || "")"
-RESET="$(tput sgr0 || "")"
+function create_color () {
+    tput "$@" 2>/dev/null || echo ""
+}
+
+RED="$(create_color setaf 1)"
+GREEN="$(create_color setaf 2)"
+YELLOW="$(create_color setaf 3)"
+BLUE="$(create_color setaf 4)"
+RESET="$(create_color sgr0)"
 
 REPO_DIR="${HOME}/.files"
 BREW="yes"
