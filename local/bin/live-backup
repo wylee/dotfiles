@@ -86,7 +86,8 @@ class LiveBackupRunner:
             elif location in available_locations:
                 selected_locations.append((location, available_locations[location]))
             else:
-                self.exit(f'"{location}" is not a valid location key\n', self.show_info(), code=1)
+                self.exit(
+                    f'"{location}" is not a valid location key\n', self.show_locations(), code=1)
 
         default_paths = paths['__default__']
         default_excludes = excludes['__default__']
