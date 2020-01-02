@@ -19,11 +19,11 @@ PYTHON="yes"
 
 BREW_PACKAGES=(
     bash-completion
+    bitwarden-cli
     fish
     gdal
     git
     hugo
-    lastpass-cli
     node
     pass
     pwgen
