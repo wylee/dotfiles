@@ -15,7 +15,6 @@ RESET="$(create_color sgr0)"
 REPO_DIR="${HOME}/.files"
 BREW="yes"
 NPM="yes"
-NVM_DIR="${HOME}/.nvm"
 PYTHON="yes"
 
 BREW_PACKAGES=(
@@ -26,7 +25,6 @@ BREW_PACKAGES=(
     hugo
     lastpass-cli
     node
-    nvm
     pass
     pwgen
     pyenv
@@ -177,12 +175,6 @@ elif [ "$(uname -s)" = "Darwin" ]; then
         echo -n "${BLUE}Installing/updating npm... ${RESET}"
         npm -g install npm &>/dev/null
         echo "${GREEN}Done${RESET}"
-        if [ ! -d "$NVM_DIR" ]; then
-            mkdir -p "$NVM_DIR"
-            echo "${GREEN}Created ${NVM_DIR}${RESET}"
-        else
-            echo "${YELLOW}${NVM_DIR} already present${RESET}"
-        fi
     fi
 
     fish_path="/usr/local/bin/fish"
