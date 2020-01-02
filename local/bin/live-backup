@@ -51,7 +51,7 @@ class LiveBackupRunner:
         self.env = self.get_option('env')
         self.project_dir = as_path(self.get_option('project_dir'))
         self.default_locations = as_list(self.get_option('default_locations'), sep=None)
-        self.only_paths = set(as_list(self.get_option('only_paths')))
+        self.only_paths = set(self.get_option('only_paths'))
         self.all = as_bool(self.get_option('all'))
         self.do_show_info = self.get_option('info')
         self.do_show_locations = self.get_option('show_locations') and not self.do_show_info
@@ -304,10 +304,10 @@ class LiveBackupRunner:
         arg_parser = argparse.ArgumentParser(argument_default=argparse.SUPPRESS)
         arg_parser.add_argument('--env', '-e')
         arg_parser.add_argument('--config-file', '-c', type=as_path)
-        arg_parser.add_argument('--project-dir', '-p', type=as_path)
+        arg_parser.add_argument('--project-dir', '-d', type=as_path)
         arg_parser.add_argument('locations', nargs='*', help='Back up to the specified locations')
         arg_parser.add_argument(
-                '--paths', '-P', dest='only_paths', nargs='*',
+                '--paths', '-p', action='append', dest='only_paths', default=[],
                 help='Back up only the specified paths')
         arg_parser.add_argument('--all', '-a', action='store_true')
         arg_parser.add_argument(
@@ -320,10 +320,10 @@ class LiveBackupRunner:
             '--show-selected', '-s', action='store_true',
             help='Show selected locations then exit.')
         arg_parser.add_argument(
-            '--debug', '-d', action='store_true',
+            '--debug', '-D', action='store_true',
             help='Show what rsync is doing (add --verbose; print command)')
         arg_parser.add_argument(
-            '--dry-run', action='store_true',
+            '--dry-run', '-R', action='store_true',
             help="Don't actually copy any files (passed through to rsync)")
         arg_parser.add_argument(
             '--quiet', '-q', action='store_true',
