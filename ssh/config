@@ -17,6 +17,9 @@ Host github.com
 Host gitlab.com
     IdentityFile ~/.ssh/id_rsa-gitlab
 
+Host notabug.org
+    IdentityFile ~/.ssh/id_rsa-notabug
+
 Host pypi.org
     IdentityFile ~/.ssh/id_rsa-pypi
 
