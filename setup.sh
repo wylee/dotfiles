@@ -33,16 +33,13 @@ BREW_PACKAGES=(
     vim
 )
 
-PYTHON_VERSIONS=$(
-    for mv in 8 7 6 5 4; do
-        pyenv install -l | \
-            grep -E " +3\\.$mv\\.\d+\$" | \
-            tail -1 | \
-            sed 's/^ *//' | \
-            sed 's/ *$//'
-    done
+PYTHON_VERSIONS=(
+    3.8.1
+    3.7.6
+    3.6.10
+    3.5.9
+    3.4.10
 )
-PYTHON_VERSIONS=(${PYTHON_VERSIONS// / })
 
 PYTHON_PACKAGES=(
     bpython

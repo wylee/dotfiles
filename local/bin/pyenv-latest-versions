@@ -1,0 +1,28 @@
+#!/bin/bash
+#
+# Use to get the latest available version of the specified Python minor
+# version. E.g.:
+#
+#     pyenv-latest-versions 3.8 3.7 3.6 3.5 3.4 | pbcopy -
+#
+# NOTE: Will upgrade Homebrew pyenv first.
+# NOTE: Versions are output to stdout; everything else is sent to stderr.
+
+if ! which pyenv 2>&1 1>/dev/null; then
+    echo "pyenv isn't installed" 1>&2
+    exit 1
+fi
+
+if which brew 2>&1 1>/dev/null; then
+    echo "Upgrading Homebrew pyenv..." 1>&2
+    brew upgrade pyenv
+fi
+
+for minor_version in "$@"; do
+    echo "Getting latest available of Python $minor_version" 1>&2
+    echo $(pyenv install --list | \
+        grep -E " +$minor_version\\.\d+\$" | \
+        tail -1 | \
+        sed 's/^ *//' | \
+        sed 's/ *$//')
+done
