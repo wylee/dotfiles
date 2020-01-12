@@ -170,7 +170,7 @@ elif [ "$(uname -s)" = "Darwin" ]; then
         echo "${YELLOW}Skipping npm installation/update${RESET}"
     else
         echo -n "${BLUE}Installing/updating npm... ${RESET}"
-        npm -g install npm &>/dev/null
+        npm --force --global install npm &>/dev/null
         echo "${GREEN}Done${RESET}"
     fi
 
