@@ -203,6 +203,7 @@ test -d ~/Projects || mkdir ~/Projects
 
 link bashrc
 link checkoutmanager.cfg
+link editorconfig
 link gitconfig
 link gitignore
 link hgignore
