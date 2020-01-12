@@ -199,6 +199,7 @@ test -d ~/.local || mkdir ~/.local
 test -d ~/.local/bin || mkdir ~/.local/bin
 test -d ~/.ssh || mkdir ~/.ssh
 test -d ~/.tmux || mkdir ~/.tmux
+test -d ~/Projects || mkdir ~/Projects
 
 link bashrc
 link checkoutmanager.cfg
