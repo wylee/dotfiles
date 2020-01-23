@@ -190,6 +190,7 @@ else
 fi
 
 test -d ~/.bashrc.d || mkdir ~/.bashrc.d
+test -d ~/.config || mkdir ~/.config
 test -d ~/.config/fish || mkdir ~/.config/fish
 test -d ~/.config/fish/functions || mkdir ~/.config/fish/functions
 test -d ~/.local || mkdir ~/.local
