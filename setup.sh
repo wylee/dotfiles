@@ -28,8 +28,9 @@ BREW_PACKAGES=(
     pass
     pwgen
     pyenv
+    reattach-to-user-namespace
     ripgrep
-    tmux reattach-to-user-namespace
+    tmux
     vim
 )
 
