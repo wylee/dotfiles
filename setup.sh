@@ -1,6 +1,7 @@
 #!/bin/bash
 
-set -eu
+set -eu -o pipefail
+shopt -s failglob
 
 function create_color () {
     tput "$@" 2>/dev/null || echo ""
@@ -245,23 +246,33 @@ if [ "$PYTHON" = "no" ]; then
     echo "${YELLOW}Skipping Python installation ${RESET}"
 else
     main_python_version="python${PYTHON_VERSIONS[0]:0:3}"
+    python_versions_string=$(printf "%s\n" ${PYTHON_VERSIONS[@]})
+    pyenv_versions=$(pyenv versions --bare)
 
-    for version in $(pyenv versions --bare); do
-        if printf "%s\n" ${PYTHON_VERSIONS[@]} | grep -Eq "^${version}$"; then
-            echo "${BLUE}Not uninstalling Python ${version}"
+    # For each installed pyenv version:
+    #
+    #   - If the version is in the current install list, do nothing
+    #   - If the version isn't in the current install list, uninstall it
+    for pyenv_version in $pyenv_versions; do
+        if grep -Eq "^${pyenv_version}$" <<< "$python_versions_string"; then
+            echo "${BLUE}Not uninstalling Python ${pyenv_version} (in current install list)"
         else
-            echo "${YELLOW}Installed Python ${version} not in current install list ${RESET}"
-            read -p "${YELLOW}Uninstall Python ${version}? [yes/no] ${RESET}" answer
+            echo "${YELLOW}Installed Python ${pyenv_version} not in current install list ${RESET}"
+            read -p "${YELLOW}Uninstall Python ${pyenv_version}? [yes/no] ${RESET}" answer
             if [ "$answer" = "yes" ]; then
-                echo "${YELLOW}Uninstalling Python ${version}... ${RESET}"
-                pyenv uninstall -f $version
+                echo "${YELLOW}Uninstalling Python ${pyenv_version}... ${RESET}"
+                pyenv uninstall -f $pyenv_version
                 echo "${GREEN}Done${RESET}"
             fi
         fi
     done
 
+    # For each Python version in the current install list:
+    #
+    #   - If the version is already installed, do nothing
+    #   - If the version isn't already installed, install it
     for version in "${PYTHON_VERSIONS[@]}"; do
-        if pyenv versions --bare | grep -Eq "^${version}$"; then
+        if grep -Eq "^${version}$" <<< "$pyenv_versions"; then
             echo "${YELLOW}Python ${version} already installed${RESET}"
         else
             read -p "${YELLOW}Install Python ${version}? [yes/no] ${RESET}" answer
@@ -273,7 +284,7 @@ else
         fi
     done
 
-    printf "%s\n" "${PYTHON_VERSIONS[@]}" >"${HOME}/.python-version"
+    echo "$python_versions_string" >"${HOME}/.python-version"
     echo "${GREEN}Created ~/.python-version${RESET}"
 
     eval "$(pyenv init -)"
