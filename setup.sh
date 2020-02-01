@@ -30,6 +30,7 @@ BREW_PACKAGES=(
     pyenv
     reattach-to-user-namespace
     ripgrep
+    shellcheck
     tmux
     vim
 )
