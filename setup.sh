@@ -118,7 +118,10 @@ function link () {
             local target="${HOME}/${1}"
         fi
     fi
-    local target_dir="$(dirname "$target")"
+
+    local target_dir
+    target_dir="$(dirname "$target")"
+
     if [ ! -d "$target_dir" ]; then
         echo "${YELLOW}Target directory \"${target_dir}\" does not exist{RESET}" 1>&2
         mkdir -p "${target_dir}"
@@ -129,7 +132,7 @@ function link () {
         ln -s "$file" "$target"
         echo "${GREEN}Linked ${target} to ${file}${RESET}"
     else
-        echo "${YELLOW}${target} already points to $(readlink ${target})${RESET}" 1>&2
+        echo "${YELLOW}${target} already points to $(readlink "${target}")${RESET}" 1>&2
     fi
     return 0
 }
@@ -162,11 +165,11 @@ elif [ "$(uname -s)" = "Darwin" ]; then
     echo "${BLUE}Installing Homebrew packages...${RESET}"
 
     for package in "${BREW_PACKAGES[@]}"; do
-        words=($package)
-        if "$brew_path" ls --versions ${words[0]} >/dev/null; then
+        words=("$package")
+        if "$brew_path" ls --versions "${words[0]}" >/dev/null; then
             echo "Skipping package ${words[0]} (already installed)"
         else
-            "$brew_path" install $package
+            "$brew_path" install "$package"
         fi
     done
 
@@ -246,7 +249,7 @@ if [ "$PYTHON" = "no" ]; then
     echo "${YELLOW}Skipping Python installation ${RESET}"
 else
     main_python_version="python${PYTHON_VERSIONS[0]:0:3}"
-    python_versions_string=$(printf "%s\n" ${PYTHON_VERSIONS[@]})
+    python_versions_string=$(printf "%s\n" "${PYTHON_VERSIONS[@]}")
     pyenv_versions=$(pyenv versions --bare)
 
     # For each installed pyenv version:
@@ -261,7 +264,7 @@ else
             read -p "${YELLOW}Uninstall Python ${pyenv_version}? [yes/no] ${RESET}" answer
             if [ "$answer" = "yes" ]; then
                 echo "${YELLOW}Uninstalling Python ${pyenv_version}... ${RESET}"
-                pyenv uninstall -f $pyenv_version
+                pyenv uninstall -f "$pyenv_version"
                 echo "${GREEN}Done${RESET}"
             fi
         fi
@@ -291,7 +294,7 @@ else
 
     for version in "${PYTHON_VERSIONS[@]}"; do
         echo -n "${BLUE}Upgrading pip for Python ${version}... ${RESET}"
-        python${version:0:3} -m pip install --upgrade --upgrade-strategy eager pip >/dev/null
+        "python${version:0:3}" -m pip install --upgrade --upgrade-strategy eager pip >/dev/null
         echo "${GREEN}Done${RESET}"
     done
 
@@ -317,10 +320,10 @@ echo "${GREEN}Done${RESET}"
 pathogen_path="${HOME}/.vim/vim-pathogen/autoload/pathogen.vim"
 pathogen_link="${HOME}/.vim/autoload/pathogen.vim"
 if [ -L "$pathogen_link" ]; then
-    echo "${YELLOW}pathogen.vim already linked to $(readlink $pathogen_link)${RESET}"
+    echo "${YELLOW}pathogen.vim already linked to $(readlink "$pathogen_link")${RESET}"
 else
     echo -n "${BLUE}Linking ${pathogen_link} to ${pathogen_path}... "
-    ln -s $pathogen_path $pathogen_link
+    ln -s "$pathogen_path" "$pathogen_link"
     echo "${GREEN}Done${RESET}"
 fi
 
