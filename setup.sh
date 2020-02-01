@@ -47,6 +47,7 @@ PYTHON_PACKAGES=(
     bpython
     checkoutmanager
     poetry
+    totp
     twine
 )
 
