@@ -74,7 +74,6 @@ nnoremap / /\v
 vnoremap / /\v
 set gdefault
 set hlsearch
-set ignorecase
 set incsearch
 set showmatch
 set smartcase
