@@ -326,7 +326,3 @@ else
     ln -s "$pathogen_path" "$pathogen_link"
     echo "${GREEN}Done${RESET}"
 fi
-
-echo "${BLUE}Adding login hook...${RESET}"
-"${HOME}/.local/bin/login-hook"
-echo "${GREEN}Login hook added${RESET}"
