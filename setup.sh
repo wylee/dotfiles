@@ -35,6 +35,10 @@ BREW_PACKAGES=(
     vim
 )
 
+BREW_CASKS=(
+    iterm2
+)
+
 PYTHON_VERSIONS=(
     3.8.1
     3.7.6
@@ -169,6 +173,15 @@ elif [ "$(uname -s)" = "Darwin" ]; then
             echo "Skipping package ${words[0]} (already installed)"
         else
             "$brew_path" install "$package"
+        fi
+    done
+
+    for package in "${BREW_CASKS[@]}"; do
+        words=("$package")
+        if "$brew_path" cask ls --versions "${words[0]}" >/dev/null; then
+            echo "Skipping cask ${words[0]} (already installed)"
+        else
+            "$brew_path" cask install "$package"
         fi
     done
 
