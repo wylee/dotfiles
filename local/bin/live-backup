@@ -360,6 +360,8 @@ class LiveBackupRunner:
         else:
             source = 'defaults'
             value = OPTIONS[name]
+        if value == '':
+            value = None
         self.debug_info(f'Got {name} from {source}: {value}')
         return value
 
