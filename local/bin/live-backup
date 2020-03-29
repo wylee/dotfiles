@@ -268,10 +268,12 @@ class LiveBackupRunner:
     def show_info(self):
         info = []
 
+        info.append(f'Environment: {self.env or "No environment specified"}\n')
+
         info.append('Project directory:\n')
         info.append(f'    - {self.project_dir}')
 
-        info.extend(('', self.show_locations()))
+        info.extend(('', self.show_locations(from_show_info=True)))
 
         info.append('\nDefault locations:\n')
         default_locations = self.default_locations
@@ -301,8 +303,11 @@ class LiveBackupRunner:
 
         return '\n'.join(info)
 
-    def show_locations(self):
+    def show_locations(self, from_show_info=False):
         info = []
+
+        if not from_show_info:
+            info.append(f'Environment: {self.env or "No environment specified"}\n')
 
         info.append('Available backup locations:\n')
         for k, v in self.available_locations.items():
