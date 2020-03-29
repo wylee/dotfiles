@@ -192,7 +192,12 @@ class LiveBackupRunner:
             else:
                 paths[location] = paths['__default__'].copy()
             for path in location_paths:
-                path = path.format(env=self.env, project_dir=self.project_dir)
+                format_kwargs = {
+                    'project_dir': self.project_dir,
+                }
+                if self.env:
+                    format_kwargs['env'] = self.env
+                path = path.format(**format_kwargs)
                 path = os.path.expanduser(path)
                 glob_paths = glob.glob(path)
                 if not glob_paths:
@@ -241,8 +246,11 @@ class LiveBackupRunner:
     @property
     def available_locations(self):
         config = self.get_config('available-locations')
+        format_kwargs = {}
+        if self.env:
+            format_kwargs['env'] = self.env
         return collections.OrderedDict(
-            (k, as_path(v).format(env=self.env)) for (k, v) in config.items())
+            (k, as_path(v).format(**format_kwargs)) for (k, v) in config.items())
 
     @property
     def location_groups(self):
