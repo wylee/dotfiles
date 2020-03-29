@@ -303,8 +303,8 @@ class LiveBackupRunner:
     def parse_args(self, argv=None):
         arg_parser = argparse.ArgumentParser(argument_default=argparse.SUPPRESS)
         arg_parser.add_argument('--env', '-e')
-        arg_parser.add_argument('--config-file', '-c', type=as_path)
-        arg_parser.add_argument('--project-dir', '-d', type=as_path)
+        arg_parser.add_argument('--config-file', '-c')
+        arg_parser.add_argument('--project-dir', '-d')
         arg_parser.add_argument('locations', nargs='*', help='Back up to the specified locations')
         arg_parser.add_argument(
             '--paths', '-p', action='append', dest='only_paths', default=[],
