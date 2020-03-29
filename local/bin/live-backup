@@ -400,8 +400,12 @@ def as_list(v, sep='\n'):
     return items
 
 
-def as_path(val):
+def as_path(val, default=None):
+    if not val:
+        return default
     val = os.path.expanduser(val)
+    val = os.path.abspath(val)
+    val = os.path.normpath(val)
     return val
 
 
