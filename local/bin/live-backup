@@ -307,8 +307,8 @@ class LiveBackupRunner:
         arg_parser.add_argument('--project-dir', '-d', type=as_path)
         arg_parser.add_argument('locations', nargs='*', help='Back up to the specified locations')
         arg_parser.add_argument(
-                '--paths', '-p', action='append', dest='only_paths', default=[],
-                help='Back up only the specified paths')
+            '--paths', '-p', action='append', dest='only_paths', default=[],
+            help='Back up only the specified paths')
         arg_parser.add_argument('--all', '-a', action='store_true')
         arg_parser.add_argument(
             '--info', '-i', action='store_true',
