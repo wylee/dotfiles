@@ -434,9 +434,16 @@ def as_list(v, sep='\n'):
 def as_path(val, default=None):
     if not val:
         return default
+    if ':' in val:
+        # Handle SSH path
+        host, val = val.split(':', 1)
+    else:
+        host = None
     val = os.path.expanduser(val)
     val = os.path.abspath(val)
     val = os.path.normpath(val)
+    if host:
+        val = f'{host}:{val}'
     return val
 
 
