@@ -12,6 +12,7 @@ import sys
 OPTIONS = {
     'env': None,
     'config_file': '~/.live-backup.cfg',
+    'env_file': None,
     'project_dir': os.environ.get('PROJECT_DIR', '~/Projects'),
     'default_locations': [],
     'locations': [],
@@ -49,6 +50,20 @@ class LiveBackupRunner:
         self.quiet = as_bool(self.get_option('quiet'))
 
         self.env = self.get_option('env')
+
+        env_file = self.get_option('env_file')
+        if not env_file:
+            config_file_dir = os.path.dirname(self.config_file)
+            maybe_env_file = os.path.join(config_file_dir, '.live-backup.env')
+            if os.path.isfile(maybe_env_file):
+                self.debug_info(f'Found env file: {maybe_env_file}')
+                env_file = maybe_env_file
+        self.env_file = as_path(env_file)
+
+        if not self.env and self.env_file:
+            with open(self.env_file) as fp:
+                self.env = fp.read().strip()
+
         self.project_dir = as_path(self.get_option('project_dir'))
         self.default_locations = as_list(self.get_option('default_locations'), sep=None)
         self.only_paths = set(self.get_option('only_paths'))
@@ -304,6 +319,7 @@ class LiveBackupRunner:
         arg_parser = argparse.ArgumentParser(argument_default=argparse.SUPPRESS)
         arg_parser.add_argument('--env', '-e')
         arg_parser.add_argument('--config-file', '-c')
+        arg_parser.add_argument('--env-file', '-f')
         arg_parser.add_argument('--project-dir', '-d')
         arg_parser.add_argument('locations', nargs='*', help='Back up to the specified locations')
         arg_parser.add_argument(
