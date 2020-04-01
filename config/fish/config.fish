@@ -1,12 +1,12 @@
 function __init
+    # XXX: Needs to be set for both login and non-login shells
+    set -gx PROJECT_DIR ~/Projects
+
     if status --is-login
         fish_vi_key_bindings
-
-        set -gx EDITOR vim
-        set -gx PROJECT_DIR ~/Projects
-
         set -gx fish_prompt_date_format '+%a %b %d %T'
         set -gx fish_greeting "Shell started" (date $fish_prompt_date_format)
+        set -gx EDITOR vim
     end
 
     __prepend_path /usr/local/bin
