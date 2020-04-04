@@ -36,6 +36,10 @@ BREW_PACKAGES=(
 )
 
 BREW_CASKS=(
+    bitwarden
+    dropbox
+    firefox
+    homebrew/cask-versions/firefox-developer-edition
     iterm2
 )
 
@@ -175,6 +179,8 @@ elif [ "$(uname -s)" = "Darwin" ]; then
             "$brew_path" install "$package"
         fi
     done
+
+    echo "${BLUE}Installing applications (casks) via Homebrew...${RESET}"
 
     for package in "${BREW_CASKS[@]}"; do
         words=("$package")
