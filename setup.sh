@@ -39,8 +39,10 @@ BREW_CASKS=(
     bitwarden
     dropbox
     firefox
-    homebrew/cask-versions/firefox-developer-edition
+    firefox-developer-edition
     iterm2
+    signal
+    visual-studio-code
 )
 
 PYTHON_VERSIONS=(
