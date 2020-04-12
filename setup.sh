@@ -41,6 +41,7 @@ BREW_CASKS=(
     firefox
     firefox-developer-edition
     iterm2
+    jetbrains-toolbox
     signal
     visual-studio-code
 )
