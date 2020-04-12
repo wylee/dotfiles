@@ -1,6 +1,7 @@
 " Search
 set gdefault
 set hlsearch
+set ideajoin
 set ignorecase
 set incsearch
 set showmatch
