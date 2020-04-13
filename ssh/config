@@ -60,19 +60,9 @@ Host tangledframework.org
 
 # PSU -----------------------------------------------------------------
 
-Host hera.rc.pdx.edu
+Host *.pdx.edu
     User wbaldwin
     IdentityFile ~/.ssh/id_rsa-psu
-    ForwardAgent yes
-    LogLevel QUIET
-    ServerAliveInterval 300
 
-Host *.rc.pdx.edu *.oit.pdx.edu !hera.rc.pdx.edu
-    User wbaldwin
-    IdentityFile ~/.ssh/id_rsa-psu
-    ProxyJump hera.rc.pdx.edu
-    ServerAliveInterval 300
-
-# Vagrant
-Host 10.0.0.10 *.vagrant
-    IdentityFile ~/.ssh/id_rsa
+Host git.oit.pdx.edu
+    IdentityFile ~/.ssh/id_rsa-git.oit.pdx.edu
