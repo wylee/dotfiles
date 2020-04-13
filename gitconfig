@@ -1,6 +1,6 @@
 [user]
     name = Wyatt Baldwin
-    email = self@wyattbaldwin.com
+    email = wbaldwin@pdx.edu
 
 [alias]
     fixup = !git commit --fixup
@@ -15,6 +15,7 @@
         --pretty=format:"%Cred%h%x20%Cgreen%ad%x20%Creset%s%Creset" \
         --date=format:"%m/%d/%y"
     st = !git status
+    stash-all = !git stash push --include-untracked -m ${1:-temp} .
 
 [color]
     ui = true
