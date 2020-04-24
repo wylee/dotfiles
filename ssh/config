@@ -3,7 +3,7 @@ Host *
     AddKeysToAgent yes
     IdentitiesOnly yes
 
-Host 192.168.1.1
+Host *.local 192.168.1.1
     IdentityFile ~/.ssh/id_rsa
 
 # Code ----------------------------------------------------------------
@@ -63,6 +63,15 @@ Host tangledframework.org
 Host *.pdx.edu
     User wbaldwin
     IdentityFile ~/.ssh/id_rsa-psu
+
+Host zelus.rc.pdx.edu
+    ForwardAgent yes
+    LogLevel QUIET
+    ServerAliveInterval 300
+
+Host *.rc.pdx.edu !zelus.rc.pdx.edu
+    ProxyJump zelus.rc.pdx.edu
+    ServerAliveInterval 300
 
 Host git.oit.pdx.edu
     IdentityFile ~/.ssh/id_rsa-git.oit.pdx.edu
