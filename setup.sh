@@ -167,6 +167,7 @@ elif [ "$(uname -s)" = "Darwin" ]; then
         echo "upgrading...${RESET}"
         "$brew_path" update
         "$brew_path" upgrade
+        "$brew_path" cask upgrade
     else
         /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
         "$brew_path" doctor
