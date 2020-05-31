@@ -36,27 +36,11 @@ Host bycycle.org
     IdentityFile ~/.ssh/id_rsa-bycycle
     Port 1046
 
-Host info.bycycle.org
-    User ubuntu
-    IdentityFile ~/.ssh/id_rsa-sites
-
 # MyStops -------------------------------------------------------------
 
 Host mystops.io
     User ubuntu
     IdentityFile ~/.ssh/id_rsa-mystops
-
-# Pedalpalooza --------------------------------------------------------
-
-Host pedalpalooza.io
-    User ubuntu
-    IdentityFile ~/.ssh/id_rsa-pedalpalooza
-
-# Tangled -------------------------------------------------------------
-
-Host tangledframework.org
-    User ubuntu
-    IdentityFile ~/.ssh/id_rsa-sites
 
 # PSU -----------------------------------------------------------------
 
