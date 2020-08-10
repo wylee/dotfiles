@@ -23,6 +23,9 @@
 [core]
     excludesfile = ~/.gitignore
 
+[init]
+    defaultBranch = dev
+
 [push]
     default = simple
 
