@@ -1,6 +1,6 @@
 [user]
     name = Wyatt Baldwin
-    email = wbaldwin@pdx.edu
+    email = self@wyattbaldwin.com
 
 [alias]
     fixup = !git commit --fixup
