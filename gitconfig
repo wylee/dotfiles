@@ -11,6 +11,7 @@
     new-since = !git log --oneline --reverse ${1}..
     new-since-last-tag = !git log --oneline --reverse $(git tag | tail -n 1)..
     latest = !git log --oneline --reverse -50
+    last = !git log --oneline --reverse -1
     report = !git log --color --oneline --reverse --since $(date +"%Y-%m-01T00:00:00") \
         --pretty=format:"%Cred%h%x20%Cgreen%ad%x20%Creset%s%Creset" \
         --date=format:"%m/%d/%y"
