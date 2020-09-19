@@ -38,11 +38,13 @@ BREW_PACKAGES=(
 BREW_CASKS=(
     bitwarden
     dropbox
+    element
     firefox
     firefox-developer-edition
     iterm2
     jetbrains-toolbox
     signal
+    spotify
     visual-studio-code
 )
 
