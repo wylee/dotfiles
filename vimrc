@@ -112,8 +112,8 @@ augroup vimrc
 
     autocmd FocusLost * :wa
 
-    autocmd FileType css setlocal sw=4 sts=4
-    autocmd FileType html setlocal sw=4 sts=4
+    autocmd FileType css setlocal sw=2 sts=2
+    autocmd FileType html setlocal sw=2 sts=2
     autocmd FileType javascript setlocal sw=4 sts=4
     autocmd FileType json setlocal sw=2 sts=2
     autocmd FileType markdown setlocal sw=2 sts=2 tw=72
