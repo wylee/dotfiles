@@ -47,11 +47,10 @@ BREW_CASKS=(
 )
 
 PYTHON_VERSIONS=(
+    3.8.5
     3.7.7
     3.6.10
     3.5.9
-    3.4.10
-    3.8.5
 )
 
 PYTHON_PACKAGES=(
