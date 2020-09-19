@@ -53,6 +53,8 @@ PYTHON_VERSIONS=(
     3.5.9
 )
 
+PYTHON_VERSIONS_FILE="${HOME}/.python-version"
+
 PYTHON_PACKAGES=(
     bpython
     checkoutmanager
@@ -273,6 +275,12 @@ else
     python_versions_string=$(printf "%s\n" "${PYTHON_VERSIONS[@]}")
     pyenv_versions=$(pyenv versions --bare)
 
+    if test -f "${PYTHON_VERSIONS_FILE}"; then
+        rm "${PYTHON_VERSIONS_FILE}"
+        touch "${PYTHON_VERSIONS_FILE}"
+        echo "${RED}Recreated ${PYTHON_VERSIONS_FILE}${RESET} (currently empty)"
+    fi
+
     # For each installed pyenv version:
     #
     #   - If the version is in the current install list, do nothing
@@ -298,26 +306,27 @@ else
     for version in "${PYTHON_VERSIONS[@]}"; do
         if grep -Eq "^${version}$" <<< "$pyenv_versions"; then
             echo "${YELLOW}Python ${version} already installed${RESET}"
+            echo "${version}" >>"${PYTHON_VERSIONS_FILE}"
+            echo "${BLUE}Added ${version} to ${PYTHON_VERSIONS_FILE}"
         else
             read -p "${YELLOW}Install Python ${version}? [yes/no] ${RESET}" answer
             if [ "$answer" = "yes" ]; then
                 echo "${BLUE}Installing Python ${version}... ${RESET}"
                 PYTHON_CONFIGURE_OPTS="--enable-shared" pyenv install "$version"
                 echo "${GREEN}Done${RESET}"
+                echo "${version}" >>"${PYTHON_VERSIONS_FILE}"
+                echo "${BLUE}Added ${version} to ${PYTHON_VERSIONS_FILE}"
             fi
         fi
     done
 
-    echo "$python_versions_string" >"${HOME}/.python-version"
-    echo "${GREEN}Created ~/.python-version${RESET}"
-
     eval "$(pyenv init -)"
 
-    for version in "${PYTHON_VERSIONS[@]}"; do
+    while read version; do
         echo -n "${BLUE}Upgrading pip for Python ${version}... ${RESET}"
         "python${version:0:3}" -m pip install --upgrade --upgrade-strategy eager pip >/dev/null
         echo "${GREEN}Done${RESET}"
-    done
+    done <"${PYTHON_VERSIONS_FILE}"
 
     echo -n "${BLUE}Installing/upgrading pipx... ${RESET}"
     $main_python_version -m pip install --user --upgrade --upgrade-strategy eager pipx >/dev/null
