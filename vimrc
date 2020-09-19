@@ -132,7 +132,7 @@ augroup vimrc
     "     - Don't auto-wrap code
     "     - Make comments wrap at column 72 (works with format option c)
     "     - Display right margin in column 100
-    autocmd FileType python setlocal fo-=t tw=72 cc=100
+    autocmd FileType python setlocal fo-=t tw=72 cc=88
 
     " Set default completion function only if one isn't already set on the
     " file.
