@@ -170,7 +170,7 @@ elif [ "$(uname -s)" = "Darwin" ]; then
         echo "upgrading...${RESET}"
         "$brew_path" update
         "$brew_path" upgrade
-        "$brew_path" cask upgrade
+        "$brew_path" upgrade --casks
     else
         /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
         "$brew_path" doctor
@@ -191,10 +191,10 @@ elif [ "$(uname -s)" = "Darwin" ]; then
 
     for package in "${BREW_CASKS[@]}"; do
         words=("$package")
-        if "$brew_path" cask ls --versions "${words[0]}" >/dev/null; then
+        if "$brew_path" list --cask --versions "${words[0]}" >/dev/null; then
             echo "Skipping cask ${words[0]} (already installed)"
         else
-            "$brew_path" cask install "$package"
+            "$brew_path" install --cask "$package"
         fi
     done
 
