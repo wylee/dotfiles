@@ -136,7 +136,7 @@ function link () {
     target_dir="$(dirname "$target")"
 
     if [ ! -d "$target_dir" ]; then
-        echo "${YELLOW}Target directory \"${target_dir}\" does not exist{RESET}" 1>&2
+        echo "${YELLOW}Target directory \"${target_dir}\" does not exist${RESET}" 1>&2
         mkdir -p "${target_dir}"
         echo "${BLUE}Created target directory: ${target_dir}"
     fi
