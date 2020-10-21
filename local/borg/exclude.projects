@@ -1,0 +1,66 @@
+sh:**/backup
+sh:**/backups
+
+sh:**/.DS_Store
+sh:**/*.bak
+sh:**/*.mo
+sh:**/*.swp
+
+sh:**/*.css.map
+sh:**/*.js.map
+sh:**/*.scss.map
+sh:**/bundle.*
+
+# Archives
+sh:**/*.bzip2
+sh:**/*.gz
+sh:**/*.jar
+sh:**/*.tar
+sh:**/*.zip
+
+sh:**/*cache
+
+# Generic build
+sh:**/.env*
+sh:**/build
+sh:**/dist
+
+# Java
+sh:**/.mvn
+sh:**/target
+sh:**/vendor
+sh:**/web*.xml
+
+# Node.js
+sh:**/node_modules
+
+# Python
+sh:**/*.egg-info
+sh:**/*.marshal
+sh:**/*.po
+sh:**/*.pyc
+sh:**/*.pyo
+sh:**/.env
+sh:**/.tox
+sh:**/.venv
+sh:**/Pipfile.lock
+sh:**/__pycache__
+sh:**/_build
+sh:**/poetry.lock
+
+sh:**/Projects/.metadata
+
+# Django
+sh:**/Projects/*/static
+sh:**/local*.cfg
+
+# AiM
+sh:**/aim-local/aim-dist
+sh:**/aim-local/aim-docs
+
+# MyStops
+sh:**/Projects/mystops/trimet/data
+
+# OHS
+sh:**/Projects/ohs/*/media
+sh:**/Projects/ohs/*/static

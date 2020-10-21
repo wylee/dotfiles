@@ -21,6 +21,7 @@ PYTHON="yes"
 BREW_PACKAGES=(
     bash-completion
     bitwarden-cli
+    borgbackup
     fish
     gdal
     git
@@ -261,6 +262,14 @@ link "config/fish/functions/additional-blackhole-hosts"
 
 for file in "${REPO_DIR}/local/bin/"*; do
     link "local/bin/$(basename "$file")"
+done
+
+for file in "${REPO_DIR}/local/borg/exclude."*; do
+    link "local/borg/$(basename "$file")"
+done
+
+for file in "${REPO_DIR}/local/borg/backup."*; do
+    link "local/borg/$(basename "$file")" "${HOME}/.local/bin/$(basename "$file")"
 done
 
 if [ "$PYTHON" = "no" ]; then

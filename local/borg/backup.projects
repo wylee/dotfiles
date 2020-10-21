@@ -1,0 +1,36 @@
+#!/usr/bin/env fish
+#
+# Initialize backup repo:
+#
+#     borg init -e none <path>
+
+~/.local/bin/mount-volumes
+set -gx BORG_REPO /Volumes/wbaldwin/backups/borg/projects
+set -gx BORG_EXCLUDE_FROM ~/.local/borg/exclude.projects
+
+if not test -d $BORG_REPO
+    echo "Borg root does not exist: $borg_root"
+    echo "Create it with `borg init -e none $BORG_REPO"
+    exit 1
+end
+
+if not test -f $BORG_EXCLUDE_FROM
+    echo "Exclude file does not exist: $BORG_EXCLUDE_FROM"
+    exit 1
+end
+
+borg create \
+    --list \
+    --exclude-from $BORG_EXCLUDE_FROM \
+    ::'{hostname}-{now}' \
+    ~/.files \
+    ~/Projects
+
+borg prune \
+    --list \
+    --prefix '{hostname}-' \
+    --show-rc \
+    --keep-hourly 24 \
+    --keep-daily 7 \
+    --keep-weekly 4 \
+    --keep-monthly 6
