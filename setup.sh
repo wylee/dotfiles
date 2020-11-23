@@ -31,7 +31,6 @@ BREW_PACKAGES=(
     pyenv
     ripgrep
     shellcheck
-    tmux
     vim
 )
 
@@ -228,7 +227,6 @@ test -d ~/.config/fish/functions || mkdir ~/.config/fish/functions
 test -d ~/.local || mkdir ~/.local
 test -d ~/.local/bin || mkdir ~/.local/bin
 test -d ~/.ssh || mkdir ~/.ssh
-test -d ~/.tmux || mkdir ~/.tmux
 test -d ~/Projects || mkdir ~/Projects
 
 link bashrc
@@ -243,7 +241,6 @@ link inputrc
 link live-backup.cfg
 link profile
 link pythonrc
-link tmux.conf
 link vimrc
 link ssh/config
 link 'Library/Application Support/pypoetry/config.toml'
@@ -264,10 +261,6 @@ link "config/fish/functions/additional-blackhole-hosts"
 
 for file in "${REPO_DIR}/local/bin/"*; do
     link "local/bin/$(basename "$file")"
-done
-
-for file in "${REPO_DIR}/tmux/"*.conf; do
-    link "tmux/$(basename "$file")"
 done
 
 if [ "$PYTHON" = "no" ]; then

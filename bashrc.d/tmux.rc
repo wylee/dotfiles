@@ -1,9 +1,0 @@
-function tmux-session {
-    local name="$1"
-    local path="${HOME}/.tmux/${1}-session.conf"
-    if [ ! -f "$path" ]; then
-        echo "Could not find tmux session config: $path" 1>&2
-    else
-        tmux source-file "$path"
-    fi
-}
