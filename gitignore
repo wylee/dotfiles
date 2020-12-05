@@ -1,16 +1,8 @@
 #### At root of repo
 /build/
+/dist/
 /docs/_build
-/var/
-/MANIFEST
-/scratch
-/tags
-/.coverage
-/.eggs/
-/.env*/
-/.tox/
-/.venv*/
-/*.commit
+/target/
 
 # Project directories
 /.eclipse*/
@@ -21,16 +13,18 @@
 /.vscode*/
 
 # Python
-/dist/
-/docs/.build
 /*.egg-info/
-/*.egg
+/.env*/
+/.tox/
+/.venv*/
 /.python-version
+/MANIFEST
+__pycache__/
+*.py[cdo]
+.coverage
 
 #### Anywhere in repo
 .DS_Store
-git.commit
 *.css.map
-*.py[cdo]
 .*.swp
 node_modules/
