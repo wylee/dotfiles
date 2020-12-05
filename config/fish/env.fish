@@ -45,7 +45,7 @@ function cdenv -a env_dir
     end
 end
 
-function activateenv -a option
+function activateenv
     set virtualenv_dir .env
     set virtualenv_bin $virtualenv_dir/bin
     set python_exe $virtualenv_bin/python
@@ -78,7 +78,7 @@ function activateenv -a option
     end
 
     if test -z "$is_virtualenv" -a -z "$is_node_env"
-        if [ "$option" != "silent" ]
+        if [ "$argv[1]" != "silent" ]
             set_color red
             echo "This is not an env directory" 1>&2
             set_color normal
@@ -113,9 +113,12 @@ function activateenv -a option
     end
 
     hash -r 2>/dev/null
-    set_color green
-    echo -e "Activated $_ENV_CURRENT ($env_type)"
-    set_color normal
+
+    if [ "$argv[1]" != "silent" ]
+        set_color green
+        echo -e "Activated $_ENV_CURRENT ($env_type)"
+        set_color normal
+    end
 end
 
 function deactivateenv
@@ -127,9 +130,11 @@ function deactivateenv
         set -gx PATH $_ENV_ORIGINAL_PATH
         set -e _ENV_ORIGINAL_PATH
         hash -r 2>/dev/null
-        set_color red
-        echo "Deactivated $env_current"
-        set_color normal
+        if [ "$argv[1]" != "silent" ]
+            set_color red
+            echo "Deactivated $env_current"
+            set_color normal
+        end
     end
 end
 
