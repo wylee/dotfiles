@@ -48,14 +48,5 @@ Host *.pdx.edu
     User wbaldwin
     IdentityFile ~/.ssh/id_rsa-psu
 
-Host zelus.rc.pdx.edu
-    ForwardAgent yes
-    LogLevel QUIET
-    ServerAliveInterval 300
-
-Host *.rc.pdx.edu !zelus.rc.pdx.edu
-    ProxyJump zelus.rc.pdx.edu
-    ServerAliveInterval 300
-
 Host git.oit.pdx.edu
     IdentityFile ~/.ssh/id_rsa-git.oit.pdx.edu
