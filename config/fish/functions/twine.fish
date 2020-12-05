@@ -4,8 +4,8 @@ function twine
     #     1. python setup.py sdist
     #     2. twine upload dist/*
     begin
-        set -lx TWINE_USERNAME (lpass show PyPI --username)
-        set -lx TWINE_PASSWORD (lpass show PyPI --password)
+        set -lx TWINE_USERNAME (bw get username PyPI)
+        set -lx TWINE_PASSWORD (bw get password PyPI)
         command twine $argv
     end
 end
