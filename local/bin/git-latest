@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+#
+# git latest [N|all]:
+#
+#     git log --max-count=<N> --no-decorate --oneline --reverse
+#
+# Shows the last N commits where N is either specified via $1 or
+# computed based on the number of lines in the terminal. If $1 = "all",
+# all commits are shown. The newest commit is shown last. Commit
+# subjects are truncated so output lines don't wrap.
+#
+# Examples:
+#
+#     git latest -> show last N commits (based on $LINES)
+#     git latest 10 -> show last 10 commits
+#     git latest all -> show all commits
+
+function git-latest {
+    local rows
+    local cols
+    local count
+    local max_count_option
+    local first_hash
+    local hash_length
+    local subject_length
+
+    rows="$(tput lines)"
+    cols="$(tput cols)"
+
+    count="${1:-$(( rows - 5 ))}"
+
+    if [ "$count" != "all" ]; then
+        max_count_option="--max-count=${count}"
+    fi
+
+    first_hash="$(git log --format="%h" -1)"
+    hash_length="${#first_hash}"
+    subject_length="$(( cols - hash_length - 1 ))"
+
+    git log \
+        --format="%C(yellow)%h%C(reset) %<(${subject_length},trunc)%s" \
+        $max_count_option \
+        --no-decorate \
+        --reverse
+}
+
+git-latest "$@"
