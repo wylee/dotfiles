@@ -316,14 +316,19 @@ else
             echo "${version}" >>"${PYTHON_VERSIONS_FILE}"
             echo "${BLUE}Added ${version} to ${PYTHON_VERSIONS_FILE}"
         else
-            read -p "${YELLOW}Install Python ${version}? [yes/no] ${RESET}" answer
-            if [ "$answer" = "yes" ]; then
-                echo "${BLUE}Installing Python ${version}... ${RESET}"
-                PYTHON_CONFIGURE_OPTS="--enable-shared" pyenv install "$version"
-                echo "${GREEN}Done${RESET}"
-                echo "${version}" >>"${PYTHON_VERSIONS_FILE}"
-                echo "${BLUE}Added ${version} to ${PYTHON_VERSIONS_FILE}"
-            fi
+            read -p "${YELLOW}Install Python ${version}? [y/N] ${RESET}" answer
+            case "$answer" in
+                y|Y|yes|YES)
+                    echo "${BLUE}Installing Python ${version}... ${RESET}"
+                    PYTHON_CONFIGURE_OPTS="--enable-shared" pyenv install "$version"
+                    echo "${GREEN}Done${RESET}"
+                    echo "${version}" >>"${PYTHON_VERSIONS_FILE}"
+                    echo "${BLUE}Added ${version} to ${PYTHON_VERSIONS_FILE}"
+                    ;;
+                *)
+                    echo "${RED}Skipping installation of Python ${version}... ${RESET}"
+                    ;;
+            esac
         fi
     done
 
