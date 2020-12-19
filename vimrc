@@ -29,8 +29,20 @@ inoremap <End>   <NOP>
 nnoremap j gj
 nnoremap k gk
 
-" Convenient insert mode save and save-and-quit
-inoremap jj <ESC>:w<Enter>
+" Disable ex mode, which I have literally never used
+nnoremap Q <nop>
+
+" Disable command line history. This often pops up when trying to quit
+" with :q but typing q: instead.
+nnoremap q: <nop>
+
+" Convenient insert mode save. The idea here is to press j and k at
+" the same time without worrying about which of j or k is actually
+" pressed first.
+inoremap jk <ESC>:w<Enter>
+inoremap kj <ESC>:w<Enter>
+
+" Convenient insert mode save-and-quit
 inoremap qq <ESC>:w<Enter>:q<Enter>
 
 " Copy to system clipboard
