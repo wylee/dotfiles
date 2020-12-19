@@ -13,15 +13,15 @@
 /.vscode*/
 
 # Python
-/*.egg-info/
 /.env*/
 /.tox/
 /.venv*/
-/.python-version
 /MANIFEST
+*.egg-info/
 __pycache__/
 *.py[cdo]
 .coverage
+.python-version
 
 #### Anywhere in repo
 .DS_Store
