@@ -46,6 +46,9 @@ fi
 # Add /usr/local/bin if it's not already in $PATH.
 echo "$PATH" | grep "/usr/local/bin" 1>/dev/null || export PATH="/usr/local/bin:${PATH}"
 
+# Add /usr/local/sbin if it's not already in $PATH.
+echo "$PATH" | grep "/usr/local/sbin" 1>/dev/null || export PATH="/usr/local/sbin:${PATH}"
+
 # Include additonal bash config from ~/.bashrc.d/*.rc.
 
 BASHRC_DIR="${HOME}/.bashrc.d"
