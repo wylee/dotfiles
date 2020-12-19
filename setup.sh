@@ -22,6 +22,7 @@ BREW_PACKAGES=(
     bash-completion
     bitwarden-cli
     borgbackup
+    exiftool
     fish
     gdal
     git
@@ -36,6 +37,7 @@ BREW_PACKAGES=(
 )
 
 BREW_CASKS=(
+    authy
     bitwarden
     dropbox
     element
@@ -44,6 +46,7 @@ BREW_CASKS=(
     iterm2
     jetbrains-toolbox
     signal
+    sourcetree
     spotify
     visual-studio-code
 )
@@ -360,3 +363,4 @@ else
     ln -s "$pathogen_path" "$pathogen_link"
     echo "${GREEN}Done${RESET}"
 fi
+echo "${GREEN}Setup complete${RESET}"
