@@ -5,7 +5,7 @@ end
 function cd -d "cd and activate project/env"
     _original_cd $argv
     if [ "$PWD" = "$HOME" ]
-        deactivateenv
+        deactivateenv silent
     else
         activateenv silent
     end
@@ -20,61 +20,60 @@ function cdenv -a env_dir
     #
     # If env_dir isn't passed, cd into the current env directory.
     if set -q env_dir[1]
-        if not string match -q "/*" $env_dir
-            set env_dir $PROJECT_DIR/$env_dir
+        if not string match -q "/*" "$env_dir"
+            set env_dir "$PROJECT_DIR/$env_dir"
         end
     else if set -q _ENV_CURRENT
-        set env_dir $_ENV_CURRENT
+        set env_dir "$_ENV_CURRENT"
     end
 
     if set -q env_dir[1]
-        _original_cd $env_dir
+        _original_cd "$env_dir"
         activateenv
     else
         set_color red
         echo "No env passed and no env is already active" 1>&2
         echo "Changing to $PROJECT_DIR instead, which contains the following projects:" 1>&2
-        echo
         set_color normal
-        _original_cd $PROJECT_DIR
-        for f in $PROJECT_DIR/*
-            echo "   " (basename $f)
+        _original_cd "$PROJECT_DIR"
+        for f in "$PROJECT_DIR"/*
+            echo (basename "$f")
         end
-        echo
         deactivateenv
     end
 end
 
 function activateenv
-    set virtualenv_dir .env
-    set virtualenv_bin $virtualenv_dir/bin
-    set python_exe $virtualenv_bin/python
+    # Do nothing if this env is already active
+    if test "$PWD" = "$_ENV_CURRENT"
+        return
+    end
 
-    set alt_virtualenv_dir .venv
-    set alt_virtualenv_bin $alt_virtualenv_dir/bin
-    set alt_python_exe $alt_virtualenv_bin/python
+    set virtualenv_candidates .venv .virtualenv .env
+    set virtualenv_dir
+    set virtualenv_bin
 
-    set node_modules_bin node_modules/.bin
-    set alt_node_modules_bin */static/node_modules/.bin
-    set alt_node_modules_bin $alt_node_modules_bin[1]
+    set node_candidates . frontend */{frontend,static} src/{frontend,static} src/*/{frontend,static}
+    set node_bin
 
     set is_virtualenv
     set is_node_env
 
-    if test -f "$python_exe"
-        set is_virtualenv true
-    else if test -f "$alt_python_exe"
-        set is_virtualenv true
-        set virtualenv_dir $alt_virtualenv_dir
-        set virtualenv_bin $alt_virtualenv_bin
-        set python_exe $alt_python_exe
+    for dir in $virtualenv_candidates
+        if test -f "$dir/bin/python"
+            set is_virtualenv "true"
+            set virtualenv_dir "$dir"
+            set virtualenv_bin "$dir/bin"
+            break
+        end
     end
 
-    if test -d "$node_modules_bin"
-        set is_node_env "true"
-    else if test -d "$alt_node_modules_bin"
-        set is_node_env true
-        set node_modules_bin $alt_node_modules_bin
+    for dir in $node_candidates
+        if test -d "$dir/node_modules"
+            set is_node_env "true"
+            set node_bin "$dir/node_modules/.bin"
+            break
+        end
     end
 
     if test -z "$is_virtualenv" -a -z "$is_node_env"
@@ -86,29 +85,24 @@ function activateenv
         return
     end
 
-    # Do nothing if this virtualenv is already active
-    if test "$PWD" = "$_ENV_CURRENT"
-        return
-    end
-
     deactivateenv
 
-    set -gx PROJECT_NAME (basename $PWD)
-    set -gx _ENV_CURRENT $PWD
-    set -gx _ENV_ORIGINAL_PATH $PATH
-
-    if test -n "$is_virtualenv"
-        set env_type virtualenv
-        set -gx PATH $PWD/$virtualenv_bin $PATH
-        set -gx VIRTUAL_ENV $_ENV_CURRENT/$virtualenv_dir
-    end
+    set -gx PROJECT_NAME (basename "$PWD")
+    set -gx _ENV_CURRENT "$PWD"
+    set -gx _ENV_ORIGINAL_PATH "$PATH"
 
     if test -n "$is_node_env"
-        set -gx PATH $PWD/$node_modules_bin $PATH
-        if test -n "$env_type"
-            set env_type "$env_type, node"
+        set -gx PATH "$PWD/$node_bin" "$PATH"
+        set -gx _ENV_TYPE node
+    end
+
+    if test -n "$is_virtualenv"
+        set -gx PATH "$PWD/$virtualenv_bin" "$PATH"
+        set -gx VIRTUAL_ENV "$_ENV_CURRENT/$virtualenv_dir"
+        if test "$_ENV_TYPE" = "node"
+            set -gx _ENV_TYPE virtualenv node
         else
-            set env_type "node"
+            set -gx _ENV_TYPE virtualenv
         end
     end
 
@@ -116,23 +110,25 @@ function activateenv
 
     if [ "$argv[1]" != "silent" ]
         set_color green
-        echo -e "Activated $_ENV_CURRENT ($env_type)"
+        set -l type (string join ', ' $_ENV_TYPE)
+        echo "Activated env $_ENV_CURRENT ($type)"
         set_color normal
     end
 end
 
 function deactivateenv
     if set -q _ENV_CURRENT
-        set env_current $_ENV_CURRENT
+        set env_current "$_ENV_CURRENT"
+        set -gx PATH "$_ENV_ORIGINAL_PATH"
         set -e PROJECT_NAME
-        set -e _ENV_CURRENT
         set -e VIRTUAL_ENV
-        set -gx PATH $_ENV_ORIGINAL_PATH
+        set -e _ENV_CURRENT
         set -e _ENV_ORIGINAL_PATH
+        set -e _ENV_TYPE
         hash -r 2>/dev/null
         if [ "$argv[1]" != "silent" ]
             set_color red
-            echo "Deactivated $env_current"
+            echo "Deactivated env $env_current"
             set_color normal
         end
     end
