@@ -27,7 +27,7 @@ function git-latest {
     rows="$(tput lines)"
     cols="$(tput cols)"
 
-    count="${1:-$(( rows - 5 ))}"
+    count="${1:-$(( rows - 6 ))}"
 
     if [ "$count" != "all" ]; then
         max_count_option="--max-count=${count}"
