@@ -243,6 +243,7 @@ link hgrc
 link ideavimrc
 link inputrc
 link live-backup.cfg
+link npmrc
 link profile
 link pythonrc
 link vimrc
