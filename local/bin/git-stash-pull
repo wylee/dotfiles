@@ -12,21 +12,46 @@ function create_color () {
     tput "$@" 2>/dev/null || echo ""
 }
 
+RED="$(create_color setaf 1)"
 YELLOW="$(create_color setaf 3)"
 RESET="$(create_color sgr0)"
 
 function git-stash-pull {
+    local stash_name
+    local stash
+
+    stash_name="temp stash for stash-pull"
+
+    stash="$(git stash list | grep "$stash_name" || echo -n "")"
+    stash="$(echo "$stash" | cut -d: -f1)"
+
+    if test -n "$stash"; then
+        echo "${RED}Temporary stash for stash-pull already exists${RESET}" 1>&2
+        exit 1
+    fi
+
     echo "${YELLOW}Stashing everything, including untracked files${RESET}"
     echo
-    git stash push --include-untracked -m "Temp for pull"
+    git stash push --include-untracked -m "$stash_name"
+
     echo
     echo "${YELLOW}Pulling${RESET}"
     echo
     git pull --rebase
-    echo
-    echo "${YELLOW}Popping stashed changes${RESET}"
-    echo
-    git stash pop
+
+    stash="$(git stash list | grep "$stash_name" || echo -n "")"
+    stash="$(echo "$stash" | cut -d: -f1)"
+
+    if test -n "$stash"; then
+        echo
+        echo "${YELLOW}Popping stashed changes${RESET}"
+        echo
+        git stash pop "$stash"
+    else
+        echo "${RED}Stash not found: ${stash_name}${RESET}" 1>&2
+        echo "${RED}If no local changes were saved above, this isn't a problem" 1>&2
+        exit 1
+    fi
 }
 
 git-stash-pull "$@"
