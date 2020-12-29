@@ -14,6 +14,8 @@
 #     git latest -> show last N commits (based on $LINES)
 #     git latest 10 -> show last 10 commits
 #     git latest all -> show all commits
+set -eu -o pipefail
+shopt -s failglob
 
 function git-latest {
     local rows

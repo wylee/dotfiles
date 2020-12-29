@@ -5,6 +5,8 @@
 # - stash all changes (including untracked files)
 # - pull
 # - unstash
+set -eu -o pipefail
+shopt -s failglob
 
 function create_color () {
     tput "$@" 2>/dev/null || echo ""
