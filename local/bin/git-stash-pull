@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+#
+# git stash-pull
+#
+# - stash all changes (including untracked files)
+# - pull
+# - unstash
+
+function create_color () {
+    tput "$@" 2>/dev/null || echo ""
+}
+
+YELLOW="$(create_color setaf 3)"
+RESET="$(create_color sgr0)"
+
+function git-stash-pull {
+    echo "${YELLOW}Stashing everything, including untracked files${RESET}"
+    echo
+    git stash push --include-untracked -m "Temp for pull"
+    echo
+    echo "${YELLOW}Pulling${RESET}"
+    echo
+    git pull --rebase
+    echo
+    echo "${YELLOW}Popping stashed changes${RESET}"
+    echo
+    git stash pop
+}
+
+git-stash-pull "$@"
