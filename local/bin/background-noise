@@ -1,2 +1,2 @@
 #!/bin/bash
-play -c 2 -n synth pinknoise band -n 2500 4000 reverb 20
+play -c 2 -n synth brownnoise band -n 1600 800 tremolo 0.1 20 gain -3
