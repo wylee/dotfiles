@@ -348,11 +348,12 @@ else
     echo "${BLUE}Installing/upgrading Python tools... ${RESET}"
     for package in "${PYTHON_PACKAGES[@]}"; do
         echo -n "${BLUE}Installing/upgrading ${package}... ${RESET}"
-        $main_python_version -m pipx install "${package}" >/dev/null
-        $main_python_version -m pipx upgrade "${package}" >/dev/null
-        echo "${GREEN}Done${RESET}"
+        $main_python_version -m pipx install \
+            --force "${package}" \
+            '--pip-args=--upgrade --upgrade-strategy eager' \
+            >/dev/null
     done
-    echo "${GREEN}Done${RESET}"
+    echo "${GREEN}Python setup complete${RESET}"
 fi
 
 mkdir -p "${HOME}/.vim/"{autoload,bundle}
