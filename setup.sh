@@ -206,7 +206,7 @@ elif [ "$(uname -s)" = "Darwin" ]; then
     else
         echo -n "${BLUE}Installing/updating npm... ${RESET}"
         npm --force --global install npm &>/dev/null
-        echo "${GREEN}Done${RESET}"
+        echo "${GREEN}npm setup complete${RESET}"
     fi
 
     fish_path="/usr/local/bin/fish"
@@ -220,6 +220,7 @@ elif [ "$(uname -s)" = "Darwin" ]; then
 
     echo "${BLUE}Running 'brew cleanup'...${RESET}"
     "$brew_path" cleanup
+    echo ${GREEN}Brew setup complete${RESET}
 else
     echo "${YELLOW}Skipping Homebrew install since this doesn't appear to be a Mac${RESET}"
 fi
