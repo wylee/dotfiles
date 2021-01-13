@@ -63,7 +63,7 @@ PYTHON_VERSIONS_FILE="${HOME}/.python-version"
 PYTHON_PACKAGES=(
     bpython
     checkoutmanager
-    poetry
+    'poetry<1.1'
     totp
     twine
 )
