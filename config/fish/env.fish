@@ -29,7 +29,10 @@ function cdenv -a env_dir
 
     if set -q env_dir[1]
         _original_cd "$env_dir"
-        activateenv
+        if ! activateenv
+            # Deactivate current env (if there is one)
+            deactivateenv silent
+        end
     else
         set_color red
         echo "No env passed and no env is already active" 1>&2
@@ -39,7 +42,7 @@ function cdenv -a env_dir
         for f in "$PROJECT_DIR"/*
             echo (basename "$f")
         end
-        deactivateenv
+        deactivateenv silent
     end
 end
 
@@ -82,10 +85,10 @@ function activateenv
             echo "This is not an env directory" 1>&2
             set_color normal
         end
-        return
+        return 1
     end
 
-    deactivateenv
+    deactivateenv silent
 
     set -gx PROJECT_NAME (basename "$PWD")
     set -gx _ENV_CURRENT "$PWD"
@@ -131,6 +134,13 @@ function deactivateenv
             echo "Deactivated env $env_current"
             set_color normal
         end
+    else
+        if [ "$argv[1]" != "silent" ]
+            set_color red
+            echo "No env is active" 1>&2
+            set_color normal
+        end
+        return 1
     end
 end
 
