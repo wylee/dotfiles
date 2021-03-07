@@ -170,8 +170,8 @@ elif [ "$(uname -s)" = "Darwin" ]; then
         echo -n "${YELLOW}Homebrew already installed at prefix $($brew_path --prefix); "
         echo "upgrading...${RESET}"
         "$brew_path" update
-        "$brew_path" upgrade
-        "$brew_path" upgrade --casks
+        "$brew_path" upgrade --formula
+        "$brew_path" upgrade --cask
     else
         /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
         "$brew_path" doctor
