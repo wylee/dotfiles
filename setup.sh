@@ -24,7 +24,6 @@ BREW_PACKAGES=(
     borgbackup
     exiftool
     fish
-    gdal
     git
     hugo
     node
