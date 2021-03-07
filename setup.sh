@@ -174,7 +174,6 @@ elif [ "$(uname -s)" = "Darwin" ]; then
         "$brew_path" upgrade --cask
     else
         /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-        "$brew_path" doctor
     fi
 
     echo "${BLUE}Installing Homebrew packages...${RESET}"
