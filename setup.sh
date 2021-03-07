@@ -303,7 +303,7 @@ elif [ ${#PYTHON_VERSIONS} -gt 0 ]; then
             echo "${BLUE}Not uninstalling Python ${pyenv_version} (in current install list)"
         else
             echo "${YELLOW}Installed Python ${pyenv_version} not in current install list ${RESET}"
-            read -p "${YELLOW}Uninstall Python ${pyenv_version}? [yes/no] ${RESET}" answer
+            read -r -p "${YELLOW}Uninstall Python ${pyenv_version}? [yes/no] ${RESET}" answer
             if [ "$answer" = "yes" ]; then
                 echo "${YELLOW}Uninstalling Python ${pyenv_version}... ${RESET}"
                 pyenv uninstall -f "$pyenv_version"
@@ -322,7 +322,7 @@ elif [ ${#PYTHON_VERSIONS} -gt 0 ]; then
             echo "${version}" >>"${PYTHON_VERSIONS_FILE}"
             echo "${BLUE}Added ${version} to ${PYTHON_VERSIONS_FILE}"
         else
-            read -p "${YELLOW}Install Python ${version}? [y/N] ${RESET}" answer
+            read -r -p "${YELLOW}Install Python ${version}? [y/N] ${RESET}" answer
             case "$answer" in
                 y|Y|yes|YES)
                     echo "${BLUE}Installing Python ${version}... ${RESET}"
@@ -340,7 +340,7 @@ elif [ ${#PYTHON_VERSIONS} -gt 0 ]; then
 
     eval "$(pyenv init -)"
 
-    while read version; do
+    while read -r version; do
         echo -n "${BLUE}Upgrading pip for Python ${version}... ${RESET}"
         "python${version:0:3}" -m pip install --upgrade --upgrade-strategy eager pip >/dev/null
         echo "${GREEN}Done${RESET}"
