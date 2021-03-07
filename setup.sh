@@ -69,10 +69,6 @@ PYTHON_PACKAGES=(
 while [[ $# -gt 0 ]]; do
     option="$1"
     case $option in
-        -e|--env)
-            ENV="$2"
-            shift
-            ;;
         -r|--repo)
             REPO_DIR="$2"
             shift
