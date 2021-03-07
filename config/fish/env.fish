@@ -1,4 +1,4 @@
-if not type --quiet _original_cd
+if not type --query _original_cd
     functions -c cd _original_cd
 end
 
