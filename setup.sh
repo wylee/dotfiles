@@ -217,6 +217,10 @@ elif [ "$(uname -s)" = "Darwin" ]; then
 
     echo "${BLUE}Running 'brew cleanup'...${RESET}"
     "$brew_path" cleanup
+
+    echo "${BLUE}Running 'brew autoremove'...${RESET}"
+    "$brew_path" autoremove
+
     echo ${GREEN}Brew setup complete${RESET}
 else
     echo "${YELLOW}Skipping Homebrew install since this doesn't appear to be a Mac${RESET}"
