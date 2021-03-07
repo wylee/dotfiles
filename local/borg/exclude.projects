@@ -41,6 +41,7 @@ sh:**/*.po
 sh:**/*.pyc
 sh:**/*.pyo
 sh:**/.env
+sh:**/.mypy_cache
 sh:**/.tox
 sh:**/.venv
 sh:**/Pipfile.lock
