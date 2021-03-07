@@ -46,7 +46,6 @@ BREW_CASKS=(
     jetbrains-toolbox
     signal
     sourcetree
-    spotify
     visual-studio-code
 )
 
