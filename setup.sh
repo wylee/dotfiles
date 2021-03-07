@@ -86,12 +86,17 @@ while [[ $# -gt 0 ]]; do
         --no-python)
             PYTHON="no"
             ;;
+        --no-python-versions)
+            PYTHON_VERSIONS=()
+            ;;
         -h|--help)
             echo "Install local config (AKA dot files)"
             echo "Usage: ./setup.sh [-r <repo>]"
             echo "    -r|--repo => Path to config directory [${REPO_DIR}]"
             echo "    --no-brew => Skip installation of Homebrew and packages"
             echo "    --no-npm => Skip npm update"
+            echo "    --no-python => Skip all Python-related setup"
+            echo "    --no-python-version => Skip installation of Python versions"
             exit
             ;;
         -*)
@@ -282,7 +287,7 @@ done
 
 if [ "$PYTHON" = "no" ]; then
     echo "${YELLOW}Skipping Python installation ${RESET}"
-else
+elif [ ${#PYTHON_VERSIONS} -gt 0 ]; then
     main_python_version="python${PYTHON_VERSIONS[0]:0:3}"
     python_versions_string=$(printf "%s\n" "${PYTHON_VERSIONS[@]}")
     pyenv_versions=$(pyenv versions --bare)
