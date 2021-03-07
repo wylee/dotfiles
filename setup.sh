@@ -178,10 +178,11 @@ elif [ "$(uname -s)" = "Darwin" ]; then
 
     echo "${BLUE}Installing Homebrew packages...${RESET}"
 
+    installed_formulas="$(brew list --formula)"
+
     for package in "${BREW_PACKAGES[@]}"; do
-        words=("$package")
-        if "$brew_path" ls --versions "${words[0]}" >/dev/null; then
-            echo "Skipping package ${words[0]} (already installed)"
+        if grep -Eq "\b$package\b" <<< "$installed_formulas"; then
+            echo "Skipping package ${package} (already installed)"
         else
             "$brew_path" install "$package"
         fi
@@ -189,10 +190,11 @@ elif [ "$(uname -s)" = "Darwin" ]; then
 
     echo "${BLUE}Installing applications (casks) via Homebrew...${RESET}"
 
+    installed_casks="$(brew list --cask)"
+
     for package in "${BREW_CASKS[@]}"; do
-        words=("$package")
-        if "$brew_path" list --cask --versions "${words[0]}" >/dev/null; then
-            echo "Skipping cask ${words[0]} (already installed)"
+        if grep -Eq "\b$package\b" <<< "$installed_casks"; then
+            echo "Skipping cask ${package} (already installed)"
         else
             "$brew_path" install --cask "$package"
         fi
