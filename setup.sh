@@ -50,10 +50,10 @@ BREW_CASKS=(
 )
 
 PYTHON_VERSIONS=(
-    3.9.0
-    3.8.6
-    3.7.9
-    3.6.12
+    3.9.1
+    3.8.7
+    3.7.10
+    3.6.13
 )
 
 PYTHON_VERSIONS_FILE="${HOME}/.python-version"
