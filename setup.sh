@@ -123,37 +123,47 @@ function save_original () {
 
 function link () {
     # Args:
-    #     $1: path relative to file in dot files repo
-    #     $2: target path (optional; default is $HOME/.$1 or $HOME/$1)
-    local file="${REPO_DIR}/${1}"
-    if [ ! -f "$file" ]; then
-        echo "${RED}${file} does not exist in .files repo${RESET}" 1>&2
+    #     $1: Source path relative to root of dot files repo.
+    #
+    #         Example: bashrc.d/alias.rc
+    #
+    #     $2: Target path. This rarely needs to be specified. It will be
+    #         set to $HOME/.$1 by default; if `dirname $HOME/.$1` isn't
+    #         an existing directory, the defaut target path will be set
+    #         to $HOME/$1 instead.
+    #
+    #         Example of default: $HOME/.bashrc.d/alias.rc
+    #
+    # NOTE: The parent directory of the target *must* exist before calling
+    #       this function.
+
+    local source
+    local target
+
+    source="${REPO_DIR}/${1}"
+
+    if [ ! -f "$source" ]; then
+        echo "${RED}${source} does not exist in .files repo${RESET}" 1>&2
         return 1
     fi
+
     if [ "${2-}" ]; then
-        local target="${2}"
+        target="${2}"
     else
-        local target="${HOME}/.${1}"
+        target="${HOME}/.${1}"
         if [ ! -d "$(dirname "$target")" ]; then
-            local target="${HOME}/${1}"
+            target="${HOME}/${1}"
         fi
     fi
 
-    local target_dir
-    target_dir="$(dirname "$target")"
-
-    if [ ! -d "$target_dir" ]; then
-        echo "${YELLOW}Target directory \"${target_dir}\" does not exist${RESET}" 1>&2
-        mkdir -p "${target_dir}"
-        echo "${BLUE}Created target directory: ${target_dir}"
-    fi
     if [ ! -L "$target" ]; then
         save_original "$target"
-        ln -s "$file" "$target"
-        echo "${GREEN}Linked ${target} to ${file}${RESET}"
+        ln -s "$source" "$target"
+        echo "${GREEN}Linked ${target} to ${source}${RESET}"
     else
         echo "${YELLOW}${target} already points to $(readlink "${target}")${RESET}" 1>&2
     fi
+
     return 0
 }
 
