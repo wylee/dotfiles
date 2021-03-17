@@ -17,6 +17,7 @@ REPO_DIR="${HOME}/.files"
 BREW="yes"
 NPM="yes"
 PYTHON="yes"
+VIM_PLUGINS="yes"
 
 BREW_PACKAGES=(
     bash-completion
@@ -85,6 +86,9 @@ while [[ $# -gt 0 ]]; do
         --no-python-versions)
             PYTHON_VERSIONS=()
             ;;
+        --no-vim-plugins)
+            VIM_PLUGINS="no"
+            ;;
         -h|--help)
             echo "Install local config (AKA dot files)"
             echo "Usage: ./setup.sh [-r <repo>]"
@@ -92,7 +96,8 @@ while [[ $# -gt 0 ]]; do
             echo "    --no-brew => Skip installation of Homebrew and packages"
             echo "    --no-npm => Skip npm update"
             echo "    --no-python => Skip all Python-related setup"
-            echo "    --no-python-version => Skip installation of Python versions"
+            echo "    --no-python-versions => Skip installation of Python versions"
+            echo "    --no-vim-plugins => Skip installation of Vim plugins"
             exit
             ;;
         -*)
@@ -361,18 +366,23 @@ elif [ ${#PYTHON_VERSIONS} -gt 0 ]; then
     echo "${GREEN}Python setup complete${RESET}"
 fi
 
-mkdir -p "${HOME}/.vim/"{autoload,bundle}
-echo -n "${BLUE}Checking out Pathogen plugins... "
-checkoutmanager co vim-pathogen >/dev/null
-checkoutmanager up vim-pathogen >/dev/null
-echo "${GREEN}Done${RESET}"
-pathogen_path="${HOME}/.vim/vim-pathogen/autoload/pathogen.vim"
-pathogen_link="${HOME}/.vim/autoload/pathogen.vim"
-if [ -L "$pathogen_link" ]; then
-    echo "${YELLOW}pathogen.vim already linked to $(readlink "$pathogen_link")${RESET}"
+if [ "$VIM_PLUGINS" = "no" ]; then
+    echo "${YELLOW}Skipping Vim plugin installation${RESET}"
 else
-    echo -n "${BLUE}Linking ${pathogen_link} to ${pathogen_path}... "
-    ln -s "$pathogen_path" "$pathogen_link"
+    mkdir -p "${HOME}/.vim/"{autoload,bundle}
+    echo -n "${BLUE}Checking out Pathogen plugins... "
+    checkoutmanager co vim-pathogen >/dev/null
+    checkoutmanager up vim-pathogen >/dev/null
     echo "${GREEN}Done${RESET}"
+    pathogen_path="${HOME}/.vim/vim-pathogen/autoload/pathogen.vim"
+    pathogen_link="${HOME}/.vim/autoload/pathogen.vim"
+    if [ -L "$pathogen_link" ]; then
+        echo "${YELLOW}pathogen.vim already linked to $(readlink "$pathogen_link")${RESET}"
+    else
+        echo -n "${BLUE}Linking ${pathogen_link} to ${pathogen_path}... "
+        ln -s "$pathogen_path" "$pathogen_link"
+        echo "${GREEN}Done${RESET}"
+    fi
 fi
+
 echo "${GREEN}Setup complete${RESET}"
