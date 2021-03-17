@@ -248,6 +248,7 @@ test -d ~/.bashrc.d || mkdir ~/.bashrc.d
 test -d ~/.config || mkdir ~/.config
 test -d ~/.config/fish || mkdir ~/.config/fish
 test -d ~/.config/fish/functions || mkdir ~/.config/fish/functions
+test -d ~/.emacs.d || mkdir ~/.emacs.d
 test -d ~/.local || mkdir ~/.local
 test -d ~/.local/bin || mkdir ~/.local/bin
 test -d ~/.ssh || mkdir ~/.ssh
@@ -255,6 +256,7 @@ test -d ~/Projects || mkdir ~/Projects
 
 link bashrc
 link checkoutmanager.cfg
+link emacs.d/init.el
 link editorconfig
 link gitconfig
 link gitignore
