@@ -36,28 +36,46 @@
 
 (use-package
   hide-mode-line
-  :ensure t
-  :defer t)
+  :ensure t)
+
+(use-package
+  magit
+  :ensure t)
 
 (use-package
   material-theme
   :ensure t)
 
 (use-package
+  org
+  :ensure t)
+
+; projects
+(use-package
   projectile
   :ensure t)
 
-;; projects
-(use-package treemacs
+(use-package
+  treemacs
   :ensure t
-  :defer t
   :config
   (setq
     treemacs-no-png-images t
-    treemacs-width 24)
-  :bind ("C-c t" . treemacs))
+    treemacs-width 64)
+  :bind
+  ("C-c t" . treemacs))
 
-;; python
+(use-package
+  treemacs-evil
+  :ensure t)
+
+(use-package
+  treemacs-projectile
+  :ensure t)
+
+(define-key treemacs-mode-map [mouse-1] #'treemacs-single-click-expand-action)
+
+; python
 (use-package
   elpy
   :ensure t
@@ -74,7 +92,6 @@
 
 (use-package blacken
   :ensure t
-  :defer t
   :hook (python-mode . blacken-mode))
 
 ;; end packages --------------------------------------------------------
@@ -91,7 +108,13 @@
 (prefer-coding-system 'utf-8)
 (show-paren-mode 1)
 
+; don't create backup files
 (setq backup-inhibited t)
+(setq make-backup-files nil)
+
+(setq initial-major-mode 'org-mode)
+(setq initial-scratch-message "")
+
 (setq inhibit-startup-message t)
 (setq inhibit-startup-echo-area-message t)
 (setq standard-indent 4)
@@ -99,7 +122,7 @@
 
 (add-hook 'write-file-hooks 'delete-trailing-whitespace)
 
-;; hide toolbar
+; hide toolbar
 (progn
   (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
   (scroll-bar-mode -1))
@@ -107,8 +130,28 @@
 ;; end basic config ----------------------------------------------------
 
 
-;; automatically updated -----------------------------------------------
+;; automatically updated
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(column-number-mode t)
+ '(package-selected-packages
+   '(projectile use-package magit hide-mode-line helm-lsp evil blacken))
+ '(show-paren-mode t)
+ '(tool-bar-mode nil))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+  '(default
+     ((t (:family "Monaco" :height 140))))
+ )
 
+
+;; automatically updated -----------------------------------------------
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
