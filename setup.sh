@@ -324,7 +324,7 @@ create_dir "${HOME}/.bashrc.d"
 create_dir "${HOME}/.config"
 create_dir "${HOME}/.config/fish"
 create_dir "${HOME}/.config/fish/functions"
-create_dir "${HOME}/.emacs.d"
+create_dir "${HOME}/.doom.d"
 create_dir "${HOME}/.local"
 create_dir "${HOME}/.local/bin"
 create_dir "${HOME}/.ssh"
@@ -336,7 +336,7 @@ link checkoutmanager.cfg
 link_many config/fish/*.fish
 link_many config/fish/functions/*.fish
 link config/fish/functions/additional-blackhole-hosts
-link emacs.d/init.el
+link_many doom.d/*.el
 link editorconfig
 link gitconfig
 link gitignore
