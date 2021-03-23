@@ -62,6 +62,7 @@ INSTALL_PYTHON_VERSIONS="yes"
 VIM_PLUGINS="yes"
 
 BREW_PACKAGES=(
+    bash
     bash-completion
     bitwarden-cli
     borgbackup
@@ -298,6 +299,14 @@ elif [ "$(uname -s)" = "Darwin" ]; then
         say -n info "Installing/updating npm... "
         npm --force --global install npm &>/dev/null
         say success "npm setup complete"
+    fi
+
+    bash_path="/usr/local/bin/bash"
+    if grep "$bash_path" /etc/shells >/dev/null; then
+        say warning "${bash_path} already in /etc/shells"
+    else
+        say info "Adding bash to /etc/shells..."
+        say $bash_path | sudo tee -a /etc/shells
     fi
 
     fish_path="/usr/local/bin/fish"
