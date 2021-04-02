@@ -336,6 +336,7 @@ create_dir "${HOME}/.config/fish/functions"
 create_dir "${HOME}/.doom.d"
 create_dir "${HOME}/.local"
 create_dir "${HOME}/.local/bin"
+create_dir "${HOME}/.local/borg"
 create_dir "${HOME}/.ssh"
 create_dir "${HOME}/Projects"
 
