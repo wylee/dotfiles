@@ -59,8 +59,11 @@ function activateenv
     set node_candidates . frontend */{frontend,static} src/{frontend,static} src/*/{frontend,static}
     set node_bin
 
+    set rust_candidates Cargo.toml
+
     set is_virtualenv
     set is_node_env
+    set is_rust_env
 
     for dir in $virtualenv_candidates
         if test -f "$dir/bin/python"
@@ -79,7 +82,14 @@ function activateenv
         end
     end
 
-    if test -z "$is_virtualenv" -a -z "$is_node_env"
+    for file in $rust_candidates
+        if test -f "$file"
+            set is_rust_env "true"
+            break
+        end
+    end
+
+    if test -z "$is_virtualenv" -a -z "$is_node_env" -a -z "$is_rust_env"
         if [ "$argv[1]" != "silent" ]
             set_color red
             echo "This is not an env directory" 1>&2
@@ -96,17 +106,17 @@ function activateenv
 
     if test -n "$is_node_env"
         set -gx PATH "$PWD/$node_bin" "$PATH"
-        set -gx _ENV_TYPE node
+        set -gx _ENV_TYPE $_ENV_TYPE node
+    end
+
+    if test -n "$is_rust_env"
+        set -gx _ENV_TYPE $_ENV_TYPE rust
     end
 
     if test -n "$is_virtualenv"
         set -gx PATH "$PWD/$virtualenv_bin" "$PATH"
         set -gx VIRTUAL_ENV "$_ENV_CURRENT/$virtualenv_dir"
-        if test "$_ENV_TYPE" = "node"
-            set -gx _ENV_TYPE virtualenv node
-        else
-            set -gx _ENV_TYPE virtualenv
-        end
+        set -gx _ENV_TYPE $_ENV_TYPE virtualenv
     end
 
     hash -r 2>/dev/null

@@ -21,6 +21,7 @@ function __init
         end
     end
 
+    __prepend_path ~/.cargo/bin
     __prepend_path ~/.local/bin
 end
 
