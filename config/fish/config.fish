@@ -9,6 +9,8 @@ function __init
         set -gx EDITOR vim
     end
 
+    __prepend_path /opt/homebrew/bin
+    __prepend_path /opt/homebrew/sbin
     __prepend_path /usr/local/bin
     __prepend_path /usr/local/sbin
 

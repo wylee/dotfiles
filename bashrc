@@ -52,6 +52,8 @@ if ! shopt -oq posix; then
     which brew >/dev/null 2>&1 && source_if "$(brew --prefix)/etc/bash_completion"
 fi
 
+prepend_path /opt/homebrew/bin
+prepend_path /opt/homebrew/sbin
 prepend_path /usr/local/bin
 prepend_path /usr/local/sbin
 
