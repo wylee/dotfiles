@@ -11,7 +11,6 @@ function __init
 
     __prepend_path /usr/local/bin
     __prepend_path /usr/local/sbin
-    __prepend_path /usr/local/opt/postgresql@9.4/bin
 
     set script_path (status -f)
     set script_dir (dirname $script_path)
