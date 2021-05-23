@@ -17,6 +17,15 @@ function first_of () {
     done
 }
 
+function prepend_path () {
+    local path="$1"
+    if test -d "$path"; then
+        if [[ $PATH != *$path* ]]; then
+            export PATH="${path}:${PATH}"
+        fi
+    fi
+}
+
 source_if ~/.bashrc.before
 
 # If not running interactively, don't do anything.
@@ -43,11 +52,8 @@ if ! shopt -oq posix; then
     which brew >/dev/null 2>&1 && source_if "$(brew --prefix)/etc/bash_completion"
 fi
 
-# Add /usr/local/bin if it's not already in $PATH.
-echo "$PATH" | grep "/usr/local/bin" 1>/dev/null || export PATH="/usr/local/bin:${PATH}"
-
-# Add /usr/local/sbin if it's not already in $PATH.
-echo "$PATH" | grep "/usr/local/sbin" 1>/dev/null || export PATH="/usr/local/sbin:${PATH}"
+prepend_path /usr/local/bin
+prepend_path /usr/local/sbin
 
 # Include additonal bash config from ~/.bashrc.d/*.rc.
 
