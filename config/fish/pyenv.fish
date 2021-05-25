@@ -3,7 +3,8 @@ set -gx PYENV_ROOT (brew --prefix)/var/pyenv
 
 # This sets up pyenv shims and bash completion; run `pyenv init -` to
 # see everything it does.
-status --is-interactive; and source (pyenv init -|psub)
+status is-login; and pyenv init --path | source
+pyenv init - | source
 
 function pyenv-install
     begin
