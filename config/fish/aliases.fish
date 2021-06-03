@@ -17,3 +17,5 @@ alias lsl '/bin/ls -lFG'
 alias lsal '/bin/ls -alFG'
 
 alias x 'exit'
+
+alias vim 'nvim'
