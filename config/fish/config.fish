@@ -1,3 +1,5 @@
+status --is-interactive; or exit
+
 function __init
     # XXX: Needs to be set for both login and non-login shells
     set -gx PROJECT_DIR ~/Projects
