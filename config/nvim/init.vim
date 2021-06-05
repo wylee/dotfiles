@@ -1,5 +1,6 @@
 let mapleader = ","
 
+filetype plugin indent on
 syntax on
 
 " Move by screen line instead of text line.
