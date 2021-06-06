@@ -4,3 +4,4 @@
 (setq doom-theme 'doom-one)
 (setq org-directory "~/org/")
 (setq display-line-numbers-type t)
+(add-hook 'after-init-hook 'global-company-mode)
