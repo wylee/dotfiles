@@ -41,12 +41,3 @@ Host bycycle.org
 Host mystops.io
     User ubuntu
     IdentityFile ~/.ssh/mystops2.pem
-
-# PSU -----------------------------------------------------------------
-
-Host *.pdx.edu
-    User wbaldwin
-    IdentityFile ~/.ssh/id_rsa-psu
-
-Host git.oit.pdx.edu
-    IdentityFile ~/.ssh/id_rsa-git.oit.pdx.edu
