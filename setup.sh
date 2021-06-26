@@ -355,7 +355,7 @@ function main () {
     local with_brew="yes"
     local with_npm="yes"
     local with_python="yes"
-    local with_python_versions="yes"
+    local with_python_versions="no"
     local with_vim_plugins="yes"
 
     local npm_path="${BREW_BIN}/npm"
@@ -380,8 +380,8 @@ function main () {
             --no-python)
                 with_python="no"
                 ;;
-            --no-python-versions)
-                with_python_versions="no"
+            --with-python-versions)
+                with_python_versions="yes"
                 ;;
             --no-vim-plugins)
                 with_vim_plugins="no"
@@ -445,7 +445,7 @@ function main () {
             say warning "Skipping all Python setup"
         else
             if [ "${with_python_versions}" = "no" ]; then
-                say warning "Skipping installation of Python versions"
+                say warning "Skipping installation of Python versions (use --with-python-versions to install them)"
             else
                 install_python_versions
             fi
