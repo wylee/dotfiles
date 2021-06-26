@@ -80,6 +80,7 @@ PYTHON_VERSIONS_FILE="${HOME}/.python-version"
 PYTHON_PACKAGES=(
     bpython
     checkoutmanager
+    com.wyattbaldwin.make-release
     poetry
     totp
     twine
