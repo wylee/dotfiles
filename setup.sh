@@ -97,6 +97,21 @@ YELLOW="$(create_color setaf 3)"
 RESET="$(create_color sgr0)"
 
 function colorize () {
+    # Colorize string by type (or color)
+    #
+    # Args:
+    #     $1 type: type | color
+    #     $2 string
+    #
+    # Type:
+    #     | default (none)
+    #     | info (blue)
+    #     | success (green)
+    #     | warning (yellow)
+    #     | error (red)
+    #
+    # Alternatively, a color string, like "RED", can be passed instead
+    # of a type name.
     local type="$1"
     local message
     if [ "$type" = "default" ]; then
@@ -110,12 +125,23 @@ function colorize () {
     elif [ "$type" = "error" ]; then
         message="${RED}${2}${RESET}"
     else
-        message="$2"
+        message="${type}$2${RESET}"
     fi
     echo -n "$message"
 }
 
 function say () {
+    # Echo with color
+    #
+    # Args:
+    #     $1 message type | message
+    #     $2 message?
+    #
+    # Message type: default | info | success | warning | error
+    #
+    # If one arg is passed, it's considered the message and will be
+    # printed with the default style (i.e., no style). If two args are
+    # passed, the first is the type and the second is the message.
     local args
     local type
     local message
