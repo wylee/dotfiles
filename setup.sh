@@ -61,7 +61,6 @@ BREW_CASKS=(
     dropbox
     element
     firefox
-    firefox-developer-edition
     iterm2
     jetbrains-toolbox
     signal
@@ -277,6 +276,12 @@ function install_brew () {
     say info "Installing applications (casks) via Homebrew..."
 
     installed_casks="$("$BREW_PATH" list --cask)"
+
+    if [ "$ARCH_NAME" = "x86_64" ]; then
+        BREW_CASKS+=("firefox-developer-edition")
+    else
+        say warning "Cask firefox-developer-edition not available on this platform"
+    fi
 
     for package in "${BREW_CASKS[@]}"; do
         if grep -Eq "\b$package\b" <<< "$installed_casks"; then
