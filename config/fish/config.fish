@@ -1,8 +1,13 @@
-status --is-interactive; or exit
-
 function __init
-    # XXX: Needs to be set for both login and non-login shells
+    if test -d /opt/homebrew/lib
+        set -gx DYLD_LIBRARY_PATH /opt/homebrew/lib
+    end
+
     set -gx PROJECT_DIR ~/Projects
+
+    status --is-interactive; or exit
+
+    # Interactive ------------------------------------------------------
 
     if status --is-login
         fish_vi_key_bindings
