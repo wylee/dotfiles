@@ -17,6 +17,7 @@ OPTIONS = {
     'default_locations': [],
     'locations': [],
     'only_paths': [],
+    'skip_missing_paths': True,
     'info': False,
     'show_locations': False,
     'show_selected': False,
@@ -67,6 +68,7 @@ class LiveBackupRunner:
         self.project_dir = as_path(self.get_option('project_dir'))
         self.default_locations = as_list(self.get_option('default_locations'), sep=None)
         self.only_paths = set(self.get_option('only_paths'))
+        self.skip_missing_paths = self.get_option('skip_missing_paths')
         self.all = as_bool(self.get_option('all'))
         self.do_show_info = self.get_option('info')
         self.do_show_locations = self.get_option('show_locations') and not self.do_show_info
@@ -88,7 +90,12 @@ class LiveBackupRunner:
         if paths_not_found:
             for path in paths_not_found:
                 print(f'Path not found: {path}', file=sys.stderr)
-            self.exit(code=1)
+            if self.skip_missing_paths:
+                answer = input('Continue? [Y/n] ').strip().lower()
+                if answer not in ('', 'y', 'yes'):
+                    self.exit(code=1)
+            else:
+                self.exit(code=1)
 
         selected_locations = []
         locations = self.locations
@@ -338,6 +345,10 @@ class LiveBackupRunner:
         arg_parser.add_argument(
             '--paths', '-p', action='append', dest='only_paths', default=[],
             help='Back up only the specified paths')
+        arg_parser.add_argument(
+            '--no-skip-missing-paths', '-S', dest='skip_missing_paths',
+            action='store_false', default=True,
+            help='Abort when a specified project path doesn\'t exist')
         arg_parser.add_argument('--all', '-a', action='store_true')
         arg_parser.add_argument(
             '--info', '-i', action='store_true',
