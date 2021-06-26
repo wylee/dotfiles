@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+#
+# git new-since-last-tag
+#
+#     !git log --oneline --reverse $(git tag | tail -n 1)..
+#
+# Shows commits since the last tag.
+set -eu -o pipefail
+shopt -s failglob
+
+function git-new-since-last-tag {
+    local last_tag="$(git tag | tail -n 1)"
+    printf "Last tag: ${last_tag}\n"
+    git log --oneline --reverse "${last_tag}.."
+}
+
+git-new-since-last-tag "$@"
