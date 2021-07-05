@@ -21,10 +21,10 @@ function cdenv -a env_dir
     # If env_dir isn't passed, cd into the current env directory.
     if set -q env_dir[1]
         if not string match -q "/*" "$env_dir"
-            set env_dir "$PROJECT_DIR/$env_dir"
+            set env_dir $PROJECT_DIR/$env_dir
         end
     else if set -q _ENV_CURRENT
-        set env_dir "$_ENV_CURRENT"
+        set env_dir $_ENV_CURRENT
     end
 
     if set -q env_dir[1]
@@ -38,8 +38,8 @@ function cdenv -a env_dir
         echo "No env passed and no env is already active" 1>&2
         echo "Changing to $PROJECT_DIR instead, which contains the following projects:" 1>&2
         set_color normal
-        _original_cd "$PROJECT_DIR"
-        for f in "$PROJECT_DIR"/*
+        _original_cd $PROJECT_DIR
+        for f in $PROJECT_DIR/*
             echo (basename "$f")
         end
         deactivateenv silent
@@ -67,24 +67,24 @@ function activateenv
 
     for dir in $virtualenv_candidates
         if test -f "$dir/bin/python"
-            set is_virtualenv "true"
-            set virtualenv_dir "$dir"
-            set virtualenv_bin "$dir/bin"
+            set is_virtualenv true
+            set virtualenv_dir $dir
+            set virtualenv_bin $dir/bin
             break
         end
     end
 
     for dir in $node_candidates
         if test -d "$dir/node_modules"
-            set is_node_env "true"
-            set node_bin "$dir/node_modules/.bin"
+            set is_node_env true
+            set node_bin $dir/node_modules/.bin
             break
         end
     end
 
     for file in $rust_candidates
         if test -f "$file"
-            set is_rust_env "true"
+            set is_rust_env true
             break
         end
     end
@@ -100,12 +100,12 @@ function activateenv
 
     deactivateenv silent
 
-    set -gx PROJECT_NAME (basename "$PWD")
-    set -gx _ENV_CURRENT "$PWD"
-    set -gx _ENV_ORIGINAL_PATH "$PATH"
+    set -gx PROJECT_NAME (basename $PWD)
+    set -gx _ENV_CURRENT $PWD
+    set -gx _ENV_ORIGINAL_PATH $PATH
 
     if test -n "$is_node_env"
-        set -gx PATH "$PWD/$node_bin" "$PATH"
+        set -gx PATH $PWD/$node_bin $PATH
         set -gx _ENV_TYPE $_ENV_TYPE node
     end
 
@@ -114,8 +114,8 @@ function activateenv
     end
 
     if test -n "$is_virtualenv"
-        set -gx PATH "$PWD/$virtualenv_bin" "$PATH"
-        set -gx VIRTUAL_ENV "$_ENV_CURRENT/$virtualenv_dir"
+        set -gx PATH $PWD/$virtualenv_bin $PATH
+        set -gx VIRTUAL_ENV $_ENV_CURRENT/$virtualenv_dir
         set -gx _ENV_TYPE $_ENV_TYPE virtualenv
     end
 
@@ -131,8 +131,8 @@ end
 
 function deactivateenv
     if set -q _ENV_CURRENT
-        set env_current "$_ENV_CURRENT"
-        set -gx PATH "$_ENV_ORIGINAL_PATH"
+        set env_current $_ENV_CURRENT
+        set -gx PATH $_ENV_ORIGINAL_PATH
         set -e PROJECT_NAME
         set -e VIRTUAL_ENV
         set -e _ENV_CURRENT
