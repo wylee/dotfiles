@@ -162,11 +162,12 @@ class LiveBackupRunner:
         cmd_str = ' '.join(cmd)
         self.print_hr()
         self.info(f'Syncing {joined_paths} to {destination}')
-        self.debug_info(f'{cmd_str}')
-        self.print_hr()
-        self.info(joined_paths)
+        self.print_hr('-')
+        if self.debug:
+            self.debug_info(f'{cmd_str}')
+            self.print_hr('-')
         subprocess.check_call(cmd)
-        self.print_hr()
+        self.print_hr('-')
         self.info(f'Finished syncing {joined_paths} to {destination}')
 
     @property
@@ -405,11 +406,11 @@ class LiveBackupRunner:
         self.debug_info(f'Got {name} from {source}: {value}')
         return value
 
-    def print_hr(self):
+    def print_hr(self, fill_char='='):
         if self.debug or not self.quiet:
             term_size = shutil.get_terminal_size()
             columns = term_size.columns
-            print('=' * columns)
+            print(fill_char * columns)
 
     def debug_info(self, *print_args, file=sys.stderr, **print_kwargs):
         if self.debug:
@@ -417,7 +418,7 @@ class LiveBackupRunner:
 
     def info(self, *print_args, file=sys.stdout, **print_kwargs):
         if self.debug or not self.quiet:
-            print(*print_args, file=file, **print_kwargs)
+            print('[INFO]', *print_args, file=file, **print_kwargs)
 
     def exit(self, *print_args, code=1, sep='\n', **print_kwargs):
         if print_args:
