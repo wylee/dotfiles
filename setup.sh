@@ -485,6 +485,7 @@ function main () {
     create_dir "${HOME}/.config"
     create_dir "${HOME}/.config/fish"
     create_dir "${HOME}/.config/fish/functions"
+    create_dir "${HOME}/.config/live-backup"
     create_dir "${HOME}/.config/nvim"
     create_dir "${HOME}/.config/nvim/ftdetect"
     create_dir "${HOME}/.config/nvim/syntax"
@@ -512,7 +513,7 @@ function main () {
     link hgrc
     link ideavimrc
     link inputrc
-    link live-backup.cfg
+    link_many config/live-backup/*
     link_many local/bin/*
     link_many local/borg/exclude.*
     link_many_with_target local/borg/backup.* "${HOME}/.local/bin"

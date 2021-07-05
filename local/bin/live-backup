@@ -11,7 +11,7 @@ import sys
 
 OPTIONS = {
     'env': None,
-    'config_file': '~/.live-backup.cfg',
+    'config_file': '~/.config/live-backup/live-backup.cfg',
     'env_file': None,
     'project_dir': os.environ.get('PROJECT_DIR', '~/Projects'),
     'default_locations': [],
@@ -55,7 +55,7 @@ class LiveBackupRunner:
         env_file = self.get_option('env_file')
         if not env_file:
             config_file_dir = os.path.dirname(self.config_file)
-            maybe_env_file = os.path.join(config_file_dir, '.live-backup.env')
+            maybe_env_file = os.path.join(config_file_dir, 'live-backup.env')
             if os.path.isfile(maybe_env_file):
                 self.debug_info(f'Found env file: {maybe_env_file}')
                 env_file = maybe_env_file
