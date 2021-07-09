@@ -46,7 +46,7 @@ BREW_PACKAGES=(
     git
     hugo
     node
-    nvim
+    neovim
     pass
     pwgen
     pyenv
