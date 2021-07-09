@@ -394,7 +394,7 @@ function main () {
                 say "    --no-brew => Skip installation of Homebrew and packages"
                 say "    --no-npm => Skip npm update"
                 say "    --no-python => Skip all Python-related setup"
-                say "    --no-python-versions => Skip installation of Python versions"
+                say "    --with-python-versions => Skip installation of Python versions"
                 say "    --no-vim-plugins => Skip installation of Vim plugins"
                 exit
                 ;;
