@@ -5,13 +5,14 @@ import configparser
 import functools
 import glob
 import os
+import platform
 import shutil
 import subprocess
 import sys
 
 
 OPTIONS = {
-    'env': None,
+    'env': platform.node().split(".", 1)[0] or None,
     'config_file': '~/.config/live-backup/live-backup.cfg',
     'local_config_file': None,
     'project_dir': os.environ.get('PROJECT_DIR', '~/Projects'),
