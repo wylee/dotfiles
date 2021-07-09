@@ -2,6 +2,7 @@
 import argparse
 import collections
 import configparser
+import functools
 import glob
 import os
 import shutil
@@ -12,7 +13,7 @@ import sys
 OPTIONS = {
     'env': None,
     'config_file': '~/.config/live-backup/live-backup.cfg',
-    'env_file': None,
+    'local_config_file': None,
     'project_dir': os.environ.get('PROJECT_DIR', '~/Projects'),
     'default_locations': [],
     'locations': [],
@@ -44,27 +45,30 @@ class LiveBackupRunner:
 
         with open(self.config_file) as fp:
             self.config_parser.read_file(fp)
+        
+        local_config_file = self.get_option('local_config_file')
+        if local_config_file:
+            self.local_config_file = local_config_file
+        else:
+            config_dir = os.path.dirname(self.config_file)
+            local_config_file = os.path.join(config_dir, 'live-backup.local.cfg')
+            if os.path.isfile(local_config_file):
+                self.local_config_file = local_config_file
+            else:
+                self.local_config_file = None
+ 
+        if self.local_config_file:
+            self.local_config_parser = configparser.ConfigParser()
+            with open(self.local_config_file) as fp:
+                self.config_parser.read_file(fp)
+        else:
+            self.local_config_parser = None
 
         self.config = self.get_config('live-backup')
         self.debug = as_bool(self.get_option('debug'))
         self.dry_run = as_bool(self.get_option('dry_run'))
         self.quiet = as_bool(self.get_option('quiet'))
-
         self.env = self.get_option('env')
-
-        env_file = self.get_option('env_file')
-        if not env_file:
-            config_file_dir = os.path.dirname(self.config_file)
-            maybe_env_file = os.path.join(config_file_dir, 'live-backup.env')
-            if os.path.isfile(maybe_env_file):
-                self.debug_info(f'Found env file: {maybe_env_file}')
-                env_file = maybe_env_file
-        self.env_file = as_path(env_file)
-
-        if not self.env and self.env_file:
-            with open(self.env_file) as fp:
-                self.env = fp.read().strip()
-
         self.project_dir = as_path(self.get_option('project_dir'))
         self.default_locations = as_list(self.get_option('default_locations'), sep=None)
         self.only_paths = set(self.get_option('only_paths'))
@@ -340,7 +344,7 @@ class LiveBackupRunner:
         arg_parser = argparse.ArgumentParser(argument_default=argparse.SUPPRESS)
         arg_parser.add_argument('--env', '-e')
         arg_parser.add_argument('--config-file', '-c')
-        arg_parser.add_argument('--env-file', '-f')
+        arg_parser.add_argument('--local-config-file', '-f')
         arg_parser.add_argument('--project-dir', '-d')
         arg_parser.add_argument('locations', nargs='*', help='Back up to the specified locations')
         arg_parser.add_argument(
@@ -372,9 +376,16 @@ class LiveBackupRunner:
         return arg_parser.parse_args(argv)
 
     def get_config(self, section, default=None):
+        # Get config for section
+        base_config = None
+        local_config = None
         if section in self.config_parser:
-            return self.config_parser[section]
-        elif default is not None:
+            base_config = dict(self.config_parser[section])
+        if self.local_config_parser and section in self.local_config_parser:
+            local_config = self.local_config_parser[section]
+        if base_config is not None or local_config is not None:
+            return merge_dicts({}, base_config, local_config)
+        if default is not None:
             return default
         raise configparser.NoSectionError(section)
 
@@ -457,6 +468,23 @@ def as_path(val, default=None):
     if host:
         val = f'{host}:{val}'
     return val
+
+
+def merge_dicts(*dicts):
+    # Merge all dicts (later dicts have precedence)
+    return functools.reduce(_merge_dicts, dicts, {})
+
+
+def _merge_dicts(a, b):
+    # Merge dict b into dict a
+    a = dict(a)
+    a = a.copy()
+    b = {} if b is None else b
+    for k, v in b.items():
+        if k in a and isinstance(a[k], dict):
+            v = merge_dicts(a[k], v)
+        a[k] = v
+    return a
 
 
 if __name__ == '__main__':
