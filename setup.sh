@@ -364,7 +364,7 @@ function main () {
     local bash_path="${BREW_BIN}/bash"
     local fish_path="${BREW_BIN}/fish"
 
-    local main_python_version="python${PYTHON_VERSIONS[0]:0:3}"
+    local main_python_version="python${PYTHON_VERSIONS[0]%.*}"
 
     # Vim plugins
     local pathogen_path="${HOME}/.vim/vim-pathogen/autoload/pathogen.vim"
@@ -454,7 +454,7 @@ function main () {
 
             while read -r version; do
                 say -n info "Upgrading pip for Python ${version}... "
-                "python${version:0:3}" -m pip install --upgrade --upgrade-strategy eager pip >/dev/null
+                "python${version%.*}" -m pip install --upgrade --upgrade-strategy eager pip >/dev/null
                 say success "Done"
             done <"${PYTHON_VERSIONS_FILE}"
 
