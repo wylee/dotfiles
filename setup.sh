@@ -73,7 +73,6 @@ PYTHON_VERSIONS=(
     3.9.7
     3.8.12
     3.7.12
-    3.6.15
 )
 
 PYTHON_VERSIONS_FILE="${HOME}/.python-version"
