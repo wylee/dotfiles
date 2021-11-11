@@ -50,6 +50,7 @@ BREW_PACKAGES=(
     pass
     pwgen
     pyenv
+    rbenv
     ripgrep
     shellcheck
     vim
@@ -84,6 +85,14 @@ PYTHON_PACKAGES=(
     poetry
     totp
     twine
+)
+
+RUBY_VERSIONS=(
+    3.0.2
+)
+
+RUBY_PACKAGES=(
+    rails
 )
 
 function create_color () {
@@ -352,11 +361,62 @@ function install_python_versions () {
     eval "$("$pyenv_path" init -)"
 }
 
+function install_ruby_versions () {
+    local rbenv_path="${BREW_BIN}/rbenv"
+
+    ruby_versions_string=$(printf "%s\n" "${RUBY_VERSIONS[@]}")
+    rbenv_versions=$("$rbenv_path" versions --bare)
+
+    # For each installed rbenv version:
+    #
+    #   - If the version is in the current install list, do nothing
+    #   - If the version isn't in the current install list, uninstall it
+    for rbenv_version in $rbenv_versions; do
+        if grep -Eq "^${rbenv_version}$" <<< "$ruby_versions_string"; then
+            say info "Not uninstalling Ruby ${rbenv_version} (in current install list)"
+        else
+            say warning "Installed Ruby ${rbenv_version} not in current install list"
+            read -r -p "$(colorize warning "Uninstall Ruby ${rbenv_version}? [yes/no] ")" answer
+            if [ "$answer" = "yes" ]; then
+                say warning "Uninstalling Ruby ${rbenv_version}... "
+                "$rbenv_path" uninstall -f "$rbenv_version"
+                say success "Done"
+            fi
+        fi
+    done
+
+    # For each Ruby version in the current install list:
+    #
+    #   - If the version is already installed, do nothing
+    #   - If the version isn't already installed, install it
+    for version in "${RUBY_VERSIONS[@]}"; do
+        if grep -Eq "^${version}$" <<< "$rbenv_versions"; then
+            say warning "Ruby ${version} already installed"
+        else
+            read -r -p "$(colorize warning "Install Ruby ${version}? [y/N] ")" answer
+            case "$answer" in
+                y|Y|yes|YES)
+                    say info "Installing Ruby ${version}... "
+                    "$rbenv_path" install "$version"
+                    say success "Done"
+                    ;;
+                *)
+                    say error "Skipping installation of Ruby ${version}... "
+                    ;;
+            esac
+        fi
+    done
+
+    eval "$("$rbenv_path" init -)"
+}
+
 function main () {
     local with_brew="yes"
     local with_npm="yes"
     local with_python="yes"
     local with_python_versions="no"
+    local with_ruby_versions="no"
+    local with_ruby="yes"
     local with_vim_plugins="yes"
 
     local npm_path="${BREW_BIN}/npm"
@@ -383,6 +443,12 @@ function main () {
                 ;;
             --with-python-versions)
                 with_python_versions="yes"
+                ;;
+            --no-ruby)
+                with_ruby="no"
+                ;;
+            --with-ruby-versions)
+                with_ruby_versions="yes"
                 ;;
             --no-vim-plugins)
                 with_vim_plugins="no"
@@ -470,6 +536,27 @@ function main () {
                     >/dev/null
             done
             say success "Python setup complete"
+        fi
+
+        # Install Ruby versions & packages
+        if [ "$with_ruby" = "no" ]; then
+            say warning "Skipping all Ruby setup"
+        else
+            if [ "${with_ruby_versions}" = "no" ]; then
+                say warning "Skipping installation of Ruby versions (use --with-ruby-versions to install them)"
+            else
+                install_ruby_versions
+            fi
+
+            say info "Installing/upgrading Ruby tools... "
+            for package in "${RUBY_PACKAGES[@]}"; do
+                say -n info "Installing/upgrading ${package}... "
+                gem install "$package" >/dev/null
+                gem update "$package" >/dev/null
+                say success "Done"
+            done
+
+            say success "Ruby setup complete"
         fi
 
         say info "Running 'brew cleanup'..."
