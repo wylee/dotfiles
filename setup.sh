@@ -53,6 +53,7 @@ BREW_PACKAGES=(
     rbenv
     ripgrep
     shellcheck
+    yarn
     vim
 )
 
@@ -413,6 +414,7 @@ function install_ruby_versions () {
 function main () {
     local with_brew="yes"
     local with_npm="yes"
+    local with_yarn="yes"
     local with_python="yes"
     local with_python_versions="no"
     local with_ruby_versions="no"
@@ -420,6 +422,7 @@ function main () {
     local with_vim_plugins="yes"
 
     local npm_path="${BREW_BIN}/npm"
+    local yarn_path="${BREW_BIN}/yarn"
     local bash_path="${BREW_BIN}/bash"
     local fish_path="${BREW_BIN}/fish"
 
@@ -437,6 +440,9 @@ function main () {
                 ;;
             --no-npm)
                 with_npm="no"
+                ;;
+            --no-yarn)
+                with_yarn="no"
                 ;;
             --no-python)
                 with_python="no"
@@ -489,6 +495,16 @@ function main () {
             PATH="${BREW_BIN}:${PATH}" \
                 "$npm_path" --force --global install npm &>/dev/null
             say success "npm setup complete"
+        fi
+
+        # Update yarn
+        if [ "$with_yarn" = "no" ]; then
+            say warning "Skipping yarn installation/update"
+        else
+            say -n info "Updating yarn... "
+            PATH="${BREW_BIN}:${PATH}" \
+                "$yarn_path" global upgrade --force yarn 
+            say success "yarn setup complete"
         fi
 
         # Configure shells
