@@ -45,15 +45,14 @@ BREW_PACKAGES=(
     fish
     git
     hugo
-    node
     neovim
+    nvm
     pass
     pwgen
     pyenv
     rbenv
     ripgrep
     shellcheck
-    yarn
     vim
 )
 
@@ -68,6 +67,17 @@ BREW_CASKS=(
     signal
     sourcetree
     visual-studio-code
+)
+
+# XXX: This is currently unused
+NODE_VERSIONS=(
+    node
+    v14.8.1
+)
+
+NODE_PACKAGES=(
+    npm
+    yarn
 )
 
 PYTHON_VERSIONS=(
@@ -303,6 +313,21 @@ function install_brew () {
     done
 }
 
+function install_node_versions () {
+    test -d ~/.nvm || mkdir ~/.nvm
+    source /usr/local/opt/nvm/nvm.sh --no-use
+    # Latest
+    nvm install node
+    nvm use node
+    npm install -g npm
+    npm install -g yarn
+    # 14 LTS
+    nvm install --lts 14
+    nvm use v14.18.1
+    npm install -g npm
+    npm install -g yarn
+}
+
 function install_python_versions () {
     local pyenv_path="${BREW_BIN}/pyenv"
 
@@ -413,8 +438,8 @@ function install_ruby_versions () {
 
 function main () {
     local with_brew="yes"
-    local with_npm="yes"
-    local with_yarn="yes"
+    local with_node="yes"
+    local with_node_versions="no"
     local with_python="yes"
     local with_python_versions="no"
     local with_ruby_versions="no"
@@ -438,11 +463,11 @@ function main () {
             --no-brew)
                 with_brew="no"
                 ;;
-            --no-npm)
-                with_npm="no"
+            --no-node)
+                with_node="no"
                 ;;
-            --no-yarn)
-                with_yarn="no"
+            --with-node-versions)
+                with_node_versions="yes"
                 ;;
             --no-python)
                 with_python="no"
@@ -464,9 +489,12 @@ function main () {
                 say ""
                 say "Usage: ./setup.sh"
                 say "    --no-brew => Skip installation of Homebrew and packages"
-                say "    --no-npm => Skip npm update"
+                say "    --no-node => Skip all Node-related setup"
+                say "    --with-node-versions => Skip installation of Node versions"
                 say "    --no-python => Skip all Python-related setup"
                 say "    --with-python-versions => Skip installation of Python versions"
+                say "    --no-ruby => Skip all Ruby-related setup"
+                say "    --with-ruby-versions => Skip installation of Ruby versions"
                 say "    --no-vim-plugins => Skip installation of Vim plugins"
                 exit
                 ;;
@@ -487,26 +515,6 @@ function main () {
     else
         install_brew
 
-        # Update npm
-        if [ "$with_npm" = "no" ]; then
-            say warning "Skipping npm installation/update"
-        else
-            say -n info "Updating npm... "
-            PATH="${BREW_BIN}:${PATH}" \
-                "$npm_path" --force --global install npm &>/dev/null
-            say success "npm setup complete"
-        fi
-
-        # Update yarn
-        if [ "$with_yarn" = "no" ]; then
-            say warning "Skipping yarn installation/update"
-        else
-            say -n info "Updating yarn... "
-            PATH="${BREW_BIN}:${PATH}" \
-                "$yarn_path" global upgrade --force yarn 
-            say success "yarn setup complete"
-        fi
-
         # Configure shells
         if grep "$bash_path" /etc/shells >/dev/null; then
             say warning "${bash_path} already in /etc/shells"
@@ -522,6 +530,25 @@ function main () {
             say "$fish_path" | sudo tee -a /etc/shells
         fi
         say info "To make fish the default shell, run: chsh -s ${fish_path}"
+
+        # Install Node versions & packages
+        if [ "$with_node" = "no" ]; then
+            say warning "Skipping all Node setup"
+        else
+            if [ "${with_node_versions}" = "no" ]; then
+                say warning "Skipping installation of Node versions (use --with-node-versions to install them)"
+            else
+                install_node_versions
+            fi
+
+#            say info "Installing/upgrading Node tools... "
+#            for package in "${NODE_PACKAGES[@]}"; do
+#                say -n info "Installing/upgrading ${package}... "
+#                say success "Done"
+#            done
+
+            say success "Node setup complete"
+        fi
 
         # Install Python versions & packages
         if [ "$with_python" = "no" ]; then
@@ -605,7 +632,9 @@ function main () {
     link checkoutmanager.cfg
     link_many config/fish/*.fish
     link_many config/fish/functions/*.fish
+    link config/fish/functions/__bass.py
     link config/fish/functions/additional-blackhole-hosts
+    link_many config/live-backup/*
     link_many config/nvim/*.vim
     link_many config/nvim/ftdetect/*.vim
     link_many config/nvim/syntax/*.vim
@@ -616,11 +645,11 @@ function main () {
     link hgrc
     link ideavimrc
     link inputrc
-    link_many config/live-backup/*
     link_many local/bin/*
     link_many local/borg/exclude.*
     link_many_with_target local/borg/backup.* "${HOME}/.local/bin"
     link npmrc
+    link nvmrc
     link profile
     link pythonrc
     link vimrc
