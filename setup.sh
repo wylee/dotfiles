@@ -488,11 +488,11 @@ function main () {
                 say "Usage: ./setup.sh"
                 say "    --no-brew => Skip installation of Homebrew and packages"
                 say "    --no-node => Skip all Node-related setup"
-                say "    --with-node-versions => Skip installation of Node versions"
+                say "    --with-node-versions => Install Node versions (not installed by default)"
                 say "    --no-python => Skip all Python-related setup"
-                say "    --with-python-versions => Skip installation of Python versions"
+                say "    --with-python-versions => Install Python versions (not installed by default)"
                 say "    --no-ruby => Skip all Ruby-related setup"
-                say "    --with-ruby-versions => Skip installation of Ruby versions"
+                say "    --with-ruby-versions => Install Ruby versions (not installed by default)"
                 say "    --no-vim-plugins => Skip installation of Vim plugins"
                 exit
                 ;;
