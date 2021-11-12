@@ -1,7 +1,7 @@
 # This updates the terminal window/tab title after every command.
 PROMPT_COMMAND='echo -ne "\033]0;$(hostname -s):$(basename ${PWD})\007"'
 
-source_if "/usr/local/etc/bash_completion.d/git-prompt.sh"
+source_if "$(brew --prefix)/etc/bash_completion.d/git-prompt.sh"
 
 # Fancy pants prompt
 make_ps1() {
