@@ -115,6 +115,7 @@ function activateenv
     if test -n "$is_node_env"
         set -gx PATH $PWD/$node_bin $PATH
         set -gx _ENV_TYPE $_ENV_TYPE node
+        test -f $PWD/.nvmrc; and nvm use
     end
 
     if test -n "$is_rust_env"
@@ -144,13 +145,17 @@ end
 
 function deactivateenv
     if set -q _ENV_CURRENT
-        set env_current $_ENV_CURRENT
+        set -l env_current $_ENV_CURRENT
+        set -l env_type $_ENV_TYPE
         set -gx PATH $_ENV_ORIGINAL_PATH
         set -e PROJECT_NAME
         set -e VIRTUAL_ENV
         set -e _ENV_CURRENT
         set -e _ENV_ORIGINAL_PATH
         set -e _ENV_TYPE
+        if contains node $env_type
+            nvm use node
+        end
         hash -r 2>/dev/null
         if [ "$argv[1]" != "silent" ]
             set_color red
