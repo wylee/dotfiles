@@ -52,21 +52,41 @@ function activateenv
         return
     end
 
+    set node_candidates . frontend */{frontend,static} src/{frontend,static} src/*/{frontend,static}
+    set node_bin
+
+    set rails_script bin/rails
+
+    set rust_candidates Cargo.toml
+
     set virtualenv_candidates .venv .virtualenv .env
     set virtualenv_dir
     set virtualenv_bin
 
-    set rails_script bin/rails
-
-    set node_candidates . frontend */{frontend,static} src/{frontend,static} src/*/{frontend,static}
-    set node_bin
-
-    set rust_candidates Cargo.toml
-
-    set is_virtualenv
-    set is_rails_env
     set is_node_env
+    set is_rails_env
     set is_rust_env
+    set is_virtualenv
+
+    for dir in $node_candidates
+        if test -d "$dir/node_modules"
+            set is_node_env true
+            set node_bin $dir/node_modules/.bin
+            break
+        end
+    end
+
+    if test -f "$rails_script"
+        set is_rails_env true
+        set rails_bin (dirname $rails_script)
+    end
+
+    for file in $rust_candidates
+        if test -f "$file"
+            set is_rust_env true
+            break
+        end
+    end
 
     for dir in $virtualenv_candidates
         if test -f "$dir/bin/python"
@@ -77,27 +97,7 @@ function activateenv
         end
     end
 
-    if test -f "$rails_script"
-        set is_rails_env true
-        set rails_bin (dirname $rails_script)
-    end
-
-    for dir in $node_candidates
-        if test -d "$dir/node_modules"
-            set is_node_env true
-            set node_bin $dir/node_modules/.bin
-            break
-        end
-    end
-
-    for file in $rust_candidates
-        if test -f "$file"
-            set is_rust_env true
-            break
-        end
-    end
-
-    if test -z "$is_virtualenv" -a -z "$is_rails_env" -a -z "$is_node_env" -a -z "$is_rust_env"
+    if test -z "$is_node_env" -a -z "$is_rails_env" -a -z "$is_rust_env" -a -z "$is_virtualenv"
         if [ "$argv[1]" != "silent" ]
             set_color red
             echo "This is not an env directory" 1>&2
@@ -118,13 +118,13 @@ function activateenv
         test -f $PWD/.nvmrc; and nvm use
     end
 
-    if test -n "$is_rust_env"
-        set -gx _ENV_TYPE $_ENV_TYPE rust
-    end
-
     if test -n "$is_rails_env"
         set -gx PATH $PWD/$rails_bin $PATH
         set -gx _ENV_TYPE $_ENV_TYPE rails
+    end
+
+    if test -n "$is_rust_env"
+        set -gx _ENV_TYPE $_ENV_TYPE rust
     end
 
     if test -n "$is_virtualenv"
