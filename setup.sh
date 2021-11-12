@@ -69,15 +69,9 @@ BREW_CASKS=(
     visual-studio-code
 )
 
-# XXX: This is currently unused
 NODE_VERSIONS=(
     node
-    v14.8.1
-)
-
-NODE_PACKAGES=(
-    npm
-    yarn
+    v14.18.1
 )
 
 PYTHON_VERSIONS=(
@@ -314,18 +308,22 @@ function install_brew () {
 }
 
 function install_node_versions () {
+    # XXX: This is necessary because nvm doesn't seem to work with
+    #      Python 3.9+, in particular when a version has to be built
+    #      from source.
+    local python_version="3.8.12"
+
     test -d ~/.nvm || mkdir ~/.nvm
-    source /usr/local/opt/nvm/nvm.sh --no-use
-    # Latest
-    nvm install node
-    nvm use node
-    npm install -g npm
-    npm install -g yarn
-    # 14 LTS
-    nvm install --lts 14
-    nvm use v14.18.1
-    npm install -g npm
-    npm install -g yarn
+    source "${BREW_PREFIX}/opt/nvm/nvm.sh" --no-use
+
+    for version in "${NODE_VERSIONS[@]}"; do
+        PYENV_VERSION="$python_version" nvm install "$version" >/dev/null
+        nvm use "$version" >/dev/null
+        npm install -g npm yarn >/dev/null
+    done
+
+    # Reset node to default version
+    nvm use node >/dev/null
 }
 
 function install_python_versions () {
@@ -531,7 +529,7 @@ function main () {
         fi
         say info "To make fish the default shell, run: chsh -s ${fish_path}"
 
-        # Install Node versions & packages
+        # Install Node versions
         if [ "$with_node" = "no" ]; then
             say warning "Skipping all Node setup"
         else
@@ -540,13 +538,6 @@ function main () {
             else
                 install_node_versions
             fi
-
-#            say info "Installing/upgrading Node tools... "
-#            for package in "${NODE_PACKAGES[@]}"; do
-#                say -n info "Installing/upgrading ${package}... "
-#                say success "Done"
-#            done
-
             say success "Node setup complete"
         fi
 
