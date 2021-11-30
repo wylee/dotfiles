@@ -12,6 +12,10 @@
 /.ropeproject*/
 /.vscode*/
 
+# Node
+node_modules/
+.nvmrc
+
 # Python
 /.env*/
 /.tox/
@@ -27,4 +31,3 @@ __pycache__/
 .DS_Store
 *.css.map
 .*.swp
-node_modules/
