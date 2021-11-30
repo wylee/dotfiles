@@ -32,6 +32,8 @@ function __init
     __prepend_path ~/.cargo/bin
     __prepend_path $PYENV_ROOT/bin
     __prepend_path ~/.local/bin
+
+    starship init fish | source
 end
 
 function __prepend_path -a path -d "Add path to front of PATH if it's not already in PATH"

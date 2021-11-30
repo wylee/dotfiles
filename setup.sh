@@ -53,6 +53,7 @@ BREW_PACKAGES=(
     rbenv
     ripgrep
     shellcheck
+    starship
     vim
 )
 
@@ -629,6 +630,7 @@ function main () {
     link_many config/nvim/*.vim
     link_many config/nvim/ftdetect/*.vim
     link_many config/nvim/syntax/*.vim
+    link config/starship.toml
     link_many doom.d/*.el
     link gitconfig
     link gitignore
