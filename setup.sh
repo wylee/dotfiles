@@ -197,9 +197,12 @@ function create_dir () {
 
 function link () {
     # Args:
-    #     $1: Source path relative to root of dot files repo.
+    #     $1: Source path relative to root of dot files repo or an
+    #         absolute path. If the path is relative, the dotfiles
+    #         repo directory will be prepended.
     #
-    #         Example: bashrc.d/alias.rc
+    #         Example: bashrc.d/alias.rc -> $REPO_DIR/bashrc.d/alias.rc
+    #         Example: /some/absolute/path -> /some/absolute/path
     #
     #     $2: Target path. This rarely needs to be specified. It will be
     #         set to $HOME/.$1 by default; if `dirname $HOME/.$1` isn't
@@ -214,11 +217,18 @@ function link () {
     local source
     local target
 
-    source="${REPO_DIR}/${1}"
-
-    if [ ! -f "$source" ]; then
-        say error "${source} does not exist in .files repo"
-        return 1
+    if [ "${1:0:1}" = "/" ]; then
+        source="${1}"
+        if [ ! -f "$source" ] && [ ! -d "$source" ]; then
+            say error "Source does not exist: ${source}"
+            return 1
+        fi
+    else
+        source="${REPO_DIR}/${1}"
+        if [ ! -f "$source" ] && [ ! -d "$source" ]; then
+            say error "Source does not exist in .files repo: ${source}"
+            return 1
+        fi
     fi
 
     if [ "${2-}" ]; then
