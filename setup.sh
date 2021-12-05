@@ -664,26 +664,16 @@ function main () {
     else
         mkdir -p "${HOME}/.vim/"{autoload,bundle}
         mkdir -p "${HOME}/.config/nvim/"{autoload,bundle}
-        say -n info "Checking out Pathogen plugins... "
+        say -n info "Checking out Pathogen plugins for vim... "
         checkoutmanager co vim-pathogen >/dev/null
         checkoutmanager up vim-pathogen >/dev/null
+        say success "Done"
+        say -n info "Checking out Pathogen plugins for nvim... "
         checkoutmanager co nvim-pathogen >/dev/null
         checkoutmanager up nvim-pathogen >/dev/null
         say success "Done"
-        if [ -L "$pathogen_link" ]; then
-            say warning "pathogen.vim already linked to $(readlink "$pathogen_link")"
-        else
-            say -n info "Linking ${pathogen_link} to ${pathogen_path}... "
-            ln -s "$pathogen_path" "$pathogen_link"
-            say success "Done"
-        fi
-        if [ -L "$nvim_pathogen_link" ]; then
-            say warning "pathogen.vim already linked to $(readlink "$nvim_pathogen_link")"
-        else
-            say -n info "Linking ${nvim_pathogen_link} to ${nvim_pathogen_path}... "
-            ln -s "$nvim_pathogen_path" "$nvim_pathogen_link"
-            say success "Done"
-        fi
+        link "$pathogen_path" "$pathogen_link"
+        link "$nvim_pathogen_path" "$nvim_pathogen_link"
     fi
 
     say success "Setup complete"
