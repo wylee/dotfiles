@@ -455,6 +455,8 @@ function main () {
     # Vim plugins
     local pathogen_path="${HOME}/.vim/vim-pathogen/autoload/pathogen.vim"
     local pathogen_link="${HOME}/.vim/autoload/pathogen.vim"
+    local nvim_pathogen_path="${HOME}/.config/nvim/vim-pathogen/autoload/pathogen.vim"
+    local nvim_pathogen_link="${HOME}/.config/nvim/autoload/pathogen.vim"
 
     while [[ $# -gt 0 ]]; do
         option="$1"
@@ -653,15 +655,25 @@ function main () {
         say warning "Skipping Vim plugin installation"
     else
         mkdir -p "${HOME}/.vim/"{autoload,bundle}
+        mkdir -p "${HOME}/.config/nvim/"{autoload,bundle}
         say -n info "Checking out Pathogen plugins... "
         checkoutmanager co vim-pathogen >/dev/null
         checkoutmanager up vim-pathogen >/dev/null
+        checkoutmanager co nvim-pathogen >/dev/null
+        checkoutmanager up nvim-pathogen >/dev/null
         say success "Done"
         if [ -L "$pathogen_link" ]; then
             say warning "pathogen.vim already linked to $(readlink "$pathogen_link")"
         else
             say -n info "Linking ${pathogen_link} to ${pathogen_path}... "
             ln -s "$pathogen_path" "$pathogen_link"
+            say success "Done"
+        fi
+        if [ -L "$nvim_pathogen_link" ]; then
+            say warning "pathogen.vim already linked to $(readlink "$nvim_pathogen_link")"
+        else
+            say -n info "Linking ${nvim_pathogen_link} to ${nvim_pathogen_path}... "
+            ln -s "$nvim_pathogen_path" "$nvim_pathogen_link"
             say success "Done"
         fi
     fi

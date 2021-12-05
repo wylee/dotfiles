@@ -5,11 +5,9 @@ silent! call pathogen#infect()
 silent! call pathogen#helptags()
 
 filetype plugin indent on
-
-let mapleader = ","
-
 syntax on
 
+let mapleader = ","
 
 " Disable up and down arrow keys and some other insert mode navigation
 inoremap <Left>  <NOP>
@@ -60,6 +58,7 @@ set ruler
 set showcmd
 set showmode
 set showtabline=1
+set termguicolors
 set wildmenu
 set wildmode=list:longest
 
@@ -108,19 +107,21 @@ augroup vimrc
 
     autocmd FileType css setlocal sw=2 sts=2
     autocmd FileType html setlocal sw=2 sts=2
-    autocmd FileType javascript setlocal sw=4 sts=4
+    autocmd FileType javascript setlocal sw=2 sts=2
     autocmd FileType json setlocal sw=2 sts=2
     autocmd FileType markdown setlocal sw=2 sts=2 tw=72
     autocmd FileType text setlocal sw=2 sts=2 tw=72
     autocmd FileType yaml setlocal sw=2 sts=2 tw=79
 
-    autocmd BufRead,BufNewFile *.mako set filetype=mako
-    autocmd FileType mako setlocal sw=2 sts=2
-
     autocmd BufRead,BufNewFile *.commit set filetype=gitcommit
     autocmd FileType gitcommit setlocal sw=4 sts=4 tw=72
 
+    autocmd BufRead,BufNewFile *.mako set filetype=mako
+    autocmd FileType mako setlocal sw=2 sts=2
+
     autocmd BufRead,BufNewFile ~/.bashrc.d/*.rc set filetype=sh
+
+    autocmd BufRead,BufNewFile CHANGELOG set filetype=rst
 
     " Python files:
     "     - Don't auto-wrap code
@@ -134,8 +135,6 @@ augroup vimrc
                 \ if &omnifunc == "" |
                 \     setlocal omnifunc=syntaxcomplete#Complete |
                 \ endif
-
-    autocmd BufRead,BufNewFile CHANGELOG set filetype=rst
 augroup END
 
 " Supertab
