@@ -77,7 +77,7 @@ NODE_VERSIONS=(
 
 PYTHON_VERSIONS=(
     3.10.0
-    3.9.7
+    3.9.9
     3.8.12
     3.7.12
 )
