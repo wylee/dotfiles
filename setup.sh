@@ -171,7 +171,7 @@ function say () {
         type="default"
     fi
     message=$(colorize "$type" "$message")
-    if [ "$type" = "warning" -o "$type" = "error" ]; then
+    if [ "$type" = "warning" ] ||  [ "$type" = "error" ]; then
         echo $args "$message" 1>&2
     else
         echo $args "$message"
@@ -445,8 +445,6 @@ function main () {
     local with_ruby="yes"
     local with_vim_plugins="yes"
 
-    local npm_path="${BREW_BIN}/npm"
-    local yarn_path="${BREW_BIN}/yarn"
     local bash_path="${BREW_BIN}/bash"
     local fish_path="${BREW_BIN}/fish"
 
