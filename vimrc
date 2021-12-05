@@ -10,11 +10,6 @@ let mapleader = ","
 
 syntax on
 
-" Use arrow keys for window navigation
-noremap <Left>  <C-w>h
-noremap <Down>  <C-w>j
-noremap <Up>    <C-w>k
-noremap <Right> <C-w>l
 
 " Disable up and down arrow keys and some other insert mode navigation
 inoremap <Left>  <NOP>
@@ -42,9 +37,6 @@ nnoremap q: <nop>
 inoremap jk <ESC>:w<Enter>
 inoremap kj <ESC>:w<Enter>
 
-" Convenient insert mode save-and-quit
-inoremap qq <ESC>:w<Enter>:q<Enter>
-
 " Copy to system clipboard
 noremap <leader>y "+y
 " Paste from system clipboard
@@ -70,16 +62,6 @@ set showmode
 set showtabline=1
 set wildmenu
 set wildmode=list:longest
-
-" GUI
-" Hide toolbar
-set guioptions-=T
-" Hide scrollbars
-set guioptions-=r
-set guioptions-=R
-set guioptions-=l
-set guioptions-=L
-set guioptions-=b
 
 " Search
 nnoremap / /\v
