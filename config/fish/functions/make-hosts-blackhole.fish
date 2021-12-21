@@ -32,14 +32,31 @@ function make-hosts-blackhole
 
     if set -q _flag_help
         echo 'Download list of hosts to block, convert to DNSmasq format, upload to router.'
-        echo 'If --local is specified, copy downloaded hosts to /etc/hosts instead.'
         echo
-
+        echo "Steps:"
+        echo "  - Download hosts file from GitHub"
+        echo "  - Add additional hosts from local file, if any"
+        echo "  - Create dnsmasq hosts file"
+        echo "  - Upload dnsmasq hosts file to router"
+        echo "  - Restart dnsmasq service on router"
+        echo "  - Flush DNS cache on local machine"
+        echo
         echo "Options:"
         for option in $options
-            echo "    -"(string replace '/' ', --' (string replace -a '_' '-' $option))
+            echo "  -"(string replace '/' ', --' (string replace -a '_' '-' $option))
         end
-
+        echo
+        echo "-D/--no-download   Don't download hosts file"
+        echo "-A/--no-add        Don't add additional hosts to downloaded hosts file"
+        echo "-C/--no-create     Don't create dnsmasq hosts file"
+        echo "-U/--no-upload     Don't copy dnsmasq hosts file to router"
+        echo "-R/--no-reload     Don't reload dnsmasq on router"
+        echo "-F/--no-flush      Don't flush DNS cache on local machine"
+        echo "-H/--hosts <file>  Use specified hosts file rather than downloading"
+        echo "-l/--local         Copy hosts to /etc/hosts on local machine rather than to the router"
+        echo "-s/--show          Show contents of hosts file before copying to router or /etc/hosts"
+        echo "-k/--keep          Keep temp files for inspection"
+        echo "-h/--help          Show help"
         rm -r $temp_dir
         return
     end
