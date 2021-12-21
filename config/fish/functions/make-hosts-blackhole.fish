@@ -68,7 +68,18 @@ function make-hosts-blackhole
         echo 'Skipping download of hosts file'
     else
         echo "Downloading hosts file $hosts_file_url to $hosts..."
-        curl -sS $hosts_file_url >$hosts
+        set -l http_status (curl --fail --silent --show-error --write-out "%{http_code}" $hosts_file_url >$hosts)
+        if test $status != 0
+            echo "Failed to download hosts file: $hosts_file_url" 1>&2
+            return $status
+        end
+    end
+
+    set -l num_hosts (wc -l <$hosts | string trim)
+    if test $num_hosts = 0
+        echo "Hosts file is empty: $hosts" 2>&1
+        echo "This is probably due to an incorrect download URL" 2>&1
+        return 1
     end
 
     if set -q _flag_no_add
