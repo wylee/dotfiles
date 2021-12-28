@@ -636,6 +636,7 @@ function main () {
     link_many config/fish/functions/*.fish
     link config/fish/functions/__bass.py
     link config/fish/functions/additional-blackhole-hosts
+    link config/fish/functions/allowed-blackhole-hosts
     link_many config/live-backup/*
     link_many config/nvim/*.vim
     link_many config/nvim/ftdetect/*.vim

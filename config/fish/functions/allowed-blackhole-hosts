@@ -1,0 +1,3 @@
+# Hosts to allow when running make-hosts-blackhole
+# These are hosts in the downloaded host list that shouldn't be blocked
+postsign.docusign.com

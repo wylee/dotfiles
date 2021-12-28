@@ -18,6 +18,7 @@ function make-hosts-blackhole
     set -l directory (dirname (status -f))
     set -l additional_hosts_file "$directory/additional-blackhole-hosts"
     set -l hosts_file_url 'https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling-porn/hosts'
+    set -l allowed_hosts_file "$directory/allowed-blackhole-hosts"
     set -l temp_dir (mktemp -d /tmp/make-hosts-blackhole.XXX)
     set -l hosts "$temp_dir/blackhole.hosts"
     set -l etc_hosts "$temp_dir/blackhole.etc_hosts"
@@ -36,6 +37,7 @@ function make-hosts-blackhole
         echo "Steps:"
         echo "  - Download hosts file from GitHub"
         echo "  - Add additional hosts from local file, if any"
+        echo "  - Remove allowed hosts from local file, if any"
         echo "  - Create dnsmasq hosts file"
         echo "  - Upload dnsmasq hosts file to router"
         echo "  - Restart dnsmasq service on router"
@@ -47,7 +49,7 @@ function make-hosts-blackhole
         end
         echo
         echo "-D/--no-download   Don't download hosts file"
-        echo "-A/--no-add        Don't add additional hosts to downloaded hosts file"
+        echo "-A/--no-add        Don't add/remove hosts to/from downloaded hosts file"
         echo "-C/--no-create     Don't create dnsmasq hosts file"
         echo "-U/--no-upload     Don't copy dnsmasq hosts file to router"
         echo "-R/--no-reload     Don't reload dnsmasq on router"
@@ -84,11 +86,18 @@ function make-hosts-blackhole
 
     if set -q _flag_no_add
         echo 'Skipping addition of additional hosts'
+        echo 'Skipping removal of allowed hosts'
     else
         echo 'Adding additional hosts...'
         for host in (cat $additional_hosts_file)
             if not string match --quiet '#*' $host
                 echo "0.0.0.0 $host" >>$hosts
+            end
+        end
+        echo 'Removing allowed hosts...'
+        for host in (cat $allowed_hosts_file)
+            if not string match --quiet '#*' $host
+                sed -E -i.bak '/^0\.0\.0\.0 +'$host'$/d' $hosts
             end
         end
     end
