@@ -143,7 +143,7 @@ function make-hosts-blackhole
         if set -q _flag_no_create
             echo 'Skipping creation of dnsmasq hosts file'
         else
-            echo "Creating dnsmasg file at $dnsmasq_hosts..."
+            echo "Creating dnsmasq file at $dnsmasq_hosts..."
             sed -En 's!^0\.0\.0\.0 +([^ #]+).*$!address=/\1/0.0.0.0!p' $hosts >>$dnsmasq_hosts
         end
 
