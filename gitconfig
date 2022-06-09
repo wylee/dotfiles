@@ -15,7 +15,6 @@
         --date=format:"%m/%d/%y"
     st = !git status
     stash-all = !git stash push --include-untracked -m temp .
-    pull-upstream-master = !git pull upstream master
 
 [color]
     ui = true
