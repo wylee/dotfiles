@@ -341,7 +341,7 @@ function install_python_versions () {
     local pyenv_path="${BREW_BIN}/pyenv"
 
     python_versions_string=$(printf "%s\n" "${PYTHON_VERSIONS[@]}")
-    pyenv_versions=$("$pyenv_path" versions --bare)
+    pyenv_versions=$("$pyenv_path" versions --bare | sort --version-sort --reverse)
 
     if test -f "${PYTHON_VERSIONS_FILE}"; then
         rm "${PYTHON_VERSIONS_FILE}"
