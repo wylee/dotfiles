@@ -3,8 +3,8 @@ Host *
     AddKeysToAgent yes
     IdentitiesOnly yes
 
-Host *.local 192.168.1.1
-    IdentityFile ~/.ssh/id_rsa
+Host 192.168.1.1
+    IdentityFile ~/.ssh/id_rsa-router
 
 # Code ----------------------------------------------------------------
 
