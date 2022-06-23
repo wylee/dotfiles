@@ -23,6 +23,9 @@ Host notabug.org
 Host pypi.org
     IdentityFile ~/.ssh/id_rsa-pypi
 
+Host git.jetbrains.space
+    IdentityFile ~/.ssh/id_rsa-space
+
 # wyattbaldwin.com ----------------------------------------------------
 
 Host old.wyattbaldwin.com
