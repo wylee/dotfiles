@@ -43,4 +43,4 @@ Host bycycle.org
 
 Host mystops.io
     User ubuntu
-    IdentityFile ~/.ssh/mystops2.pem
+    IdentityFile ~/.ssh/id_rsa-mystops
