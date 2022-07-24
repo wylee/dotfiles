@@ -40,6 +40,7 @@ BREW_PACKAGES=(
     bash-completion
     bitwarden-cli
     borgbackup
+    direnv
     editorconfig
     exiftool
     fish

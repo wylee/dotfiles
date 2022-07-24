@@ -45,9 +45,9 @@ end
 # Fixes slow command completion, which appears to be an Mac-specific
 # issue due to the way `apropos` and `whatis` are implemented. The
 # __fish_describe_command function is called when tab-completing
-# a command name and shows list of commands of shown with descriptions
-# in parentheses. Since I never look at those descriptions, disabling
-# them is no big deal.
+# a command name and shows a list of commands of with descriptions in
+# parentheses. Since I never look at those descriptions, disabling them
+# is no big deal.
 function __fish_describe_command; end
 
 __init
