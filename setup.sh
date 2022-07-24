@@ -39,7 +39,6 @@ BREW_PACKAGES=(
     bash
     bash-completion
     bitwarden-cli
-    borgbackup
     direnv
     editorconfig
     exiftool
@@ -625,7 +624,6 @@ function main () {
     create_dir "${HOME}/.doom.d"
     create_dir "${HOME}/.local"
     create_dir "${HOME}/.local/bin"
-    create_dir "${HOME}/.local/borg"
     create_dir "${HOME}/.ssh"
     create_dir "${HOME}/Library/Application Support/pypoetry"
     create_dir "${HOME}/Projects"
@@ -651,8 +649,6 @@ function main () {
     link ideavimrc
     link inputrc
     link_many local/bin/*
-    link_many local/borg/exclude.*
-    link_many_with_target local/borg/backup.* "${HOME}/.local/bin"
     link npmrc
     link nvmrc
     link profile
