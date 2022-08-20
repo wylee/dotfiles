@@ -1,0 +1,41 @@
+# SSH to the router and execute the command below
+#
+# TODO: Add user setup
+# TODO: Add SSH setup
+# TODO: Convert this to a script
+
+ssh 192.168.1.1
+
+configure
+
+# Basics
+set system domain-name home.lan
+set system time-zone America/Los_Angeles
+
+# DNS
+set system name-server 127.0.0.1
+set service dhcp-server use-dnsmasq enable
+set service dns forwarding listen-on eth1
+set service dns forwarding name-server 1.1.1.1
+
+# Enable DNS black hole config
+set service dns forwarding options addn-hosts=/config/user-data/dnsmasq.blackhole.conf
+
+# Delete any existing DNS services if necessary, if they point at public DNS servers
+delete service dhcp-server shared-network-name LAN1 subnet 192.168.1.0/24 dns-server <IP>
+delete service dhcp-server shared-network-name LAN2 subnet 192.168.2.0/24 dns-server <IP>
+
+# Set up DNS services to use local DNS only
+set service dhcp-server shared-network-name LAN1 subnet 192.168.1.0/24 dns-server 192.168.1.1
+set service dhcp-server shared-network-name LAN2 subnet 192.168.2.0/24 dns-server 192.168.2.1
+
+# Ignore the default /etc/hosts file
+set service dns forwarding options no-hosts
+# Don't forward plain host names (without a dot)
+set service dns forwarding options domain-needed
+
+commit
+save
+exit
+
+reboot # ???
