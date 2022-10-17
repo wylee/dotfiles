@@ -625,7 +625,7 @@ function main () {
     create_dir "${HOME}/.local"
     create_dir "${HOME}/.local/bin"
     create_dir "${HOME}/.ssh"
-    create_dir "${HOME}/Library/Application Support/pypoetry"
+    create_dir "${HOME}/Library/Preferences/pypoetry"
     create_dir "${HOME}/Projects"
 
     link bashrc
@@ -655,7 +655,7 @@ function main () {
     link pythonrc
     link vimrc
     link ssh/config
-    link "Library/Application Support/pypoetry/config.toml"
+    link "Library/Preferences/pypoetry/config.toml"
 
     if [ "$with_vim_plugins" = "no" ]; then
         say warning "Skipping Vim plugin installation"
