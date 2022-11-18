@@ -3,18 +3,45 @@
 # TODO: Add user setup
 # TODO: Add SSH setup
 # TODO: Convert this to a script
+#
+# Default username:password = ubnt:ubnt
 
+# Router UI ------------------------------------------------------------
+
+open http://192.168.1.1/
+# - Log in with default credentials
+# - Run the Basic Setup wizard
+#   - Use public DNS servers
+#   - Create new admin user wyatt
+# - Configure eth4 PoE to 48v for wireless AP
+
+# Local ----------------------------------------------------------------
+
+# Create SSH key pair if necessary, noting that the comment field after
+# the key is REQUIRED.
+ssh-keygen -t rsa -f ~/.ssh/id_rsa-router
+scp ~/.ssh/id_rsa-router.pub 192.168.1.1:~/ssh-key.pub
+
+# NOTE: Use the password for the user created above in the router UI
 ssh 192.168.1.1
 
 # Enter config mode
 configure
 
-# Basics ---------------------------------------------------------------------
+# Basics ---------------------------------------------------------------
 
+set system host-name rauter
 set system domain-name home.lan
 set system time-zone America/Los_Angeles
 
-# DNS ------------------------------------------------------------------------
+# Auth -----------------------------------------------------------------
+
+loadkey wyatt ssh-key.pub
+set service ssh disable-password-authentication
+
+# DNS ------------------------------------------------------------------
+#
+# NOTE: I'm not sure about this DNS config. Skip for now.
 
 # Delete any existing DNS services if they point at public DNS servers
 # I don't think this is necessary with the default config
@@ -40,8 +67,10 @@ set service dns forwarding except-interface eth0
 set service dns forwarding name-server 1.1.1.1
 
 set service dns forwarding cache-size 2048
+set service dns forwarding options bogus-priv
 set service dns forwarding options domain-needed
 set service dns forwarding options no-hosts
+set service dns forwarding options domain=home.local
 
 # These are recommended one site, but I'm not sure what they do
 # set service dns forwarding options bogus-priv
@@ -53,7 +82,7 @@ set service dns forwarding options no-hosts
 
 # Enable DNS black hole
 set service dhcp-server use-dnsmasq enable
-set service dns forwarding options addn-hosts=/config/user-data/dnsmasq.blackhole.conf
+set service dns forwarding options conf-file=/config/user-data/dnsmasq.blackhole.conf
 
 # Save and exit config mode
 commit
