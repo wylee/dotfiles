@@ -72,7 +72,7 @@ BREW_CASKS=(
 
 NODE_VERSIONS=(
     node
-    v14.18.1
+    v16
 )
 
 PYTHON_VERSIONS=(
@@ -320,18 +320,13 @@ function install_brew () {
 }
 
 function install_node_versions () {
-    # XXX: This is necessary because nvm doesn't seem to work with
-    #      Python 3.9+, in particular when a version has to be built
-    #      from source.
-    local python_version="3.8.12"
-
     test -d ~/.nvm || mkdir ~/.nvm
     source "${BREW_PREFIX}/opt/nvm/nvm.sh" --no-use
 
     for version in "${NODE_VERSIONS[@]}"; do
-        PYENV_VERSION="$python_version" nvm install "$version" >/dev/null
+        nvm install --skip-default-packages "$version" >/dev/null
         nvm use "$version" >/dev/null
-        npm install -g npm yarn >/dev/null
+        npm install -g npm >/dev/null
     done
 
     # Reset node to default version
