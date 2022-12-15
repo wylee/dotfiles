@@ -1,4 +1,4 @@
-#### At root of repo
+# Various build directories at project root
 /build/
 /dist/
 /docs/_build
@@ -17,10 +17,12 @@ node_modules/
 .nvmrc
 
 # Python
-/.env*/
-/.tox/
-/.venv*/
 /MANIFEST
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.tox/
+.venv*/
 *.egg-info/
 __pycache__/
 *.py[cdo]
@@ -30,4 +32,5 @@ __pycache__/
 #### Anywhere in repo
 .DS_Store
 *.css.map
+*.js.map
 .*.swp
