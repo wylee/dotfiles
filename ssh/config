@@ -39,6 +39,12 @@ Host bycycle.org
     IdentityFile ~/.ssh/id_rsa-bycycle
     Port 1046
 
+# DjangoKit -----------------------------------------------------------
+
+Host djangokit.org
+    User admin
+    IdentityFile ~/.ssh/id_rsa-djangokit.org
+
 # MyStops -------------------------------------------------------------
 
 Host mystops.io
