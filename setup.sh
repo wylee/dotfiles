@@ -76,11 +76,11 @@ NODE_VERSIONS=(
 )
 
 PYTHON_VERSIONS=(
-    3.11.0
-    3.10.7
-    3.9.14
-    3.8.14
-    3.7.14
+    3.11.1
+    3.10.9
+    3.9.16
+    3.8.16
+    3.7.16
 )
 
 PYTHON_VERSIONS_FILE="${HOME}/.python-version"
