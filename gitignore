@@ -17,7 +17,7 @@ node_modules/
 .nvmrc
 
 # Python
-/MANIFEST
+MANIFEST
 .mypy_cache/
 .pytest_cache/
 .ruff_cache/
@@ -25,8 +25,10 @@ node_modules/
 .venv*/
 *.egg-info/
 __pycache__/
+__pypackages__/
 *.py[cdo]
 .coverage
+.pdm.toml
 .python-version
 
 #### Anywhere in repo
