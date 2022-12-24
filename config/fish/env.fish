@@ -16,7 +16,7 @@ function cdenv -a env_dir
     #     env_dir: A subdirectory of $PROJECT_DIR [optional]
     #
     # If env_dir is passed (as $1), cd into $PROJECT_DIR/$env_dir and
-    # then activate the virtualenv in that directory.
+    # then activate the environments in that directory.
     #
     # If env_dir isn't passed, cd into the current env directory.
     if set -q env_dir[1]
@@ -63,10 +63,14 @@ function activateenv
     set virtualenv_dir
     set virtualenv_bin
 
+    set pypackages_dir __pypackages__
+    set pypackages_bin
+
     set is_node_env
     set is_rails_env
     set is_rust_env
     set is_virtualenv
+    set is_pypackages_env
 
     for dir in $node_candidates
         if test -d "$dir/node_modules"
@@ -97,12 +101,23 @@ function activateenv
         end
     end
 
-    if test -z "$is_node_env" -a -z "$is_rails_env" -a -z "$is_rust_env" -a -z "$is_virtualenv"
+    if test -d $pypackages_dir
+        set is_pypackages_env true
+        set pypackages_bin $pypackages_dir/3.*/bin
+    end
+
+    if test -z "$is_node_env" \
+            -a -z "$is_rails_env" \
+            -a -z "$is_rust_env" \
+            -a -z "$is_virtualenv" \
+            -a -z "$is_pypackages_env"
+
         if [ "$argv[1]" != "silent" ]
             set_color red
             echo "This is not an env directory" 1>&2
             set_color normal
         end
+
         return 1
     end
 
@@ -131,6 +146,11 @@ function activateenv
         set -gx PATH $PWD/$virtualenv_bin $PATH
         set -gx VIRTUAL_ENV $_ENV_CURRENT/$virtualenv_dir
         set -gx _ENV_TYPE $_ENV_TYPE virtualenv
+    end
+
+    if test -n "$is_pypackages_env"
+        set -gx PATH $PWD/$pypackages_bin $PATH
+        set -gx _ENV_TYPE $_ENV_TYPE pypackages
     end
 
     hash -r 2>/dev/null
