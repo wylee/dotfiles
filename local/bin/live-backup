@@ -46,7 +46,7 @@ class LiveBackupRunner:
 
         with open(self.config_file) as fp:
             self.config_parser.read_file(fp)
-        
+
         local_config_file = self.get_option('local_config_file')
         if local_config_file:
             self.local_config_file = local_config_file
@@ -57,7 +57,7 @@ class LiveBackupRunner:
                 self.local_config_file = local_config_file
             else:
                 self.local_config_file = None
- 
+
         if self.local_config_file:
             self.local_config_parser = configparser.ConfigParser()
             with open(self.local_config_file) as fp:
@@ -65,10 +65,15 @@ class LiveBackupRunner:
         else:
             self.local_config_parser = None
 
-        self.config = self.get_config('live-backup')
         self.debug = as_bool(self.get_option('debug'))
         self.dry_run = as_bool(self.get_option('dry_run'))
         self.quiet = as_bool(self.get_option('quiet'))
+
+        if self.debug and self.quiet:
+            self.quiet = False
+            self.debug_info("Forced quiet to False because debug mode is active")
+
+        self.config = self.get_config('live-backup')
         self.env = self.get_option('env')
         self.project_dir = as_path(self.get_option('project_dir'))
         self.default_locations = as_list(self.get_option('default_locations'), sep=None)
@@ -82,6 +87,8 @@ class LiveBackupRunner:
             not (self.do_show_info or self.do_show_locations)
         )
 
+        self.git_garbarge_collected_paths = set()
+
     def run(self):
         if self.do_show_info:
             self.exit(self.show_info(), code=0)
@@ -94,7 +101,7 @@ class LiveBackupRunner:
 
         if paths_not_found:
             for path in paths_not_found:
-                print(f'Path not found: {path}', file=sys.stderr)
+                self.warn(f'Path not found: {path}')
             if self.skip_missing_paths:
                 answer = input('Continue? [Y/n] ').strip().lower()
                 if answer not in ('', 'y', 'yes'):
@@ -120,14 +127,16 @@ class LiveBackupRunner:
         default_excludes = excludes['__default__']
         only_paths = self.only_paths
 
-        if self.debug or not self.quiet:
+        if not self.quiet:
+            if self.debug:
+                print()
             print('Selected locations:\n')
             for location, destination in selected_locations:
                 print(f'    - {location} => {destination}')
 
         if self.do_show_selected:
             self.exit()
-        else:
+        elif not self.quiet:
             print()
 
         for location, destination in selected_locations:
@@ -158,6 +167,21 @@ class LiveBackupRunner:
         return rsync_cmd.copy()
 
     def rsync(self, paths, destination, excludes=()):
+        for path in paths:
+            git_dir = os.path.join(path, ".git")
+            gc_cmd = ["git", "gc", "--prune", "--quiet"]
+            gc_cmd_str = " ".join(gc_cmd)
+            if path in self.git_garbarge_collected_paths:
+                if self.debug:
+                    self.debug_info(f"Already ran `{gc_cmd_str}` in {path}")
+                continue
+            if os.path.isdir(git_dir):
+                if self.debug:
+                    self.debug_info(f"Running `{gc_cmd_str}` in {path}")
+                if not self.dry_run:
+                    subprocess.check_call(gc_cmd, cwd=path)
+            self.git_garbarge_collected_paths.add(path)
+
         joined_paths = ', '.join(paths)
         cmd = self.get_base_rsync_command()
         for exclude in excludes:
@@ -394,8 +418,10 @@ class LiveBackupRunner:
         # Get option from: command line > env > config > default
         if name not in OPTIONS:
             raise KeyError(f'Unknown option: {name}')
+
         env_name = f'LIVE_BACKUP_OPTION_{name.upper()}'
         config_name = name.replace('_', '-')
+
         if hasattr(self.args, name):
             source = 'args'
             value = getattr(self.args, name)
@@ -413,24 +439,42 @@ class LiveBackupRunner:
         else:
             source = 'defaults'
             value = OPTIONS[name]
+
         if value == '':
             value = None
+
+        # XXX: Set these early
+        if name == "debug":
+            self.debug = value
+            self.quiet = not value
+        elif name == "dry_run":
+            self.dry_run = value
+
         self.debug_info(f'Got {name} from {source}: {value}')
         return value
 
     def print_hr(self, fill_char='='):
-        if self.debug or not self.quiet:
+        if not self.quiet:
             term_size = shutil.get_terminal_size()
             columns = term_size.columns
             print(fill_char * columns)
 
     def debug_info(self, *print_args, file=sys.stderr, **print_kwargs):
         if self.debug:
+            if self.dry_run:
+                print("[DRY_RUN]", end=" ", file=file, flush=True)
             print('[DEBUG]', *print_args, file=file, **print_kwargs)
 
     def info(self, *print_args, file=sys.stdout, **print_kwargs):
-        if self.debug or not self.quiet:
+        if not self.quiet:
+            if self.dry_run:
+                print("[DRY_RUN]", end=" ", flush=True)
             print('[INFO]', *print_args, file=file, **print_kwargs)
+
+    def warn(self, *print_args, file=sys.stderr, **print_kwargs):
+        if self.dry_run:
+            print("[DRY_RUN]", end=" ", file=file, flush=True)
+        print('[WARNING]', *print_args, file=file, **print_kwargs)
 
     def exit(self, *print_args, code=1, sep='\n', **print_kwargs):
         if print_args:
