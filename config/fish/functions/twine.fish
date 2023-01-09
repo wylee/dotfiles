@@ -36,6 +36,6 @@ function twine
         echo
         echo "> twine $twine_args"
 
-        command twine $argv
+        command twine $twine_args
     end
 end
