@@ -1,3 +1,4 @@
+#!/bin/bash
 # SSH to the router and execute the command below
 #
 # TODO: Add user setup
@@ -11,7 +12,7 @@
 open http://192.168.1.1/
 # - Log in with default credentials
 # - Run the Basic Setup wizard
-#   - Use public DNS servers
+#   - Do NOT use public DNS servers
 #   - Create new admin user wyatt
 # - Configure eth4 PoE to 48v for wireless AP
 
@@ -48,7 +49,7 @@ set service ssh disable-password-authentication
 # delete service dhcp-server shared-network-name LAN1 subnet 192.168.1.0/24 dns-server <IP>
 # delete service dhcp-server shared-network-name LAN2 subnet 192.168.2.0/24 dns-server <IP>
 
-# Make DHCP to use local DNS only
+# Make DHCP use local DNS only
 set service dhcp-server shared-network-name LAN1 subnet 192.168.1.0/24 dns-server 192.168.1.1
 set service dhcp-server shared-network-name LAN2 subnet 192.168.2.0/24 dns-server 192.168.2.1
 
@@ -56,33 +57,44 @@ set service dhcp-server shared-network-name LAN2 subnet 192.168.2.0/24 dns-serve
 set system name-server 127.0.0.1
 set system name-server '::1'
 
-set service dns forwarding system
-set service dns forwarding except-interface eth0
+# XXX: Should this include other interfaces?
+set service dns forwarding listen-on eth1
+set service dns forwarding listen-on switch0
 
-# I think this is unnecessary due to the above except-interface config
-# set service dns forwarding listen-on eth1
-# set service dns forwarding listen-on switch0
+# Alternative interface config
+# XXX: This seems to cause issues
+# set service dns forwarding except-interface eth0
 
 # Forward to public DNS servers
 set service dns forwarding name-server 1.1.1.1
+set service dns forwarding name-server 1.0.0.1
+set service dns forwarding name-server 8.8.8.8
+set service dns forwarding name-server 9.9.9.9
 
-set service dns forwarding cache-size 2048
+set service dns forwarding cache-size 512
 set service dns forwarding options bogus-priv
 set service dns forwarding options domain-needed
+
+# Ignore /etc/hosts
 set service dns forwarding options no-hosts
-set service dns forwarding options domain=home.local
 
 # These are recommended one site, but I'm not sure what they do
-# set service dns forwarding options bogus-priv
 # set service dns forwarding options enable-ra
 # set service dns forwarding options expand-hosts
 # set service dns forwarding options localise-queries
 # set service dns forwarding options strict-order
 # set service dns forwarding options domain=home.local
 
-# Enable DNS black hole
+# Enable dnsmasq
 set service dhcp-server use-dnsmasq enable
-set service dns forwarding options conf-file=/config/user-data/dnsmasq.blackhole.conf
+
+# DNS blackhole
+# Copy file with blackhole entries to /etc/dnsmasq.d/
+#
+# Entries look like:
+#
+#     address=/0.0.0.0/0.0.0.0
+#     address=/example.com/0.0.0.0
 
 # Save and exit config mode
 commit
