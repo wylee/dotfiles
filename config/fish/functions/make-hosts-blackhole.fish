@@ -1,3 +1,6 @@
+# This requires dnsmasq to be enabled on the router. See
+# .files/router/setup for router setup.
+#
 # TODO: Add whitelist
 function make-hosts-blackhole
     set -l options \
@@ -28,13 +31,14 @@ function make-hosts-blackhole
     set -l dnsmasq_hosts_basename 'dnsmasq.blackhole.conf'
     set -l dnsmasq_hosts "$temp_dir/$dnsmasq_hosts_basename"
     set -l router_dnsmasq_upload_path "/config/user-data/$dnsmasq_hosts_basename"
-    set -l router_dnsmasq_dir '/etc/dnsmasq.d'
+    set -l router_dnsmasq_path "/etc/dnsmasq.d/$dnsmasq_hosts_basename"
     set -l router_ip '192.168.1.1'
 
     if set -q _flag_help
         echo 'Download list of hosts to block, convert to DNSmasq format, upload to router.'
         echo
         echo "Steps:"
+        echo
         echo "  - Download hosts file from GitHub"
         echo "  - Add additional hosts from local file, if any"
         echo "  - Remove allowed hosts from local file, if any"
@@ -44,21 +48,18 @@ function make-hosts-blackhole
         echo "  - Flush DNS cache on local machine"
         echo
         echo "Options:"
-        for option in $options
-            echo "  -"(string replace '/' ', --' (string replace -a '_' '-' $option))
-        end
         echo
-        echo "-D/--no-download   Don't download hosts file"
-        echo "-A/--no-add        Don't add/remove hosts to/from downloaded hosts file"
-        echo "-C/--no-create     Don't create dnsmasq hosts file"
-        echo "-U/--no-upload     Don't copy dnsmasq hosts file to router"
-        echo "-R/--no-reload     Don't reload dnsmasq on router"
-        echo "-F/--no-flush      Don't flush DNS cache on local machine"
-        echo "-H/--hosts <file>  Use specified hosts file rather than downloading"
-        echo "-l/--local         Copy hosts to /etc/hosts on local machine rather than to the router"
-        echo "-s/--show          Show contents of hosts file before copying to router or /etc/hosts"
-        echo "-k/--keep          Keep temp files for inspection"
-        echo "-h/--help          Show help"
+        echo "  -D/--no-download   Don't download hosts file"
+        echo "  -A/--no-add        Don't add/remove hosts to/from downloaded hosts file"
+        echo "  -C/--no-create     Don't create dnsmasq hosts file"
+        echo "  -U/--no-upload     Don't copy dnsmasq hosts file to router"
+        echo "  -R/--no-reload     Don't reload dnsmasq on router"
+        echo "  -F/--no-flush      Don't flush DNS cache on local machine"
+        echo "  -H/--hosts <file>  Use specified hosts file rather than downloading"
+        echo "  -l/--local         Copy hosts to /etc/hosts on local machine rather than to the router"
+        echo "  -s/--show          Show contents of hosts file before copying to router or /etc/hosts"
+        echo "  -k/--keep          Keep temp files for inspection"
+        echo "  -h/--help          Show help"
         rm -r $temp_dir
         return
     end
@@ -77,10 +78,15 @@ function make-hosts-blackhole
         end
     end
 
-    set -l num_hosts (wc -l <$hosts | string trim)
-    if test $num_hosts = 0
-        echo "Hosts file is empty: $hosts" 2>&1
-        echo "This is probably due to an incorrect download URL" 2>&1
+    if test -f $hosts
+        set -l num_hosts (wc -l <$hosts | string trim)
+        if test $num_hosts = 0
+            echo "Hosts file is empty: $hosts" 2>&1
+            echo "This is probably due to an incorrect download URL" 2>&1
+            return 1
+        end
+    else if ! set -q _flag_no_download
+        echo "Hosts file not found: $hosts" 2>&1
         return 1
     end
 
@@ -157,8 +163,8 @@ function make-hosts-blackhole
         else
             echo "Uploading hosts file to router at $router_dnsmasq_upload_path..."
             scp -q $dnsmasq_hosts $router_ip:$router_dnsmasq_upload_path
-            echo "Copying hosts file to $router_dnsmasq_dir..."
-            ssh -q $router_ip sudo cp $router_dnsmasq_upload_path $router_dnsmasq_dir
+            echo "Copying hosts file to $router_dnsmasq_path..."
+            ssh -q $router_ip sudo cp $router_dnsmasq_upload_path $router_dnsmasq_path
         end
 
         if set -q _flag_no_reload

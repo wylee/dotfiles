@@ -1,9 +1,6 @@
 # Additional hosts to block when running make-hosts-blackhole
 # Sorted by second level domain then third, fourth, etc
-facebook.com
-hulu.com
-instagram.com
-netflix.com
-news.google.com
-reddit.com
-i.reddit.com
+
+# SEO Spam
+geeksforgeeks.org
+www.geeksforgeeks.org
