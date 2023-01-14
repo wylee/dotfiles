@@ -124,10 +124,13 @@ augroup vimrc
 
     autocmd BufRead,BufNewFile CHANGELOG set filetype=rst
 
+    autocmd BufRead,BufNewFile *.fi set filetype=feint
+    autocmd FileType feint setlocal fo-=t tw=72 cc=88
+
     " Python files:
     "     - Don't auto-wrap code
     "     - Make comments wrap at column 72 (works with format option c)
-    "     - Display right margin in column 100
+    "     - Display right margin in column 88
     autocmd FileType python setlocal fo-=t tw=72 cc=88
 
     " Set default completion function only if one isn't already set on the

@@ -457,11 +457,15 @@ function main () {
 
     local main_python_version="python${PYTHON_VERSIONS[0]%.*}"
 
-    # Vim plugins
-    local pathogen_path="${HOME}/.vim/vim-pathogen/autoload/pathogen.vim"
-    local pathogen_link="${HOME}/.vim/autoload/pathogen.vim"
-    local nvim_pathogen_path="${HOME}/.config/nvim/vim-pathogen/autoload/pathogen.vim"
-    local nvim_pathogen_link="${HOME}/.config/nvim/autoload/pathogen.vim"
+    # vim
+    local vim_config_dir="${HOME}/.vim"
+    local pathogen_path="${vim_config_dir}/vim-pathogen/autoload/pathogen.vim"
+    local pathogen_link="${vim_config_dir}/autoload/pathogen.vim"
+
+    # neovim
+    local nvim_config_dir="${HOME}/.config/nvim"
+    local nvim_pathogen_path="${nvim_config_dir}/vim-pathogen/autoload/pathogen.vim"
+    local nvim_pathogen_link="${nvim_config_dir}/autoload/pathogen.vim"
 
     while [[ $# -gt 0 ]]; do
         option="$1"
@@ -615,9 +619,9 @@ function main () {
     create_dir "${HOME}/.config/fish"
     create_dir "${HOME}/.config/fish/functions"
     create_dir "${HOME}/.config/live-backup"
-    create_dir "${HOME}/.config/nvim"
-    create_dir "${HOME}/.config/nvim/ftdetect"
-    create_dir "${HOME}/.config/nvim/syntax"
+    create_dir "${nvim_config_dir}"
+    create_dir "${nvim_config_dir}/ftdetect"
+    create_dir "${nvim_config_dir}/syntax"
     create_dir "${HOME}/.doom.d"
     create_dir "${HOME}/.local"
     create_dir "${HOME}/.local/bin"
@@ -634,6 +638,7 @@ function main () {
     link config/fish/functions/additional-blackhole-hosts
     link config/fish/functions/allowed-blackhole-hosts
     link_many config/live-backup/*
+    link_many config/nvim/*.lua
     link_many config/nvim/*.vim
     link_many config/nvim/ftdetect/*.vim
     link_many config/nvim/syntax/*.vim
@@ -657,18 +662,29 @@ function main () {
     if [ "$with_vim_plugins" = "no" ]; then
         say warning "Skipping Vim plugin installation"
     else
-        mkdir -p "${HOME}/.vim/"{autoload,bundle}
-        mkdir -p "${HOME}/.config/nvim/"{autoload,bundle}
+        mkdir -p "${vim_config_dir}/"{autoload,bundle}
         say -n info "Checking out Pathogen plugins for vim... "
         checkoutmanager co vim-pathogen >/dev/null
         checkoutmanager up vim-pathogen >/dev/null
         say success "Done"
+
+        # NOTE: $pathogen_path is created by checkoutmanager
+        link "$pathogen_path" "$pathogen_link"
+        link \
+            "${HOME}/Projects/tree-sitter-feint/queries" \
+            "${vim_config_dir}/bundle/nvim-treesitter/queries/feint"
+
+        mkdir -p "${nvim_config_dir}/"{autoload,bundle}
         say -n info "Checking out Pathogen plugins for nvim... "
         checkoutmanager co nvim-pathogen >/dev/null
         checkoutmanager up nvim-pathogen >/dev/null
         say success "Done"
-        link "$pathogen_path" "$pathogen_link"
+
+        # NOTE: $nvim_pathogen_path is created by checkoutmanager
         link "$nvim_pathogen_path" "$nvim_pathogen_link"
+        link \
+            "${HOME}/Projects/tree-sitter-feint/queries" \
+            "${nvim_config_dir}/bundle/nvim-treesitter/queries/feint"
     fi
 
     say success "Setup complete"
