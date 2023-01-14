@@ -48,5 +48,5 @@ Host djangokit.org
 # MyStops -------------------------------------------------------------
 
 Host mystops.io
-    User ubuntu
+    User admin
     IdentityFile ~/.ssh/id_rsa-mystops
