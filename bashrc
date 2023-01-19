@@ -8,7 +8,7 @@
 # ~/.bashrc.before
 
 function source_if () {
-    test -f "${1}" && source "${1}"
+    test -r "${1}" && source "${1}"
 }
 
 function first_of () {
@@ -45,11 +45,14 @@ set -o vi
 bind -m vi-insert "\C-l":clear-screen
 export EDITOR=vim
 
-export PROJECT_DIR="$(first_of ~/Projects ~/projects)"
+PROJECT_DIR="$(first_of ~/Projects ~/projects)"
+export PROJECT_DIR
 
 if ! shopt -oq posix; then
     source_if "/etc/bash_completion"
-    which brew >/dev/null 2>&1 && source_if "$(brew --prefix)/etc/bash_completion"
+    if which brew >/dev/null 2>&1; then
+        source_if "$(brew --prefix)/etc/profile.d/bash_completion.sh"
+    fi
 fi
 
 prepend_path /opt/homebrew/bin

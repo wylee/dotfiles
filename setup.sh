@@ -37,7 +37,7 @@ BREW_PATH="${BREW_BIN}/brew"
 
 BREW_PACKAGES=(
     bash
-    bash-completion
+    bash-completion@2
     bitwarden-cli
     direnv
     editorconfig
