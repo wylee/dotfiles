@@ -671,7 +671,7 @@ function main () {
         # NOTE: $pathogen_path is created by checkoutmanager
         link "$pathogen_path" "$pathogen_link"
         link \
-            "${HOME}/Projects/tree-sitter-feint/queries" \
+            "${HOME}/Projects/feint-lang/tree-sitter-feint/queries" \
             "${vim_config_dir}/bundle/nvim-treesitter/queries/feint"
 
         mkdir -p "${nvim_config_dir}/"{autoload,bundle}
@@ -683,7 +683,7 @@ function main () {
         # NOTE: $nvim_pathogen_path is created by checkoutmanager
         link "$nvim_pathogen_path" "$nvim_pathogen_link"
         link \
-            "${HOME}/Projects/tree-sitter-feint/queries" \
+            "${HOME}/Projects/feint-lang/tree-sitter-feint/queries" \
             "${nvim_config_dir}/bundle/nvim-treesitter/queries/feint"
     fi
 
