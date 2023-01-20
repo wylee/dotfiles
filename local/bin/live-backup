@@ -284,8 +284,8 @@ class LiveBackupRunner:
                 no_default_excludes.add(base_name)
 
         for k, v in self.config.items():
-            if k.startswith("additional_excludes."):
-                _, base_name = k.split(".", 1)
+            if k.startswith("extend.location_excludes."):
+                *_, base_name = k.split(".", 2)
                 excludes_in.setdefault(base_name, [])
                 excludes_in[base_name] += as_list(self.config[k])
 
