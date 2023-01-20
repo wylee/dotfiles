@@ -211,18 +211,36 @@ class LiveBackupRunner:
     @property
     def paths(self):
         paths_in = collections.OrderedDict()
-        paths_in["__default__"] = as_list(self.config.get("paths", []))
+
+        # Default paths are listed in `paths`. They're backed up to ALL
+        # locations. Local config files can also use `extend.paths` to
+        # specify additional paths to be backed up to ALL locations.
+        default_paths = as_list(self.config.get("paths", []))
+        additional_default_paths = as_list(self.config.get("extend.paths", []))
+
+        for path in additional_default_paths:
+            if path in default_paths:
+                self.warn(
+                    "Path specified in both default paths and "
+                    f"appended default paths: {path}"
+                )
+
+        paths_in["__default__"] = default_paths + additional_default_paths
+
+        # This records locations to which the default paths should NOT
+        # be backed up. These are locations that have paths specified
+        # using `location_paths.<location>`.
         no_default_paths = {"__default__"}
 
         for k, v in self.config.items():
-            if k.startswith("paths."):
+            if k.startswith("location_paths."):
                 _, location = k.split(".", 1)
                 paths_in[location] = as_list(self.config[k])
                 no_default_paths.add(location)
 
         for k, v in self.config.items():
-            if k.startswith("additional_paths."):
-                _, location = k.split(".", 1)
+            if k.startswith("extend.location_paths."):
+                *_, location = k.split(".", 2)
                 paths_in.setdefault(location, [])
                 paths_in[location] += as_list(self.config[k])
 
