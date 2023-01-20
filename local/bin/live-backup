@@ -12,47 +12,46 @@ import sys
 
 
 OPTIONS = {
-    'env': platform.node().split(".", 1)[0] or None,
-    'config_file': '~/.config/live-backup/live-backup.cfg',
-    'local_config_file': None,
-    'project_dir': os.environ.get('PROJECT_DIR', '~/Projects'),
-    'default_locations': [],
-    'locations': [],
-    'only_paths': [],
-    'skip_missing_paths': True,
-    'info': False,
-    'show_locations': False,
-    'show_selected': False,
-    'all': False,
-    'debug': False,
-    'quiet': False,
-    'dry_run': False,
+    "env": platform.node().split(".", 1)[0] or None,
+    "config_file": "~/.config/live-backup/live-backup.cfg",
+    "local_config_file": None,
+    "project_dir": os.environ.get("PROJECT_DIR", "~/Projects"),
+    "default_locations": [],
+    "locations": [],
+    "only_paths": [],
+    "skip_missing_paths": True,
+    "info": False,
+    "show_locations": False,
+    "show_selected": False,
+    "all": False,
+    "debug": False,
+    "quiet": False,
+    "dry_run": False,
 }
 
 
 class LiveBackupRunner:
-
     def __init__(self):
         self.args = self.parse_args()
 
         # Bootstrap
         self.config = {}
-        self.debug = OPTIONS['debug']
-        self.dry_run = OPTIONS['dry_run']
-        self.quiet = OPTIONS['quiet']
+        self.debug = OPTIONS["debug"]
+        self.dry_run = OPTIONS["dry_run"]
+        self.quiet = OPTIONS["quiet"]
 
         self.config_parser = configparser.ConfigParser()
-        self.config_file = as_path(self.get_option('config_file'))
+        self.config_file = as_path(self.get_option("config_file"))
 
         with open(self.config_file) as fp:
             self.config_parser.read_file(fp)
 
-        local_config_file = self.get_option('local_config_file')
+        local_config_file = self.get_option("local_config_file")
         if local_config_file:
             self.local_config_file = local_config_file
         else:
             config_dir = os.path.dirname(self.config_file)
-            local_config_file = os.path.join(config_dir, 'live-backup.local.cfg')
+            local_config_file = os.path.join(config_dir, "live-backup.local.cfg")
             if os.path.isfile(local_config_file):
                 self.local_config_file = local_config_file
             else:
@@ -65,26 +64,27 @@ class LiveBackupRunner:
         else:
             self.local_config_parser = None
 
-        self.debug = as_bool(self.get_option('debug'))
-        self.dry_run = as_bool(self.get_option('dry_run'))
-        self.quiet = as_bool(self.get_option('quiet'))
+        self.debug = as_bool(self.get_option("debug"))
+        self.dry_run = as_bool(self.get_option("dry_run"))
+        self.quiet = as_bool(self.get_option("quiet"))
 
         if self.debug and self.quiet:
             self.quiet = False
             self.debug_info("Forced quiet to False because debug mode is active")
 
-        self.config = self.get_config('live-backup')
-        self.env = self.get_option('env')
-        self.project_dir = as_path(self.get_option('project_dir'))
-        self.default_locations = as_list(self.get_option('default_locations'), sep=None)
-        self.only_paths = set(self.get_option('only_paths'))
-        self.skip_missing_paths = self.get_option('skip_missing_paths')
-        self.all = as_bool(self.get_option('all'))
-        self.do_show_info = self.get_option('info')
-        self.do_show_locations = self.get_option('show_locations') and not self.do_show_info
-        self.do_show_selected = (
-            self.get_option('show_selected') and
-            not (self.do_show_info or self.do_show_locations)
+        self.config = self.get_config("live-backup")
+        self.env = self.get_option("env")
+        self.project_dir = as_path(self.get_option("project_dir"))
+        self.default_locations = as_list(self.get_option("default_locations"), sep=None)
+        self.only_paths = set(self.get_option("only_paths"))
+        self.skip_missing_paths = self.get_option("skip_missing_paths")
+        self.all = as_bool(self.get_option("all"))
+        self.do_show_info = self.get_option("info")
+        self.do_show_locations = (
+            self.get_option("show_locations") and not self.do_show_info
+        )
+        self.do_show_selected = self.get_option("show_selected") and not (
+            self.do_show_info or self.do_show_locations
         )
 
         self.git_garbarge_collected_paths = set()
@@ -101,10 +101,10 @@ class LiveBackupRunner:
 
         if paths_not_found:
             for path in paths_not_found:
-                self.warn(f'Path not found: {path}')
+                self.warn(f"Path not found: {path}")
             if self.skip_missing_paths:
-                answer = input('Continue? [Y/n] ').strip().lower()
-                if answer not in ('', 'y', 'yes'):
+                answer = input("Continue? [Y/n] ").strip().lower()
+                if answer not in ("", "y", "yes"):
                     self.exit(code=1)
             else:
                 self.exit(code=1)
@@ -115,24 +115,29 @@ class LiveBackupRunner:
         available_locations = self.available_locations
         for location in locations:
             if location in location_groups:
-                locations = [(l, available_locations[l]) for l in location_groups[location]]
+                locations = [
+                    (l, available_locations[l]) for l in location_groups[location]
+                ]
                 selected_locations.extend(locations)
             elif location in available_locations:
                 selected_locations.append((location, available_locations[location]))
             else:
                 self.exit(
-                    f'"{location}" is not a valid location key\n', self.show_locations(), code=1)
+                    f'"{location}" is not a valid location key\n',
+                    self.show_locations(),
+                    code=1,
+                )
 
-        default_paths = paths['__default__']
-        default_excludes = excludes['__default__']
+        default_paths = paths["__default__"]
+        default_excludes = excludes["__default__"]
         only_paths = self.only_paths
 
         if not self.quiet:
             if self.debug:
                 print()
-            print('Selected locations:\n')
+            print("Selected locations:\n")
             for location, destination in selected_locations:
-                print(f'    - {location} => {destination}')
+                print(f"    - {location} => {destination}")
 
         if self.do_show_selected:
             self.exit()
@@ -144,14 +149,18 @@ class LiveBackupRunner:
             location_paths = paths.get(location) or default_paths
             for location_path in location_paths:
                 base_name = os.path.basename(location_path)
-                if only_paths and location_path not in only_paths and base_name not in only_paths:
-                    self.debug_info(f'Skipping {location_path}')
+                if (
+                    only_paths
+                    and location_path not in only_paths
+                    and base_name not in only_paths
+                ):
+                    self.debug_info(f"Skipping {location_path}")
                     continue
                 path_excludes = excludes.get(base_name)
                 if path_excludes:
                     self.rsync([location_path], destination, path_excludes)
                 else:
-                    self.debug_info(f'Batching {location_path}')
+                    self.debug_info(f"Batching {location_path}")
                     batch_paths.append(location_path)
             if batch_paths:
                 self.rsync(batch_paths, destination, default_excludes)
@@ -159,11 +168,11 @@ class LiveBackupRunner:
         self.print_hr()
 
     def get_base_rsync_command(self):
-        rsync_cmd = ['rsync', '-rltz', '--delete']
+        rsync_cmd = ["rsync", "-rltz", "--delete"]
         if self.dry_run:
-            rsync_cmd.append('--dry-run')
+            rsync_cmd.append("--dry-run")
         if not self.quiet:
-            rsync_cmd.append('--verbose')
+            rsync_cmd.append("--verbose")
         return rsync_cmd.copy()
 
     def rsync(self, paths, destination, excludes=()):
@@ -182,38 +191,38 @@ class LiveBackupRunner:
                     subprocess.check_call(gc_cmd, cwd=path)
             self.git_garbarge_collected_paths.add(path)
 
-        joined_paths = ', '.join(paths)
+        joined_paths = ", ".join(paths)
         cmd = self.get_base_rsync_command()
         for exclude in excludes:
-            cmd.extend(('--exclude', exclude))
+            cmd.extend(("--exclude", exclude))
         cmd.extend(paths)
         cmd.append(destination)
-        cmd_str = ' '.join(cmd)
+        cmd_str = " ".join(cmd)
         self.print_hr()
-        self.info(f'Syncing {joined_paths} to {destination}')
-        self.print_hr('-')
+        self.info(f"Syncing {joined_paths} to {destination}")
+        self.print_hr("-")
         if self.debug:
-            self.debug_info(f'{cmd_str}')
-            self.print_hr('-')
+            self.debug_info(f"{cmd_str}")
+            self.print_hr("-")
         subprocess.check_call(cmd)
-        self.print_hr('-')
-        self.info(f'Finished syncing {joined_paths} to {destination}')
+        self.print_hr("-")
+        self.info(f"Finished syncing {joined_paths} to {destination}")
 
     @property
     def paths(self):
         paths_in = collections.OrderedDict()
-        paths_in['__default__'] = as_list(self.config.get('paths', []))
-        no_default_paths = {'__default__'}
+        paths_in["__default__"] = as_list(self.config.get("paths", []))
+        no_default_paths = {"__default__"}
 
         for k, v in self.config.items():
-            if k.startswith('paths.'):
-                _, location = k.split('.', 1)
+            if k.startswith("paths."):
+                _, location = k.split(".", 1)
                 paths_in[location] = as_list(self.config[k])
                 no_default_paths.add(location)
 
         for k, v in self.config.items():
-            if k.startswith('additional_paths.'):
-                _, location = k.split('.', 1)
+            if k.startswith("additional_paths."):
+                _, location = k.split(".", 1)
                 paths_in.setdefault(location, [])
                 paths_in[location] += as_list(self.config[k])
 
@@ -224,16 +233,16 @@ class LiveBackupRunner:
         paths = collections.OrderedDict()
         paths_not_found = []
         for location, location_paths in paths_in.items():
-            if location in no_default_paths :
+            if location in no_default_paths:
                 paths[location] = []
             else:
-                paths[location] = paths['__default__'].copy()
+                paths[location] = paths["__default__"].copy()
             for path in location_paths:
                 format_kwargs = {
-                    'project_dir': self.project_dir,
+                    "project_dir": self.project_dir,
                 }
                 if self.env:
-                    format_kwargs['env'] = self.env
+                    format_kwargs["env"] = self.env
                 path = path.format(**format_kwargs)
                 path = os.path.expanduser(path)
                 glob_paths = glob.glob(path)
@@ -247,33 +256,33 @@ class LiveBackupRunner:
     @property
     def excludes(self):
         excludes_in = collections.OrderedDict()
-        excludes_in['__default__'] = as_list(self.config.get('excludes', []))
-        no_default_excludes = {'__default__'}
+        excludes_in["__default__"] = as_list(self.config.get("excludes", []))
+        no_default_excludes = {"__default__"}
 
         for k, v in self.config.items():
-            if k.startswith('excludes.'):
-                _, base_name = k.split('.', 1)
+            if k.startswith("excludes."):
+                _, base_name = k.split(".", 1)
                 excludes_in[base_name] = as_list(self.config[k])
                 no_default_excludes.add(base_name)
 
         for k, v in self.config.items():
-            if k.startswith('additional_excludes.'):
-                _, base_name = k.split('.', 1)
+            if k.startswith("additional_excludes."):
+                _, base_name = k.split(".", 1)
                 excludes_in.setdefault(base_name, [])
                 excludes_in[base_name] += as_list(self.config[k])
 
         excludes = collections.OrderedDict()
         for base_name, path_excludes in excludes_in.items():
-            if base_name in no_default_excludes :
+            if base_name in no_default_excludes:
                 excludes[base_name] = path_excludes
             else:
-                excludes[base_name] = excludes_in['__default__'].copy() + path_excludes
+                excludes[base_name] = excludes_in["__default__"].copy() + path_excludes
 
         return excludes
 
     @property
     def locations(self):
-        locations = self.get_option('locations')
+        locations = self.get_option("locations")
         if locations:
             return as_list(locations)
         elif self.all or not self.default_locations:
@@ -282,23 +291,24 @@ class LiveBackupRunner:
 
     @property
     def available_locations(self):
-        config = self.get_config('available-locations')
+        config = self.get_config("available-locations")
         format_kwargs = {}
         if self.env:
-            format_kwargs['env'] = self.env
+            format_kwargs["env"] = self.env
         return collections.OrderedDict(
-            (k, as_path(v).format(**format_kwargs)) for (k, v) in config.items())
+            (k, as_path(v).format(**format_kwargs)) for (k, v) in config.items()
+        )
 
     @property
     def location_groups(self):
-        config = self.get_config('location-groups', {})
+        config = self.get_config("location-groups", {})
         location_groups = collections.OrderedDict()
         available_locations = self.available_locations
         for group, group_locations in config.items():
             group_locations = as_list(group_locations, sep=None)
             for group_loc in group_locations:
                 if group_loc not in available_locations:
-                    self.exit(f'Bad location in {group} group: {group_loc}')
+                    self.exit(f"Bad location in {group} group: {group_loc}")
             location_groups[group] = group_locations
         return location_groups
 
@@ -307,38 +317,38 @@ class LiveBackupRunner:
 
         info.append(f'Environment: {self.env or "No environment specified"}\n')
 
-        info.append('Project directory:\n')
-        info.append(f'    - {self.project_dir}')
+        info.append("Project directory:\n")
+        info.append(f"    - {self.project_dir}")
 
-        info.extend(('', self.show_locations(from_show_info=True)))
+        info.extend(("", self.show_locations(from_show_info=True)))
 
-        info.append('\nDefault locations:\n')
+        info.append("\nDefault locations:\n")
         default_locations = self.default_locations
         if default_locations:
-            default_locations_str = ', '.join(default_locations)
-            info.append(f'    - {default_locations_str}')
+            default_locations_str = ", ".join(default_locations)
+            info.append(f"    - {default_locations_str}")
         else:
-            info.append('    No default locations')
+            info.append("    No default locations")
 
-        info.append('\nDefault paths:\n')
+        info.append("\nDefault paths:\n")
         paths, paths_not_found = self.paths
         for location, location_paths in paths.items():
-            if location != '__default__':
-                info.append(f'\nPaths for location {location}:\n')
+            if location != "__default__":
+                info.append(f"\nPaths for location {location}:\n")
             for location_path in location_paths:
-                info.append(f'    - {location_path}')
+                info.append(f"    - {location_path}")
 
-        info.append('\nDefault excludes:\n')
+        info.append("\nDefault excludes:\n")
         excludes = self.excludes
         for base_name, path_excludes in excludes.items():
             path_excludes = excludes.get(base_name, [])
             if path_excludes:
-                if base_name != '__default__':
-                    info.append(f'\nExcludes for path {base_name}:\n')
+                if base_name != "__default__":
+                    info.append(f"\nExcludes for path {base_name}:\n")
                 for exclude in path_excludes:
-                    info.append(f'    - {exclude}')
+                    info.append(f"    - {exclude}")
 
-        return '\n'.join(info)
+        return "\n".join(info)
 
     def show_locations(self, from_show_info=False):
         info = []
@@ -346,58 +356,87 @@ class LiveBackupRunner:
         if not from_show_info:
             info.append(f'Environment: {self.env or "No environment specified"}\n')
 
-        info.append('Available backup locations:\n')
+        info.append("Available backup locations:\n")
         for k, v in self.available_locations.items():
-            info.append(f'    - {k}: {v}')
+            info.append(f"    - {k}: {v}")
 
         location_groups = self.location_groups
         if location_groups:
-            info.append('\nLocation groups:\n')
+            info.append("\nLocation groups:\n")
             for k, v in location_groups.items():
-                v = ', '.join(v)
-                info.append(f'    - {k}: {v}')
+                v = ", ".join(v)
+                info.append(f"    - {k}: {v}")
 
         default_locations = self.default_locations
         if self.default_locations:
-            info.append('\nDefault backup locations:\n')
+            info.append("\nDefault backup locations:\n")
             for loc in default_locations:
-                info.append(f'    - {loc}')
+                info.append(f"    - {loc}")
 
-        return '\n'.join(info)
+        return "\n".join(info)
 
     def parse_args(self, argv=None):
         arg_parser = argparse.ArgumentParser(argument_default=argparse.SUPPRESS)
-        arg_parser.add_argument('--env', '-e')
-        arg_parser.add_argument('--config-file', '-c')
-        arg_parser.add_argument('--local-config-file', '-f')
-        arg_parser.add_argument('--project-dir', '-d')
-        arg_parser.add_argument('locations', nargs='*', help='Back up to the specified locations')
+        arg_parser.add_argument("--env", "-e")
+        arg_parser.add_argument("--config-file", "-c")
+        arg_parser.add_argument("--local-config-file", "-f")
+        arg_parser.add_argument("--project-dir", "-d")
         arg_parser.add_argument(
-            '--paths', '-p', action='append', dest='only_paths', default=[],
-            help='Back up only the specified paths')
+            "locations", nargs="*", help="Back up to the specified locations"
+        )
         arg_parser.add_argument(
-            '--no-skip-missing-paths', '-S', dest='skip_missing_paths',
-            action='store_false', default=True,
-            help='Abort when a specified project path doesn\'t exist')
-        arg_parser.add_argument('--all', '-a', action='store_true')
+            "--paths",
+            "-p",
+            action="append",
+            dest="only_paths",
+            default=[],
+            help="Back up only the specified paths",
+        )
         arg_parser.add_argument(
-            '--info', '-i', action='store_true',
-            help='List paths & available backup locations then exit.')
+            "--no-skip-missing-paths",
+            "-S",
+            dest="skip_missing_paths",
+            action="store_false",
+            default=True,
+            help="Abort when a specified project path doesn't exist",
+        )
+        arg_parser.add_argument("--all", "-a", action="store_true")
         arg_parser.add_argument(
-            '--show-locations', '-l', action='store_true',
-            help='List available backup locations then exit.')
+            "--info",
+            "-i",
+            action="store_true",
+            help="List paths & available backup locations then exit.",
+        )
         arg_parser.add_argument(
-            '--show-selected', '-s', action='store_true',
-            help='Show selected locations then exit.')
+            "--show-locations",
+            "-l",
+            action="store_true",
+            help="List available backup locations then exit.",
+        )
         arg_parser.add_argument(
-            '--debug', '-D', action='store_true',
-            help='Show what rsync is doing (add --verbose; print command)')
+            "--show-selected",
+            "-s",
+            action="store_true",
+            help="Show selected locations then exit.",
+        )
         arg_parser.add_argument(
-            '--dry-run', '-R', action='store_true',
-            help="Don't actually copy any files (passed through to rsync)")
+            "--debug",
+            "-D",
+            action="store_true",
+            help="Show what rsync is doing (add --verbose; print command)",
+        )
         arg_parser.add_argument(
-            '--quiet', '-q', action='store_true',
-            help='Hide default output (show no output unless --debug)')
+            "--dry-run",
+            "-R",
+            action="store_true",
+            help="Don't actually copy any files (passed through to rsync)",
+        )
+        arg_parser.add_argument(
+            "--quiet",
+            "-q",
+            action="store_true",
+            help="Hide default output (show no output unless --debug)",
+        )
         return arg_parser.parse_args(argv)
 
     def get_config(self, section, default=None):
@@ -417,30 +456,30 @@ class LiveBackupRunner:
     def get_option(self, name):
         # Get option from: command line > env > config > default
         if name not in OPTIONS:
-            raise KeyError(f'Unknown option: {name}')
+            raise KeyError(f"Unknown option: {name}")
 
-        env_name = f'LIVE_BACKUP_OPTION_{name.upper()}'
-        config_name = name.replace('_', '-')
+        env_name = f"LIVE_BACKUP_OPTION_{name.upper()}"
+        config_name = name.replace("_", "-")
 
         if hasattr(self.args, name):
-            source = 'args'
+            source = "args"
             value = getattr(self.args, name)
         elif env_name in os.environ:
-            source = 'environ'
+            source = "environ"
             name = env_name
             value = os.environ[env_name]
         elif name in self.config:
-            source = 'config'
+            source = "config"
             value = self.config[name]
         elif config_name in self.config:
-            source = 'config'
+            source = "config"
             name = config_name
             value = self.config[config_name]
         else:
-            source = 'defaults'
+            source = "defaults"
             value = OPTIONS[name]
 
-        if value == '':
+        if value == "":
             value = None
 
         # XXX: Set these early
@@ -450,10 +489,10 @@ class LiveBackupRunner:
         elif name == "dry_run":
             self.dry_run = value
 
-        self.debug_info(f'Got {name} from {source}: {value}')
+        self.debug_info(f"Got {name} from {source}: {value}")
         return value
 
-    def print_hr(self, fill_char='='):
+    def print_hr(self, fill_char="="):
         if not self.quiet:
             term_size = shutil.get_terminal_size()
             columns = term_size.columns
@@ -463,23 +502,23 @@ class LiveBackupRunner:
         if self.debug:
             if self.dry_run:
                 print("[DRY_RUN]", end=" ", file=file, flush=True)
-            print('[DEBUG]', *print_args, file=file, **print_kwargs)
+            print("[DEBUG]", *print_args, file=file, **print_kwargs)
 
     def info(self, *print_args, file=sys.stdout, **print_kwargs):
         if not self.quiet:
             if self.dry_run:
                 print("[DRY_RUN]", end=" ", flush=True)
-            print('[INFO]', *print_args, file=file, **print_kwargs)
+            print("[INFO]", *print_args, file=file, **print_kwargs)
 
     def warn(self, *print_args, file=sys.stderr, **print_kwargs):
         if self.dry_run:
             print("[DRY_RUN]", end=" ", file=file, flush=True)
-        print('[WARNING]', *print_args, file=file, **print_kwargs)
+        print("[WARNING]", *print_args, file=file, **print_kwargs)
 
-    def exit(self, *print_args, code=1, sep='\n', **print_kwargs):
+    def exit(self, *print_args, code=1, sep="\n", **print_kwargs):
         if print_args:
-            if 'file' not in print_kwargs:
-                print_kwargs['file'] = sys.stderr if code else sys.stdout
+            if "file" not in print_kwargs:
+                print_kwargs["file"] = sys.stderr if code else sys.stdout
             print(*print_args, sep=sep, **print_kwargs)
         sys.exit(code)
 
@@ -487,13 +526,13 @@ class LiveBackupRunner:
 def as_bool(v):
     if isinstance(v, bool):
         return v
-    return v == 'true'
+    return v == "true"
 
 
-def as_list(v, sep='\n'):
+def as_list(v, sep="\n"):
     if isinstance(v, list):
         return v
-    items = v.splitlines() if sep == '\n' else v.split(sep)
+    items = v.splitlines() if sep == "\n" else v.split(sep)
     items = [item.strip() for item in items]
     items = [item for item in items if item]
     return items
@@ -502,16 +541,16 @@ def as_list(v, sep='\n'):
 def as_path(val, default=None):
     if not val:
         return default
-    if ':' in val:
+    if ":" in val:
         # Handle SSH path
-        host, val = val.split(':', 1)
+        host, val = val.split(":", 1)
     else:
         host = None
     val = os.path.expanduser(val)
     val = os.path.abspath(val)
     val = os.path.normpath(val)
     if host:
-        val = f'{host}:{val}'
+        val = f"{host}:{val}"
     return val
 
 
@@ -532,6 +571,6 @@ def _merge_dicts(a, b):
     return a
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     live_backup_runner = LiveBackupRunner()
     live_backup_runner.run()
