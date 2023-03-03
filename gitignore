@@ -1,16 +1,16 @@
-# Various build directories at project root
-/build/
-/dist/
-/docs/_build
-/target/
+# Build directories
+build/
+dist/
+_build
+target/
 
 # Project directories
-/.eclipse*/
-/.idea*/
-/.project*/
-/.pydevproject*/
-/.ropeproject*/
-/.vscode*/
+.eclipse*/
+.idea*/
+.project*/
+.pydevproject*/
+.ropeproject*/
+.vs*/
 
 # Node
 node_modules/
@@ -31,13 +31,13 @@ __pypackages__/
 .pdm.toml
 .python-version
 
-#### Anywhere in repo
-.DS_Store
-*.css.map
-*.js.map
-.*.swp
-
 # Files that may contain sensitive data
 .env*
 local*.cfg
 settings*.toml
+
+# Miscellaneous
+.DS_Store
+*.css.map
+*.js.map
+.*.swp
