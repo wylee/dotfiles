@@ -89,7 +89,6 @@ PYTHON_PACKAGES=(
     bpython
     checkoutmanager
     com.wyattbaldwin.make-release
-    pdm
     poetry
     totp
     twine
