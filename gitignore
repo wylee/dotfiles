@@ -31,6 +31,10 @@ __pypackages__/
 .pdm.toml
 .python-version
 
+# Zig
+zig-cache/
+zig-out/
+
 # Files that may contain sensitive data
 .env*
 local*.cfg
