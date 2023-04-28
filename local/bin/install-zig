@@ -1,0 +1,71 @@
+#!/bin/bash
+#
+# Download and install the latest Zig nightly release
+#
+# For best results, run in ~/Downloads
+
+set -eu -o pipefail
+
+DESTINATION="${HOME}/.local/bin/zig"
+MINISIG_KEY="RWSGOq2NVecA2UPNdBUZykf1CCb147pkmdtYxgb3Ti+JO/wCYvhbAb/U"
+
+if test $# -gt 0; then
+  echo "[ERROR] Too many args (0 expected)" >&2
+  exit 1
+fi
+
+OS_NAME="$(uname -s)"
+case $OS_NAME in
+    Darwin)
+        ;;
+    *)
+        echo "[ERROR] Unsupported OS: ${OS_NAME}" >&2
+        exit 1
+esac
+
+ARCH_NAME="$(uname -m)"
+case $ARCH_NAME in
+    arm64)
+        PLATFORM="macos-aarch64"
+        ;;
+    x86_64)
+        PLATFORM="macos-x86_64"
+        ;;
+    *)
+        echo "[ERROR] Unsupported archictecture: ${ARCH_NAME}" >&2
+        exit 1
+esac
+
+VERSION="$(curl -s https://ziglang.org/download/index.json | jq -r .master.version)"
+RELEASE_NAME="zig-${PLATFORM}-${VERSION}"
+TARBALL_NAME="${RELEASE_NAME}.tar.xz"
+MINISIG_FILE_NAME="${TARBALL_NAME}.minisig"
+DOWNLOAD_URL="https://ziglang.org/builds/${TARBALL_NAME}"
+MINISIG_URL="https://ziglang.org/builds/${MINISIG_FILE_NAME}"
+
+echo "[INFO] Downloading zig ${VERSION} for ${PLATFORM}"
+echo "[INFO] Download URL: ${DOWNLOAD_URL}"
+curl -Os "$DOWNLOAD_URL"
+curl -Os "$MINISIG_URL"
+
+echo "[INFO] Checking signature..."
+if minisign -q -Vm "$TARBALL_NAME" -P "$MINISIG_KEY"; then
+  echo "[INFO] Signature verified"
+else
+  echo "[ERROR] Signature NOT verified" >&2
+  exit 1
+fi
+
+echo "[INFO] Extracting tarball..."
+tar xf "$TARBALL_NAME"
+
+echo "[INFO] Copying zig binary to ${DESTINATION}..."
+ln -sf "$(realpath "${RELEASE_NAME}")/zig" "$DESTINATION"
+
+echo "[INFO] Cleaning up..."
+rm -r "$TARBALL_NAME"
+rm -r "$MINISIG_FILE_NAME"
+
+echo "[INFO] zig path: $(which zig)"
+echo "[INFO] zig version: $(zig version)"
+
