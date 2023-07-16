@@ -14,6 +14,7 @@ function make-hosts-blackhole
         'l/local' \
         's/show' \
         'k/keep_temp_files' \
+        'delete' \
         'h/help'
 
     argparse --name='make-hosts-blackhole' $options -- $argv or return
@@ -59,9 +60,18 @@ function make-hosts-blackhole
         echo "  -l/--local         Copy hosts to /etc/hosts on local machine rather than to the router"
         echo "  -s/--show          Show contents of hosts file before copying to router or /etc/hosts"
         echo "  -k/--keep          Keep temp files for inspection"
+        echo "  --delete           Delete dnsmasq hosts file on router and restart dnsmasq service"
         echo "  -h/--help          Show help"
         rm -r $temp_dir
         return
+    end
+
+    if set -q _flag_delete
+        echo "Removing hosts file $router_dnsmasq_path on router..."
+        ssh -q $router_ip sudo rm $router_dnsmasq_path
+        echo 'Restarting dnsmasq on router...'
+        ssh -q $router_ip sudo systemctl restart dnsmasq
+        return 0
     end
 
     if set -q _flag_hosts
