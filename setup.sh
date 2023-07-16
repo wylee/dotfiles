@@ -44,7 +44,6 @@ BREW_PACKAGES=(
     exiftool
     fish
     git
-    hugo
     neovim
     nvm
     pass
