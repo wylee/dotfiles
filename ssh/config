@@ -35,9 +35,8 @@ Host old.wyattbaldwin.com
 # byCycle -------------------------------------------------------------
 
 Host bycycle.org
-    User ubuntu
-    IdentityFile ~/.ssh/id_rsa-bycycle
-    Port 1046
+    User admin
+    IdentityFile ~/.ssh/id_rsa-bycycle.org
 
 # DjangoKit -----------------------------------------------------------
 
