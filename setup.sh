@@ -56,7 +56,6 @@ BREW_PACKAGES=(
 )
 
 BREW_CASKS=(
-    authy
     bitwarden
     dropbox
     element
