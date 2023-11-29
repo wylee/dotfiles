@@ -1,6 +1,6 @@
 [user]
     name = Wyatt Baldwin
-    useConfigOnly = true
+    email = self@wyattbaldwin.com
 
 [alias]
     fixup = !git commit --fixup

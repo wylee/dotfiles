@@ -3,6 +3,7 @@
 # First run on new machine:
 #
 #     ssh-keygen -t rsa -f ~/.ssh/id_rsa-github
+#     curl -o ~/.ssh/config https://raw.githubusercontent.com/wylee/dotfiles/main/ssh/config
 #     git clone git@github.com:wylee/dotfiles ~/.files
 
 set -eu -o pipefail
@@ -47,6 +48,7 @@ BREW_PACKAGES=(
     neovim
     nvm
     pass
+    pipx
     pwgen
     pyenv
     ripgrep
@@ -56,20 +58,18 @@ BREW_PACKAGES=(
 )
 
 BREW_CASKS=(
-    bitwarden
     dropbox
-    element
     firefox
+    font-fira-mono-nerd-font
     iterm2
     jetbrains-toolbox
-    signal
     sourcetree
     visual-studio-code
 )
 
 NODE_VERSIONS=(
     node
-    v16
+    v20
 )
 
 PYTHON_VERSIONS=(
@@ -87,6 +87,7 @@ PYTHON_PACKAGES=(
     checkoutmanager
     com.wyattbaldwin.make-release
     poetry
+    ruff
     totp
     twine
 )
@@ -275,6 +276,7 @@ function install_brew () {
         "$BREW_PATH" upgrade --cask
     else
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        "$BREW_PATH" tap homebrew/cask-fonts
     fi
 
     say info "Installing Homebrew packages..."
@@ -492,20 +494,10 @@ function main () {
                 install_python_versions
             fi
 
-            while read -r version; do
-                say -n info "Upgrading pip for Python ${version}... "
-                "python${version%.*}" -m pip install --upgrade --upgrade-strategy eager pip >/dev/null
-                say success "Done"
-            done <"${PYTHON_VERSIONS_FILE}"
-
-            say -n info "Installing/upgrading pipx... "
-            "$main_python_version" -m pip install --user --upgrade --upgrade-strategy eager pipx >/dev/null
-            say success "Done"
-
             say info "Installing/upgrading Python tools... "
             for package in "${PYTHON_PACKAGES[@]}"; do
                 say -n info "Installing/upgrading ${package}... "
-                "$main_python_version" -m pipx install \
+                pipx install \
                     --force "$package" \
                     '--pip-args=--upgrade --upgrade-strategy eager' \
                     >/dev/null
@@ -587,10 +579,6 @@ function main () {
 
         # NOTE: $nvim_pathogen_path is created by checkoutmanager
         link "$nvim_pathogen_path" "$nvim_pathogen_link"
-        create_dir "${nvim_config_dir}/bundle/nvim-treesitter/queries/feint"
-        link_many_with_target \
-            "${HOME}/Projects/feint-lang/tree-sitter-feint/queries/"* \
-            "${nvim_config_dir}/bundle/nvim-treesitter/queries/feint"
     fi
 
     say success "Setup complete"
