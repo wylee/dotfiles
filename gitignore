@@ -28,7 +28,6 @@ __pypackages__/
 *.py[cdo]
 .coverage
 .pdm.toml
-.python-version
 
 # Zig
 zig-cache/

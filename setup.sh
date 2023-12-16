@@ -50,7 +50,7 @@ BREW_PACKAGES=(
     pass
     pipx
     pwgen
-    pyenv
+    python@3.12
     ripgrep
     shellcheck
     starship
@@ -66,16 +66,6 @@ BREW_CASKS=(
     sourcetree
     visual-studio-code
 )
-
-PYTHON_VERSIONS=(
-    3.12.0
-    3.11.6
-    3.10.13
-    3.9.18
-    3.8.18
-)
-
-PYTHON_VERSIONS_FILE="${HOME}/.python-version"
 
 PYTHON_PACKAGES=(
     bpython
@@ -305,75 +295,13 @@ function install_brew () {
     done
 }
 
-function install_python_versions () {
-    local pyenv_path="${BREW_BIN}/pyenv"
-
-    python_versions_string=$(printf "%s\n" "${PYTHON_VERSIONS[@]}")
-    pyenv_versions=$("$pyenv_path" versions --bare | sort --version-sort --reverse)
-
-    if test -f "${PYTHON_VERSIONS_FILE}"; then
-        rm "${PYTHON_VERSIONS_FILE}"
-        touch "${PYTHON_VERSIONS_FILE}"
-        say error "Recreated ${PYTHON_VERSIONS_FILE} (currently empty)"
-    fi
-
-    # For each installed pyenv version:
-    #
-    #   - If the version is in the current install list, do nothing
-    #   - If the version isn't in the current install list, uninstall it
-    for pyenv_version in $pyenv_versions; do
-        if grep -Eq "^${pyenv_version}$" <<< "$python_versions_string"; then
-            say info "Not uninstalling Python ${pyenv_version} (in current install list)"
-        else
-            say warning "Installed Python ${pyenv_version} not in current install list"
-            read -r -p "$(colorize warning "Uninstall Python ${pyenv_version}? [yes/no] ")" answer
-            if [ "$answer" = "yes" ]; then
-                say warning "Uninstalling Python ${pyenv_version}... "
-                "$pyenv_path" uninstall -f "$pyenv_version"
-                say success "Done"
-            fi
-        fi
-    done
-
-    # For each Python version in the current install list:
-    #
-    #   - If the version is already installed, do nothing
-    #   - If the version isn't already installed, install it
-    for version in "${PYTHON_VERSIONS[@]}"; do
-        if grep -Eq "^${version}$" <<< "$pyenv_versions"; then
-            say warning "Python ${version} already installed"
-            say "${version}" >>"${PYTHON_VERSIONS_FILE}"
-            say info "Added ${version} to ${PYTHON_VERSIONS_FILE}"
-        else
-            read -r -p "$(colorize warning "Install Python ${version}? [y/N] ")" answer
-            case "$answer" in
-                y|Y|yes|YES)
-                    say info "Installing Python ${version}... "
-                    PYTHON_CONFIGURE_OPTS="--enable-shared" "$pyenv_path" install "$version"
-                    say success "Done"
-                    say "${version}" >>"${PYTHON_VERSIONS_FILE}"
-                    say info "Added ${version} to ${PYTHON_VERSIONS_FILE}"
-                    ;;
-                *)
-                    say error "Skipping installation of Python ${version}... "
-                    ;;
-            esac
-        fi
-    done
-
-    eval "$("$pyenv_path" init -)"
-}
-
 function main () {
     local with_brew="yes"
     local with_python="yes"
-    local with_python_versions="no"
     local with_vim_plugins="yes"
 
     local bash_path="${BREW_BIN}/bash"
     local fish_path="${BREW_BIN}/fish"
-
-    local main_python_version="python${PYTHON_VERSIONS[0]%.*}"
 
     # vim
     local vim_config_dir="${HOME}/.vim"
@@ -394,9 +322,6 @@ function main () {
             --no-python)
                 with_python="no"
                 ;;
-            --with-python-versions)
-                with_python_versions="yes"
-                ;;
             --no-vim-plugins)
                 with_vim_plugins="no"
                 ;;
@@ -406,7 +331,6 @@ function main () {
                 say "Usage: ./setup.sh"
                 say "    --no-brew => Skip installation of Homebrew and packages"
                 say "    --no-python => Skip all Python-related setup"
-                say "    --with-python-versions => Install Python versions (not installed by default)"
                 say "    --no-vim-plugins => Skip installation of Vim plugins"
                 exit
                 ;;
@@ -443,23 +367,15 @@ function main () {
         fi
         say info "To make fish the default shell, run: chsh -s ${fish_path}"
 
-        # Install Python versions & packages
+        # Install Python tools
         if [ "$with_python" = "no" ]; then
             say warning "Skipping all Python setup"
         else
-            if [ "${with_python_versions}" = "no" ]; then
-                say warning "Skipping installation of Python versions (use --with-python-versions to install them)"
-            else
-                install_python_versions
-            fi
-
-            say info "Installing/upgrading Python tools... "
+            say info "Installing Python tools... "
             for package in "${PYTHON_PACKAGES[@]}"; do
                 say -n info "Installing/upgrading ${package}... "
-                pipx install \
-                    --force "$package" \
-                    '--pip-args=--upgrade --upgrade-strategy eager' \
-                    >/dev/null
+                pipx install "$package" >/dev/null
+                say success "Done"
             done
             say success "Python setup complete"
         fi
