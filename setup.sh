@@ -46,7 +46,7 @@ BREW_PACKAGES=(
     fish
     git
     neovim
-    nvm
+    node
     pass
     pipx
     pwgen
@@ -65,11 +65,6 @@ BREW_CASKS=(
     jetbrains-toolbox
     sourcetree
     visual-studio-code
-)
-
-NODE_VERSIONS=(
-    node
-    v20
 )
 
 PYTHON_VERSIONS=(
@@ -310,20 +305,6 @@ function install_brew () {
     done
 }
 
-function install_node_versions () {
-    test -d ~/.nvm || mkdir ~/.nvm
-    source "${BREW_PREFIX}/opt/nvm/nvm.sh" --no-use
-
-    for version in "${NODE_VERSIONS[@]}"; do
-        nvm install --skip-default-packages "$version" >/dev/null
-        nvm use "$version" >/dev/null
-        npm install -g npm >/dev/null
-    done
-
-    # Reset node to default version
-    nvm use node >/dev/null
-}
-
 function install_python_versions () {
     local pyenv_path="${BREW_BIN}/pyenv"
 
@@ -385,8 +366,6 @@ function install_python_versions () {
 
 function main () {
     local with_brew="yes"
-    local with_node="yes"
-    local with_node_versions="no"
     local with_python="yes"
     local with_python_versions="no"
     local with_vim_plugins="yes"
@@ -412,12 +391,6 @@ function main () {
             --no-brew)
                 with_brew="no"
                 ;;
-            --no-node)
-                with_node="no"
-                ;;
-            --with-node-versions)
-                with_node_versions="yes"
-                ;;
             --no-python)
                 with_python="no"
                 ;;
@@ -432,8 +405,6 @@ function main () {
                 say ""
                 say "Usage: ./setup.sh"
                 say "    --no-brew => Skip installation of Homebrew and packages"
-                say "    --no-node => Skip all Node-related setup"
-                say "    --with-node-versions => Install Node versions (not installed by default)"
                 say "    --no-python => Skip all Python-related setup"
                 say "    --with-python-versions => Install Python versions (not installed by default)"
                 say "    --no-vim-plugins => Skip installation of Vim plugins"
@@ -471,18 +442,6 @@ function main () {
             say "$fish_path" | sudo tee -a /etc/shells
         fi
         say info "To make fish the default shell, run: chsh -s ${fish_path}"
-
-        # Install Node versions
-        if [ "$with_node" = "no" ]; then
-            say warning "Skipping all Node setup"
-        else
-            if [ "${with_node_versions}" = "no" ]; then
-                say warning "Skipping installation of Node versions (use --with-node-versions to install them)"
-            else
-                install_node_versions
-            fi
-            say success "Node setup complete"
-        fi
 
         # Install Python versions & packages
         if [ "$with_python" = "no" ]; then
@@ -534,7 +493,6 @@ function main () {
     link checkoutmanager.cfg
     link_many config/fish/*.fish
     link_many config/fish/functions/*.fish
-    link config/fish/functions/__bass.py
     link config/fish/functions/additional-blackhole-hosts
     link config/fish/functions/allowed-blackhole-hosts
     link_many config/live-backup/*
@@ -552,7 +510,6 @@ function main () {
     link inputrc
     link_many local/bin/*
     link npmrc
-    link nvmrc
     link profile
     link pythonrc
     link vimrc

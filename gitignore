@@ -14,7 +14,6 @@ target/
 
 # Node
 node_modules/
-.nvmrc
 
 # Python
 MANIFEST

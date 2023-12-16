@@ -130,7 +130,6 @@ function activateenv
     if test -n "$is_node_env"
         set -gx PATH $PWD/$node_bin $PATH
         set -gx _ENV_TYPE $_ENV_TYPE node
-        test -f $PWD/.nvmrc; and nvm use
     end
 
     if test -n "$is_rails_env"
@@ -173,9 +172,6 @@ function deactivateenv
         set -e _ENV_CURRENT
         set -e _ENV_ORIGINAL_PATH
         set -e _ENV_TYPE
-        if contains node $env_type
-            nvm use node
-        end
         hash -r 2>/dev/null
         if [ "$argv[1]" != "silent" ]
             set_color red

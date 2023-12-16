@@ -1,6 +1,0 @@
-BREW_PREFIX="$(brew --prefix)"
-
-export NVM_DIR="$HOME/.nvm"
-
-source "${BREW_PREFIX}/opt/nvm/nvm.sh"
-source_if "${BREW_PREFIX}/opt/nvm/etc/bash_completion"
