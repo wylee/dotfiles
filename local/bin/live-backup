@@ -87,8 +87,6 @@ class LiveBackupRunner:
             self.do_show_info or self.do_show_locations
         )
 
-        self.git_garbarge_collected_paths = set()
-
     def run(self):
         if self.do_show_info:
             self.exit(self.show_info(), code=0)
@@ -176,21 +174,6 @@ class LiveBackupRunner:
         return rsync_cmd.copy()
 
     def rsync(self, paths, destination, excludes=()):
-        for path in paths:
-            git_dir = os.path.join(path, ".git")
-            gc_cmd = ["git", "gc", "--prune", "--quiet"]
-            gc_cmd_str = " ".join(gc_cmd)
-            if path in self.git_garbarge_collected_paths:
-                if self.debug:
-                    self.debug_info(f"Already ran `{gc_cmd_str}` in {path}")
-                continue
-            if os.path.isdir(git_dir):
-                if self.debug:
-                    self.debug_info(f"Running `{gc_cmd_str}` in {path}")
-                if not self.dry_run:
-                    subprocess.check_call(gc_cmd, cwd=path)
-            self.git_garbarge_collected_paths.add(path)
-
         joined_paths = ", ".join(paths)
         cmd = self.get_base_rsync_command()
         for exclude in excludes:
