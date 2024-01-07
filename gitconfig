@@ -24,6 +24,10 @@
     autocrlf = input
     excludesfile = ~/.gitignore
 
+[diff]
+    colormoved = default
+    colormovedws = allow-indentation-change
+
 [init]
     defaultBranch = dev
 
