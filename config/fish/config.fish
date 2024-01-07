@@ -31,7 +31,6 @@ function __init
 
     __prepend_path ~/go/bin
     __prepend_path ~/.cargo/bin
-    __prepend_path $PYENV_ROOT/bin
     __prepend_path ~/.local/bin
 
     starship init fish | source
