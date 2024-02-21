@@ -25,11 +25,15 @@
     excludesfile = ~/.gitignore
 
 [diff]
+    algorithm = histogram
     colormoved = default
     colormovedws = allow-indentation-change
 
 [init]
     defaultBranch = dev
+
+[merge]
+    conflictstyle = zdiff3
 
 [push]
     default = simple
