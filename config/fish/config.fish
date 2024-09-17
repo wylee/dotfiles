@@ -31,6 +31,7 @@ function __init
 
     __prepend_path ~/go/bin
     __prepend_path ~/.cargo/bin
+    __prepend_path ~/.dotnet/tools
     __prepend_path ~/.local/bin
 
     starship init fish | source
