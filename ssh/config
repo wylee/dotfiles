@@ -38,12 +38,6 @@ Host bycycle.org
     User admin
     IdentityFile ~/.ssh/id_rsa-bycycle.org
 
-# DjangoKit -----------------------------------------------------------
-
-Host djangokit.org
-    User admin
-    IdentityFile ~/.ssh/id_rsa-djangokit.org
-
 # MyStops -------------------------------------------------------------
 
 Host mystops.io
