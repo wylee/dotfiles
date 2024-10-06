@@ -48,12 +48,12 @@ BREW_PACKAGES=(
     neovim
     node
     pass
-    pipx
     pwgen
     python@3.12
     ripgrep
     shellcheck
     starship
+    uv
     vim
 )
 
@@ -374,7 +374,7 @@ function main () {
             say info "Installing Python tools... "
             for package in "${PYTHON_PACKAGES[@]}"; do
                 say -n info "Installing/upgrading ${package}... "
-                pipx install "$package" >/dev/null
+                uv tool install "$package" >/dev/null
                 say success "Done"
             done
             say success "Python setup complete"
